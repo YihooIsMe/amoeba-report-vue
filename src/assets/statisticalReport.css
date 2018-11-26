@@ -1,0 +1,158 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+html,body{
+    min-height: 100%;
+    margin: 0;
+}
+/**去掉input上的小箭头**/
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+input[type="number"]{
+    -moz-appearance: textfield;
+}
+
+/**end**/
+input[readonly]{
+    cursor: not-allowed;
+    background: rgba(170, 170, 170, 0.41);
+}
+.center{
+    text-align: center;
+    margin: 10px 0;
+}
+.table-container{
+    min-width: 1200px;
+    width: 1200px;
+    margin:10px auto 10px;
+}
+.table-container table{
+    width: 100%;
+    border-collapse: collapse;
+}
+.commonTable>tbody>tr>td{
+    text-align: center;
+    width: 6.9%;
+    height: 30px;
+}
+.commonTable>tbody>tr>td:nth-child(1){
+    width: 10% !important;
+}
+.commonTable>tbody>tr>td>input{
+    width: 100%;
+    height: 100%;
+    border:none;
+    outline: none;
+    text-indent: 5px;
+    font-size: 16px;
+    text-align: center;
+}
+.loading{
+    width:100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.51);
+    position: fixed;
+    top:0;
+    left:0;
+    display: none;
+}
+.imgContainer{
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+}
+/*服务管理费*/
+.managementAlert{
+    position: fixed;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.61);
+}
+.alertParent{
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.alertContent{
+    position: absolute;
+    background-color: #fff;
+    border-radius: 2px;
+    box-shadow: 1px 1px 50px rgba(0,0,0,.3);
+    width: 300px;
+    height: 200px;
+    top: 30%;
+    left: 50%;
+    margin-left: -150px;
+
+}
+.alertContent>.title{
+    padding-left: 10px;
+    height: 42px;
+    line-height: 42px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    color: #333;
+    overflow: hidden;
+    background-color: #F8F8F8;
+    border-radius: 2px 2px 0 0;
+}
+.alertContent>.close{
+    text-align: right;
+    padding-right:10px;
+    height: 42px;
+    line-height: 42px;
+    margin-top: -42px;
+    font-size:25px;
+    cursor: pointer;
+}
+.select{
+    padding:10px 0 0;
+    text-align: center;
+}
+.select>select{
+    width: 100px;
+    height: 25px;
+}
+.bottomBtn{
+    text-align: right;
+    padding: 0 15px 12px;
+    pointer-events: auto;
+    user-select: none;
+    -webkit-user-select: none;
+    position:absolute;
+    bottom:0;
+    right:0;
+    font-size:14px;
+}
+.bottomBtn a{
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+    text-align: center;
+    vertical-align: center;
+    font-weight: 400;
+    cursor: pointer;
+    text-decoration: none;
+    box-sizing: border-box;
+    padding-top: 4px;
+}
+.sureBtn{
+    border-color: #1E9FFF;
+    background-color: #1E9FFF;
+    color: #fff;
+    border-radius: 2px;
+}
+.cancelBtn{
+    border: 1px solid #dedede;
+    background-color: #fff;
+    color: #333;
+    border-radius: 2px;
+    margin-left: 20px;
+}
+
+
