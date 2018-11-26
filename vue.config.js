@@ -1,5 +1,5 @@
 module.exports = {
-  // baseUrl: './',
+  baseUrl: './',
   pages: {
     index: {
       entry: 'src/pages/index/main.js',

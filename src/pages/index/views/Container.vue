@@ -133,6 +133,7 @@ export default {
     handleInputNum(e) {
       if (e.keyCode !== 8) {
         e.target.value = (e.target.value.match(/^\d*(\.?\d{0,1})/g)[0]) || null;
+        // e.target.value = (e.target.value.match(/^\d+$/g)[0]) || null;
       }
     },
 
@@ -180,6 +181,7 @@ export default {
         Vue.set(this.pullAllData, 'ParentId', this.responseData.ParentId);
         Vue.set(this.pullAllData, 'JobAttribute', this.responseData.JobAttribute);
         Vue.set(this.pullAllData, 'userID', this.responseData.userID);
+        Vue.set(this.pullAllData, 'Pr0139', this.responseData.Pr0139);
         Vue.set(this.pullAllData, 'SupervisorNumber', this.responseData.SupervisorNumber);
         Vue.set(this.pullAllData, 'draft', this.draft);
         Vue.set(this.pullAllData, 'F_RealName', this.responseData.F_RealName);
@@ -587,11 +589,14 @@ export default {
     },
 
     deleteCurrentLineData(className) {
-      const currentLineTr = document.querySelectorAll('table.commonTable .' + className + '>td>input');
-      for (let i = 1; i < 13; i += 1) {
-        currentLineTr[i].value = '';
+      if (!this.isInputValEmpty) {
+        const currentLineTr = document.querySelectorAll('table.commonTable .' + className + '>td>input');
+        for (let i = 1; i < 13; i += 1) {
+          currentLineTr[i].value = '';
+        }
+        this.AllMonthsAutomaticCalculation();
+        this.isInputValEmpty = true;
       }
-      this.AllMonthsAutomaticCalculation();
     },
     /* 当前行没有数据的时候，任一月份输入数据，12个月均会填充此数据 */
     autoFillTwelveMonthData(index, className) {
