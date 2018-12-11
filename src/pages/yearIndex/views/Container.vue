@@ -9,8 +9,27 @@
         <div class="top-right">
           <el-button type="primary"
                      @click="dataSubmissionRequest(0)"
+                     v-if="!inputDisabled"
           >保存到草稿箱</el-button>
-          <el-button type="success" @click="dataSubmissionRequest(1)">数据提交</el-button>
+          <el-button type="success"
+                     @click="dataSubmissionRequest(1)"
+                     v-if="!inputDisabled"
+          >数据提交</el-button>
+          <el-button type="success"
+                     icon="el-icon-success"
+                     v-if="showReviewAndReject"
+                     @click="ReviewOrReject(2)"
+          >审核通过</el-button>
+          <el-button type="danger"
+                     icon="el-icon-error"
+                     v-if="showReviewAndReject"
+                     @click="ReviewOrReject(3)"
+          >驳回</el-button>
+          <el-button type="success"
+                     plain
+                     @click="exportAllData"
+                     v-if="draft===1"
+          >导出</el-button>
         </div>
       </div>
       <div v-for="(tableData, index) in tableDataInject"
@@ -31,7 +50,7 @@
                  :key="i"
                  :class="getForClassName(item.className)">
               <td>{{item.Name}}</td>
-              <td><input type="number" readonly></td>
+              <td><input type="text" readonly :value="item.Amount"></td>
               <td v-for="n in 12"
                   :key="n">
                 <input type="number"
@@ -39,6 +58,7 @@
                        @focus="inputFocus(n+2,item.className)"
                        @change="AutomaticCalculation(n+2, item.className)"
                        @keydown="handleInputNum"
+                       :disabled="inputDisabled || (fillStatus !=='填写中' && fillStatus !=='未填写')"
                 >
               </td>
               <td class="delete-btn">
@@ -58,6 +78,8 @@
                        @giveSelectedNum="getSigningRatio">
       </ManagementAlert>
     </transition>
+    <input type="hidden" value="0" id="zeroVal">
+    <iframe src="" frameborder="0" id="exportIframe" ref="exportIframe"></iframe>
   </div>
 </template>
 
@@ -65,10 +87,12 @@
 import Vue from 'vue';
 import qs from 'qs';
 import axios from 'axios';
+import VueCookie from 'vue-cookie';
 import { MessageBox } from 'element-ui';
 import ManagementAlert from './managementAlert.vue';
 
 Vue.component(MessageBox.name, MessageBox);
+Vue.use(VueCookie);
 
 export default {
   name: 'tableContainer',
@@ -77,12 +101,18 @@ export default {
     return {
       isReadOnly: '',
       getUrl: 'http://10.100.250.153:99/api/Subject',
-      userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}',
+      reviewOrRejectUrl: 'http://10.100.250.153:99/api/Review',
+      exportUrl: 'http://10.100.250.153:99/api/downLoad',
+      userID: '',
+      // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 权限大
+      // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 权限小
       IsYM: 0,
       OrganizeId: '',
       years: new Date().getFullYear() + 1,
+      viewEditorYear: '',
       submitBtnShow: false,
       draft: '',
+      Pr0139: '',
       tableSource: [],
       responseData: {},
       tableDataSource0: [], // Type类型为0的数据;
@@ -114,9 +144,23 @@ export default {
       pullAllData: {},
       isInputValEmpty: true,
       DraftData: [],
+      CreateByUser: '',
+      inputDisabled: false,
+      ReviewOrRejectMPID: '',
+      fillStatus: '',
+      showReviewAndReject: '',
     };
   },
   methods: {
+    getHistoryData(el) {
+      console.log(el.Amount);
+      return Number(el.Amount);
+    },
+
+    getFillStatus() {
+      this.fillStatus = VueCookie.get('fillStatus');
+    },
+
     getForClassName(el) {
       return el;
     },
@@ -133,8 +177,16 @@ export default {
     handleInputNum(e) {
       if (e.keyCode !== 8) {
         e.target.value = (e.target.value.match(/^\d*(\.?\d{0,1})/g)[0]) || null;
+        // e.target.value = (e.target.value.match(/^[1-9]\d*/g)[0]) || null;
         // e.target.value = (e.target.value.match(/^\d+$/g)[0]) || null;
       }
+      /*
+      if (e.target.value.length === 1) {
+        e.target.value = e.target.value.replace(/[^1-9]/g, '');
+      } else {
+        e.target.value = e.target.value.replace(/\D/g, '');
+      }
+      */
     },
 
     changeShow() {
@@ -164,16 +216,33 @@ export default {
     },
 
     firstLoadingRequest() {
-      axios.get(this.getUrl, {
-        params: {
+      this.userID = VueCookie.get('userID');
+      this.CreateByUser = VueCookie.get('CreateByUser');
+      this.viewEditorYear = VueCookie.get('viewEditorYear');
+      // this.Pr0139 = VueCookie.get('Pr0139');
+      let paramsArgs;
+      if (VueCookie.get('fromWhichBtn') === 'newAdded') {
+        paramsArgs = {
           userID: this.userID,
           IsYM: this.IsYM,
-        },
+          Year: this.years,
+        };
+      }
+      if (VueCookie.get('fromWhichBtn') === 'viewEditorBtn') {
+        paramsArgs = {
+          userID: this.CreateByUser,
+          IsYM: this.IsYM,
+          Year: this.viewEditorYear,
+        };
+      }
+      axios.get(this.getUrl, {
+        params: paramsArgs,
       }).then((response) => {
         this.responseData = JSON.parse(response.data);
         console.log(this.responseData);
         this.OrganizeId = this.responseData.OrganizeId;
         this.draft = this.responseData.draft;
+        this.Pr0139 = this.responseData.Pr0139;
         Vue.set(this.pullAllData, 'OrganizeId', this.OrganizeId);
         Vue.set(this.pullAllData, 'City', this.responseData.City);
         Vue.set(this.pullAllData, 'years', this.years); // 目前years暂无传参；
@@ -254,13 +323,16 @@ export default {
       this.$emit('getDataFromDraft', '正在读取草稿箱数据，请稍后...');
       axios.get(this.getUrl, {
         params: {
-          OrganizeId: this.OrganizeId,
+          Pr0139: this.Pr0139,
           years: this.years,
         },
       }).then((response) => {
         this.$emit('readDraftCompleted');
         this.DraftData = JSON.parse(response.data);
         console.log(this.DraftData);
+        if (this.DraftData.length > 0) {
+          this.ReviewOrRejectMPID = this.DraftData[0].MPID;
+        }
         this.DraftData.forEach((item) => {
           const allInputEl = document.querySelectorAll('tr.' + item.className + '>td>input');
           for (let i = 0; i < 12; i += 1) {
@@ -280,6 +352,7 @@ export default {
         ReadOnly: data.ReadOnly,
         Name: data.Name,
         className: data.className,
+        Amount: data.Amount,
       };
       tableDataSource.push(obj);
     },
@@ -309,13 +382,21 @@ export default {
     },
     tableOneCalculation(index) {
       /** 营业收入合计* */
-      this.tableOne(index).TotalOperatingIncome.value = (Number(this.tableOne(index).OriginalContractFee.value) - Number(this.tableOne(index).DiscountRefund.value)).toFixed(2);
+      if (this.tableOne(index).TotalOperatingIncome) {
+        this.tableOne(index).TotalOperatingIncome.value = (Number(this.tableOne(index).OriginalContractFee.value) - Number(this.tableOne(index).DiscountRefund.value)).toFixed(2);
+      }
       /** 減：营业税金* */
-      this.tableOne(index).BusinessTax.value = Number(this.tableOne(index).TotalOperatingIncome.value * 0.05).toFixed(2);
+      if (this.tableOne(index).BusinessTax) {
+        this.tableOne(index).BusinessTax.value = Number(this.tableOne(index).TotalOperatingIncome.value * 0.05).toFixed(2);
+      }
       /* 营业收入净额 */
-      this.tableOne(index).OperatingNetProfit.value = (Number(this.tableOne(index).TotalOperatingIncome.value) - Number(this.tableOne(index).BusinessTax.value)).toFixed(2);
+      if (this.tableOne(index).OperatingNetProfit) {
+        this.tableOne(index).OperatingNetProfit.value = (Number(this.tableOne(index).TotalOperatingIncome.value) - Number(this.tableOne(index).BusinessTax.value)).toFixed(2);
+      }
       /* 收入合计 */
-      this.tableOne(index).TotalIncome.value = (Number(this.tableOne(index).OperatingNetProfit.value)).toFixed(2);
+      if (this.tableOne(index).TotalIncome) {
+        this.tableOne(index).TotalIncome.value = (Number(this.tableOne(index).OperatingNetProfit.value)).toFixed(2);
+      }
     },
 
     /* Type类型为1时 */
@@ -580,7 +661,7 @@ export default {
     isCurrentLineEmpty(className) {
       this.isInputValEmpty = true;
       const currentLineInput = document.querySelectorAll('table.commonTable .' + className + ' input');
-      for (let i = 0; i < 12; i += 1) {
+      for (let i = 1; i < 13; i += 1) {
         if (currentLineInput[i].value !== '') {
           this.isInputValEmpty = false;
           break;
@@ -589,6 +670,7 @@ export default {
     },
 
     deleteCurrentLineData(className) {
+      this.isCurrentLineEmpty(className);
       if (!this.isInputValEmpty) {
         const currentLineTr = document.querySelectorAll('table.commonTable .' + className + '>td>input');
         for (let i = 1; i < 13; i += 1) {
@@ -664,6 +746,57 @@ export default {
         this.currentMonthAutomaticCalculation(i);
       }
     },
+
+    judgeInputDisabled() {
+      if (VueCookie.get('fromWhichBtn') === 'newAdded') {
+        this.inputDisabled = false;
+      } else {
+        if (this.userID !== this.CreateByUser) {
+          this.inputDisabled = true;
+          if (this.fillStatus === '填写中' || this.fillStatus === '未填写') {
+            this.showReviewAndReject = false;
+          } else {
+            this.showReviewAndReject = true;
+          }
+        } else {
+          if (this.fillStatus !== '待审核' && this.fillStatus !== '审核通过') {
+            this.inputDisabled = false;
+          } else {
+            this.inputDisabled = true;
+          }
+        }
+      }
+    },
+
+    ReviewOrReject(index) {
+      axios.get(this.reviewOrRejectUrl, {
+        params: {
+          MPID: this.ReviewOrRejectMPID,
+          status: index,
+          User: VueCookie.get('userID'),
+        },
+      }).then((res) => {
+        console.log(res);
+        let content;
+        if (index === 2) {
+          content = '您已经审核通过!';
+        } else {
+          content = '您已经驳回了！';
+        }
+        MessageBox.alert(content, '提示', {
+          confirmButtonText: '确定',
+          callback(action) {
+            console.log(action);
+          },
+        });
+      }).catch((errMsg) => {
+        console.log(errMsg);
+      });
+    },
+
+    exportAllData() {
+      this.$refs.exportIframe.setAttribute('src', this.exportUrl + '?MPID=' + this.ReviewOrRejectMPID);
+    },
   },
 
   watch: {
@@ -707,10 +840,23 @@ export default {
   created() {
     this.firstLoadingRequest();
   },
+  mounted() {
+    this.getFillStatus();
+    this.judgeInputDisabled();
+
+    console.log(this.inputDisabled);
+    console.log(this.fillStatus === '填写中');
+    console.log(this.fillStatus !== '填写中');
+    console.log(this.fillStatus !== '未填写');
+    console.log((this.fillStatus !== '填写中' && this.fillStatus !== '未填写'));
+  },
 };
 
 </script>
 <style lang="less" scoped>
+  input[type=number]:invalid {
+    background-color: red;
+  }
   .table-container{
     h1{
       text-align: center;
@@ -729,6 +875,7 @@ export default {
     position: relative;
     height:40px;
     line-height: 40px;
+    margin-top: 20px;
     .top-left{
       position:absolute;
       top:0;
@@ -750,5 +897,8 @@ export default {
     button{
       padding:7px 11px;
     }
+  }
+  #exportIframe{
+    display: none;
   }
 </style>

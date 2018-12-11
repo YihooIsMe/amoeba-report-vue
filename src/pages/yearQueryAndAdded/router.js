@@ -10,8 +10,8 @@ export default new Router({
       path: '/index',
       name: 'index',
       beforeEnter() {
-        window.location = '/index.html';
-        // window.location = './index.html';
+        window.location = '/01demo.html';
+        // window.location = './01demo.html';
       },
     },
     /*
