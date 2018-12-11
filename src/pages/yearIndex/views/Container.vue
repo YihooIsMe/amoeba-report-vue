@@ -25,6 +25,10 @@
                      v-if="showReviewAndReject"
                      @click="ReviewOrReject(3)"
           >驳回</el-button>
+          <el-button type="warning"
+                     v-if="true"
+                     @click=""
+          >隐藏整行为0的科目</el-button>
           <el-button type="success"
                      plain
                      @click="exportAllData"
@@ -211,9 +215,14 @@ export default {
             } else {
               console.log('数据已经提交成功!');
             }
+            this.readFromDraftBoxRequest();
           }
         },
       });
+    },
+
+    hideSubjectWithZero() {
+
     },
 
     firstLoadingRequest() {
@@ -848,13 +857,6 @@ export default {
   mounted() {
     this.getFillStatus();
     this.judgeInputDisabled();
-
-    console.log(this.inputDisabled);
-    console.log(this.fillStatus);
-    console.log(this.fillStatus === '填写中');
-    console.log(this.fillStatus !== '填写中');
-    console.log(this.fillStatus !== '未填写');
-    console.log((this.fillStatus !== '填写中' && this.fillStatus !== '未填写'));
   },
 };
 

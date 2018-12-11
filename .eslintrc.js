@@ -17,6 +17,7 @@ module.exports = {
     'no-shadow': 'off',
     'prefer-destructuring': 'off',
     'func-names': ['error', 'as-needed'],
+    'linebreak-style': 'off',
   },
   parserOptions: {
     parser: 'babel-eslint',
