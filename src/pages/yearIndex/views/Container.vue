@@ -62,7 +62,7 @@
                 >
               </td>
               <td class="delete-btn">
-                <el-button type="warning" @click="deleteCurrentLineData(item.className)" :disabled="item.ReadOnly === 1?true:false">删除</el-button>
+                <el-button type="warning" @click="deleteCurrentLineData(item.className)" :disabled="(item.ReadOnly === 1?true:false) || deleteBtnDisabled">删除</el-button>
               </td>
             </tr>
             </tbody>
@@ -149,6 +149,7 @@ export default {
       ReviewOrRejectMPID: '',
       fillStatus: '',
       showReviewAndReject: '',
+      deleteBtnDisabled: '',
     };
   },
   methods: {
@@ -752,6 +753,7 @@ export default {
         this.inputDisabled = false;
       } else {
         if (this.userID !== this.CreateByUser) {
+          this.deleteBtnDisabled = true;
           this.inputDisabled = true;
           if (this.fillStatus === '填写中' || this.fillStatus === '未填写') {
             this.showReviewAndReject = false;
@@ -759,6 +761,7 @@ export default {
             this.showReviewAndReject = true;
           }
         } else {
+          this.deleteBtnDisabled = false;
           if (this.fillStatus !== '待审核' && this.fillStatus !== '审核通过') {
             this.inputDisabled = false;
           } else {
@@ -845,6 +848,7 @@ export default {
     this.judgeInputDisabled();
 
     console.log(this.inputDisabled);
+    console.log(this.fillStatus);
     console.log(this.fillStatus === '填写中');
     console.log(this.fillStatus !== '填写中');
     console.log(this.fillStatus !== '未填写');
