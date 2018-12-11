@@ -9,11 +9,11 @@
         <div class="top-right">
           <el-button type="primary"
                      @click="dataSubmissionRequest(0)"
-                     v-if="!inputDisabled"
+                     v-if="showDraftAndSubmit"
           >保存到草稿箱</el-button>
           <el-button type="success"
                      @click="dataSubmissionRequest(1)"
-                     v-if="!inputDisabled"
+                     v-if="showDraftAndSubmit"
           >数据提交</el-button>
           <el-button type="success"
                      icon="el-icon-success"
@@ -52,6 +52,7 @@
               <th>历史数据</th>
               <th  v-for="n in 12" :key="n">{{n}}月</th>
               <th>批量删除</th>
+              <th>合计</th>
             </tr>
             </thead>
             <tbody>
@@ -67,11 +68,14 @@
                        @focus="inputFocus(n+2,item.className)"
                        @change="AutomaticCalculation(n+2, item.className)"
                        @keydown="handleInputNum"
-                       :disabled="inputDisabled || (fillStatus !=='填写中' && fillStatus !=='未填写')"
+                       :disabled="inputDisabled"
                 >
               </td>
               <td class="delete-btn">
                 <el-button type="warning" @click="deleteCurrentLineData(item.className)" :disabled="(item.ReadOnly === 1?true:false) || deleteBtnDisabled">删除</el-button>
+              </td>
+              <td>
+                <input type="number">
               </td>
             </tr>
             </tbody>
@@ -157,7 +161,8 @@ export default {
       inputDisabled: false,
       ReviewOrRejectMPID: '',
       fillStatus: '',
-      showReviewAndReject: '',
+      showReviewAndReject: false,
+      showDraftAndSubmit: false,
       deleteBtnDisabled: '',
       currentLineZero: '',
     };
@@ -202,6 +207,16 @@ export default {
 
     changeShow() {
       this.isAlertShow = false;
+    },
+
+    oneToTwelveSum(className) {
+      const currentLine = document.querySelectorAll('table.KMTable1.commonTable tr.' + className + ' input');
+      console.log(currentLine);
+      let baseNum = 0;
+      for (let i = 1; i < 13; i += 1) {
+        baseNum = baseNum + Number(currentLine[i].value);
+      }
+      currentLine[13].value = baseNum;
     },
 
     getSigningRatio(val) {
@@ -779,23 +794,42 @@ export default {
       } else {
         this.currentMonthAutomaticCalculation(i);
       }
+      this.oneToTwelveSum(className);
     },
 
     judgeInputDisabled() {
       if (VueCookie.get('fromWhichBtn') === 'newAdded') {
-        this.inputDisabled = false;
-        this.deleteBtnDisabled = false;
+        this.showReviewAndReject = false;
+        if (this.fillStatus === '未填写' || this.fillStatus === '填写中' || this.fillStatus === '驳回') {
+          this.showDraftAndSubmit = true;
+        } else {
+          this.showDraftAndSubmit = false;
+        }
+        if (this.fillStatus === '待审核' || this.fillStatus === '审核通过') {
+          this.deleteBtnDisabled = true;
+          this.inputDisabled = true;
+        } else {
+          this.deleteBtnDisabled = false;
+          this.inputDisabled = false;
+        }
       } else {
         if (this.userID !== this.CreateByUser) {
           this.deleteBtnDisabled = true;
+          this.showDraftAndSubmit = false;
           this.inputDisabled = true;
-          if (this.fillStatus === '填写中' || this.fillStatus === '未填写') {
-            this.showReviewAndReject = false;
-          } else {
+          if (this.fillStatus === '待审核') {
             this.showReviewAndReject = true;
+          } else {
+            this.showReviewAndReject = false;
           }
         } else {
-          if (this.fillStatus !== '待审核' && this.fillStatus !== '审核通过' && this.fillStatus !== '驳回') {
+          this.showReviewAndReject = false;
+          if (this.fillStatus === '未填写' || this.fillStatus === '填写中' || this.fillStatus === '驳回') {
+            this.showDraftAndSubmit = true;
+          } else {
+            this.showDraftAndSubmit = false;
+          }
+          if (this.fillStatus !== '待审核' && this.fillStatus !== '审核通过') {
             this.deleteBtnDisabled = false;
             this.inputDisabled = false;
           } else {
@@ -881,6 +915,7 @@ export default {
   mounted() {
     this.getFillStatus();
     this.judgeInputDisabled();
+    console.log(this.fillStatus);
   },
 };
 

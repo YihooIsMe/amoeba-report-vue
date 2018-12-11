@@ -157,11 +157,15 @@ export default {
     },
 
     getApprovalStatus() {
-      this.queryTableAllData.forEach((item) => {
-        if (this.userID === item.CreateByUser) {
-          VueCookie.set('fillStatus', item.Status);
-        }
-      });
+      if (this.queryTableAllData.length === 1 && this.queryTableAllData[0].CreateByUser === null) {
+        VueCookie.set('fillStatus', '未填写');
+      } else {
+        this.queryTableAllData.forEach((item) => {
+          if (this.userID === item.CreateByUser) {
+            VueCookie.set('fillStatus', item.Status);
+          }
+        });
+      }
     },
     getBusinessOfficeRequest(permission) {
       this.businessOffice = [];

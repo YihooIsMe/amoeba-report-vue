@@ -35,11 +35,11 @@ input[readonly]{
 }
 .commonTable>tbody>tr>td{
     text-align: center;
-    width: 6.9%;
+    width: 6.1%;
     height: 30px;
 }
 .commonTable>tbody>tr>td:nth-child(1){
-    width: 10% !important;
+    width: 8% !important;
 }
 .commonTable>tbody>tr>td>input{
     width: 100%;
