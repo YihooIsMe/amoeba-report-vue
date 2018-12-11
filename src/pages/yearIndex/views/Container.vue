@@ -27,8 +27,13 @@
           >驳回</el-button>
           <el-button type="warning"
                      v-if="true"
-                     @click=""
+                     @click="hideSubjectWithZero"
           >隐藏整行为0的科目</el-button>
+          <el-button type="primary"
+                     plain
+                     v-if="true"
+                     @click="showAllSubject"
+          >显示所有科目</el-button>
           <el-button type="success"
                      plain
                      @click="exportAllData"
@@ -154,6 +159,7 @@ export default {
       fillStatus: '',
       showReviewAndReject: '',
       deleteBtnDisabled: '',
+      currentLineZero: '',
     };
   },
   methods: {
@@ -222,7 +228,25 @@ export default {
     },
 
     hideSubjectWithZero() {
+      this.tableSource.forEach((item) => {
+        this.currentLineZero = '';
+        const allInputEl = document.querySelectorAll('table.KMTable1.commonTable tr.' + item.className + ' input');
+        let sumData = 0;
+        for (let i = 1; i < 13; i += 1) {
+          sumData = sumData + Number(allInputEl[i].value);
+        }
 
+        if ((sumData === 0 || sumData === 0.0 || sumData === 0.00) && (allInputEl[0].value === '0' || allInputEl[0].value === '0.0' || allInputEl[0].value === '0.00')) {
+          this.currentLineZero = true;
+          document.querySelector('table.KMTable1.commonTable tr.' + item.className).style.display = 'none';
+        } else {
+          this.currentLineZero = false;
+        }
+      });
+    },
+
+    showAllSubject() {
+      window.location.reload();
     },
 
     firstLoadingRequest() {

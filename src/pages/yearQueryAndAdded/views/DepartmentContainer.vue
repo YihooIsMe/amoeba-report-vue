@@ -151,9 +151,17 @@ export default {
 
     linkToIndex() {
       VueCookie.set('userID', this.userID);
-      VueCookie.set('fillStatus', '未填写');
       VueCookie.set('fromWhichBtn', 'newAdded');
+      this.getApprovalStatus();
       window.location = 'yearIndex.html';
+    },
+
+    getApprovalStatus() {
+      this.queryTableAllData.forEach((item) => {
+        if (this.userID === item.CreateByUser) {
+          VueCookie.set('fillStatus', item.Status);
+        }
+      });
     },
     getBusinessOfficeRequest(permission) {
       this.businessOffice = [];
