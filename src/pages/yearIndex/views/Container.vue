@@ -751,6 +751,7 @@ export default {
     judgeInputDisabled() {
       if (VueCookie.get('fromWhichBtn') === 'newAdded') {
         this.inputDisabled = false;
+        this.deleteBtnDisabled = false;
       } else {
         if (this.userID !== this.CreateByUser) {
           this.deleteBtnDisabled = true;
@@ -761,10 +762,11 @@ export default {
             this.showReviewAndReject = true;
           }
         } else {
-          this.deleteBtnDisabled = false;
-          if (this.fillStatus !== '待审核' && this.fillStatus !== '审核通过') {
+          if (this.fillStatus !== '待审核' && this.fillStatus !== '审核通过' && this.fillStatus !== '驳回') {
+            this.deleteBtnDisabled = false;
             this.inputDisabled = false;
           } else {
+            this.deleteBtnDisabled = true;
             this.inputDisabled = true;
           }
         }
