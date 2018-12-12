@@ -48,7 +48,7 @@
           <table class="KMTable1 commonTable" border="1">
             <thead>
             <tr>
-              <th>科目</th>
+              <th><i class="el-icon-arrow-down" @click="toggleSubject($event)" id="toggle-icon">科目</i></th>
               <th>历史数据</th>
               <th  v-for="n in 12" :key="n">{{n}}月</th>
               <th>批量删除</th>
@@ -126,6 +126,7 @@ export default {
       submitBtnShow: false,
       draft: '',
       Pr0139: '',
+      Pr0111: '',
       tableSource: [],
       responseData: {},
       tableDataSource0: [], // Type类型为0的数据;
@@ -168,11 +169,6 @@ export default {
     };
   },
   methods: {
-    getHistoryData(el) {
-      console.log(el.Amount);
-      return Number(el.Amount);
-    },
-
     getFillStatus() {
       this.fillStatus = VueCookie.get('fillStatus');
     },
@@ -209,12 +205,45 @@ export default {
       this.isAlertShow = false;
     },
 
+    toggleSubject(event) {
+      const toggleChildNodes = event.target.parentNode.parentNode.parentNode.nextSibling.childNodes;
+      const toggleChildNodesLen = toggleChildNodes.length;
+      const isF5 = toggleChildNodes[0].getAttribute('class').indexOf('F') !== -1;
+      if (event.target.getAttribute('class') === 'el-icon-arrow-down') {
+        this.$nextTick(() => {
+          if (!isF5) {
+            for (let i = 0; i < toggleChildNodesLen - 1; i += 1) {
+              toggleChildNodes[i].classList.add('toggle-subject');
+            }
+          } else {
+            for (let i = 0; i < toggleChildNodesLen - 2; i += 1) {
+              toggleChildNodes[i].classList.add('toggle-subject');
+            }
+          }
+        });
+        event.target.setAttribute('class', 'el-icon-arrow-up');
+      } else {
+        this.$nextTick(() => {
+          if (!isF5) {
+            for (let i = 0; i < toggleChildNodesLen - 1; i += 1) {
+              toggleChildNodes[i].classList.remove('toggle-subject');
+            }
+          } else {
+            for (let i = 0; i < toggleChildNodesLen - 2; i += 1) {
+              toggleChildNodes[i].classList.remove('toggle-subject');
+            }
+          }
+        });
+        event.target.setAttribute('class', 'el-icon-arrow-down');
+      }
+    },
+
     oneToTwelveSum(className) {
       const currentLine = document.querySelectorAll('table.KMTable1.commonTable tr.' + className + ' input');
       console.log(currentLine);
       let baseNum = 0;
       for (let i = 1; i < 13; i += 1) {
-        baseNum = baseNum + Number(currentLine[i].value);
+        baseNum = Number(currentLine[i].value) + baseNum;
       }
       currentLine[13].value = baseNum;
     },
@@ -248,7 +277,7 @@ export default {
         const allInputEl = document.querySelectorAll('table.KMTable1.commonTable tr.' + item.className + ' input');
         let sumData = 0;
         for (let i = 1; i < 13; i += 1) {
-          sumData = sumData + Number(allInputEl[i].value);
+          sumData = Number(allInputEl[i].value) + sumData;
         }
 
         if ((sumData === 0 || sumData === 0.0 || sumData === 0.00) && (allInputEl[0].value === '0' || allInputEl[0].value === '0.0' || allInputEl[0].value === '0.00')) {
@@ -306,6 +335,7 @@ export default {
         Vue.set(this.pullAllData, 'UnitName', this.responseData.UnitName);
         Vue.set(this.pullAllData, 'Company', this.responseData.Company);
         Vue.set(this.pullAllData, 'District', this.responseData.District);
+        Vue.set(this.pullAllData, 'Pr0111', this.responseData.Pr0111);
         this.tableSource = JSON.parse(response.data).list;
         console.log(this.tableSource);
         this.injectTableSourceData();
@@ -932,6 +962,32 @@ export default {
       margin-top: 20px;
     }
   }
+  table.KMTable1.commonTable{
+    thead{
+      tr{
+        height: 40px;
+        th:first-child{
+          cursor: pointer;
+          i{
+            padding:5px;
+          }
+          i:before{
+            content: '';
+          }
+          .el-icon-arrow-down:after{
+            content: '\E603' !important;
+            border:1px solid #ccc;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+          }
+          i:hover{
+            color:#409eff;
+          }
+        }
+      }
+    }
+  }
   .fade-enter-active, .fade-leave-active {
     transition: opacity .8s;
   }
@@ -957,7 +1013,7 @@ export default {
     }
   }
   .F5{
-    visibility: hidden;
+    display: none;
   }
   .delete-btn{
     padding:5px;
@@ -967,5 +1023,15 @@ export default {
   }
   #exportIframe{
     display: none;
+  }
+  .toggle-subject{
+    display: none;
+  }
+  .el-icon-arrow-up:after{
+    content: '\E605' !important;
+    border:1px solid #ccc;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
   }
 </style>
