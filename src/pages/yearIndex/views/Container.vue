@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="table-container">
-      <h1>阿米巴报表核算系统</h1>
+      <h2>阿米巴报表核算系统</h2>
       <div class="submitBtn" v-if="submitBtnShow">
         <div class="top-left">
           {{responseData.UnitName}}{{years}}年年度预定计划
@@ -26,14 +26,14 @@
                      @click="ReviewOrReject(3)"
           >驳回</el-button>
           <el-button type="warning"
-                     v-if="true"
                      @click="hideSubjectWithZero"
           >隐藏整行为0的科目</el-button>
           <el-button type="primary"
                      plain
-                     v-if="true"
                      @click="showAllSubject"
           >显示所有科目</el-button>
+          <input type="file" value="" id="file"/>
+          <el-button type="warning" plain @click="importExcelRequest()">导入</el-button>
           <el-button type="success"
                      plain
                      @click="exportAllData"
@@ -63,11 +63,11 @@
               <td><input type="text" readonly :value="item.Amount"></td>
               <td v-for="n in 12"
                   :key="n">
-                <input type="number"
+                <input type="text"
                        :readonly="item.ReadOnly === 1?true:false"
                        @focus="inputFocus(n+2,item.className)"
                        @change="AutomaticCalculation(n+2, item.className)"
-                       @keydown="handleInputNum"
+                       @keyup="handleInputNum"
                        :disabled="inputDisabled"
                 >
               </td>
@@ -101,8 +101,9 @@ import Vue from 'vue';
 import qs from 'qs';
 import axios from 'axios';
 import VueCookie from 'vue-cookie';
-import { MessageBox } from 'element-ui';
+import { MessageBox, Message } from 'element-ui';
 import ManagementAlert from './managementAlert.vue';
+
 
 Vue.component(MessageBox.name, MessageBox);
 Vue.use(VueCookie);
@@ -116,6 +117,7 @@ export default {
       getUrl: 'http://10.100.250.153:99/api/Subject',
       reviewOrRejectUrl: 'http://10.100.250.153:99/api/Review',
       exportUrl: 'http://10.100.250.153:99/api/downLoad',
+      importUrl: 'http://10.100.250.153:99/api/ImportExcel',
       userID: '',
       // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 权限大
       // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 权限小
@@ -154,7 +156,7 @@ export default {
         SigningRatio11: 0.1,
         SigningRatio12: 0.1,
       },
-      months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+      months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Total'],
       pullAllData: {},
       isInputValEmpty: true,
       DraftData: [],
@@ -188,9 +190,18 @@ export default {
 
     handleInputNum(e) {
       if (e.keyCode !== 8) {
-        e.target.value = (e.target.value.match(/^\d*(\.?\d{0,1})/g)[0]) || null;
+        // e.target.value = (e.target.value.match(/^\d*(\.?\d{0,1})/g)[0]) || null;
         // e.target.value = (e.target.value.match(/^[1-9]\d*/g)[0]) || null;
         // e.target.value = (e.target.value.match(/^\d+$/g)[0]) || null;
+
+      }
+      if (!/^\d+$/.test(e.target.value)) {
+        Message({
+          message: '请输入整数',
+          duration: 1000,
+          type: 'warning',
+        });
+        e.target.value = '';
       }
       /*
       if (e.target.value.length === 1) {
@@ -209,32 +220,35 @@ export default {
       const toggleChildNodes = event.target.parentNode.parentNode.parentNode.nextSibling.childNodes;
       const toggleChildNodesLen = toggleChildNodes.length;
       const isF5 = toggleChildNodes[0].getAttribute('class').indexOf('F') !== -1;
-      if (event.target.getAttribute('class') === 'el-icon-arrow-down') {
-        this.$nextTick(() => {
-          if (!isF5) {
-            for (let i = 0; i < toggleChildNodesLen - 1; i += 1) {
-              toggleChildNodes[i].classList.add('toggle-subject');
+      console.log(toggleChildNodesLen);
+      if (toggleChildNodesLen > 1) {
+        if (event.target.getAttribute('class') === 'el-icon-arrow-down') {
+          this.$nextTick(() => {
+            if (!isF5) {
+              for (let i = 0; i < toggleChildNodesLen - 1; i += 1) {
+                toggleChildNodes[i].classList.add('toggle-subject');
+              }
+            } else {
+              for (let i = 0; i < toggleChildNodesLen - 2; i += 1) {
+                toggleChildNodes[i].classList.add('toggle-subject');
+              }
             }
-          } else {
-            for (let i = 0; i < toggleChildNodesLen - 2; i += 1) {
-              toggleChildNodes[i].classList.add('toggle-subject');
+          });
+          event.target.setAttribute('class', 'el-icon-arrow-up');
+        } else {
+          this.$nextTick(() => {
+            if (!isF5) {
+              for (let i = 0; i < toggleChildNodesLen - 1; i += 1) {
+                toggleChildNodes[i].classList.remove('toggle-subject');
+              }
+            } else {
+              for (let i = 0; i < toggleChildNodesLen - 2; i += 1) {
+                toggleChildNodes[i].classList.remove('toggle-subject');
+              }
             }
-          }
-        });
-        event.target.setAttribute('class', 'el-icon-arrow-up');
-      } else {
-        this.$nextTick(() => {
-          if (!isF5) {
-            for (let i = 0; i < toggleChildNodesLen - 1; i += 1) {
-              toggleChildNodes[i].classList.remove('toggle-subject');
-            }
-          } else {
-            for (let i = 0; i < toggleChildNodesLen - 2; i += 1) {
-              toggleChildNodes[i].classList.remove('toggle-subject');
-            }
-          }
-        });
-        event.target.setAttribute('class', 'el-icon-arrow-down');
+          });
+          event.target.setAttribute('class', 'el-icon-arrow-down');
+        }
       }
     },
 
@@ -359,6 +373,31 @@ export default {
       Vue.set(this.pullAllData, 'DZ', index); // 0表示保存草稿  1表示提交审核
     },
 
+    importExcelRequest() {
+      const formData = new FormData();
+      formData.append('File', document.getElementById('file').files[0]);
+      formData.append('userID', this.userID);
+      console.log(formData);
+      axios.post(this.importUrl, formData).then((res) => {
+        console.log(res);
+      }).catch((errMsg) => {
+        console.log(errMsg);
+      });
+/*
+      axios({
+        method: 'POST',
+        url: this.importUrl,
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        data: qs.stringify({ formData }),
+
+      }).then((res) => {
+        console.log(res);
+      }).catch((errMsg) => {
+        console.log(errMsg);
+      });
+*/
+    },
+
     dataSubmissionRequest(DZIndex) {
       this.$emit('saveToDraftBox', '数据正在提交中，请稍后');
       const getSubmitData = this.tableSource;// LIST下的86个数据
@@ -375,7 +414,7 @@ export default {
         }
         const dataClassName = getSubmitData[i].className;
         const allInput = document.querySelectorAll('table.commonTable .' + dataClassName + ' input');
-        for (let j = 0; j < 12; j += 1) {
+        for (let j = 0; j < 13; j += 1) {
           submitObj[this.months[j]] = allInput[(j + 1)].value;
         }
         submitListsArr.push(submitObj);
@@ -414,7 +453,7 @@ export default {
         }
         this.DraftData.forEach((item) => {
           const allInputEl = document.querySelectorAll('tr.' + item.className + '>td>input');
-          for (let i = 0; i < 12; i += 1) {
+          for (let i = 0; i < 13; i += 1) {
             allInputEl[(i + 1)].value = item[this.months[i]];
             if (item.className === 'F5') {
               this.SigningRatio['SigningRatio' + (i + 1)] = item[this.months[i]];
@@ -462,7 +501,7 @@ export default {
     tableOneCalculation(index) {
       /** 营业收入合计* */
       if (this.tableOne(index).TotalOperatingIncome) {
-        this.tableOne(index).TotalOperatingIncome.value = (Number(this.tableOne(index).OriginalContractFee.value) - Number(this.tableOne(index).DiscountRefund.value)).toFixed(2);
+        this.tableOne(index).TotalOperatingIncome.value = (Number(this.tableOne(index).OriginalContractFee.value) - Number(this.tableOne(index).DiscountRefund.value));
       }
       /** 減：营业税金* */
       if (this.tableOne(index).BusinessTax) {
@@ -470,11 +509,11 @@ export default {
       }
       /* 营业收入净额 */
       if (this.tableOne(index).OperatingNetProfit) {
-        this.tableOne(index).OperatingNetProfit.value = (Number(this.tableOne(index).TotalOperatingIncome.value) - Number(this.tableOne(index).BusinessTax.value)).toFixed(2);
+        this.tableOne(index).OperatingNetProfit.value = (Number(this.tableOne(index).TotalOperatingIncome.value) - Number(this.tableOne(index).BusinessTax.value));
       }
       /* 收入合计 */
       if (this.tableOne(index).TotalIncome) {
-        this.tableOne(index).TotalIncome.value = (Number(this.tableOne(index).OperatingNetProfit.value)).toFixed(2);
+        this.tableOne(index).TotalIncome.value = (Number(this.tableOne(index).OperatingNetProfit.value));
       }
     },
 
@@ -515,13 +554,13 @@ export default {
     },
     tableTwoCalculation(index) {
       /* 工资 */
-      this.tableTwo(index).Wage.value = (Number(this.tableTwo(index).FixedSalary.value) + Number(this.tableTwo(index).VariableWage.value)).toFixed(2);
+      this.tableTwo(index).Wage.value = (Number(this.tableTwo(index).FixedSalary.value) + Number(this.tableTwo(index).VariableWage.value));
       /* 社会保险金 */
       this.tableTwo(index).SocialInsurancePremium.value = (Number(this.tableTwo(index).Wage.value * 0.305)).toFixed(2);
       /* 公积金 */
       this.tableTwo(index).ProvidentFund.value = (Number(this.tableTwo(index).Wage.value * 0.07)).toFixed(2);
       /* 用人费用 */
-      this.tableTwo(index).EmploymentFee.value = (Number(this.tableTwo(index).Wage.value) + Number(this.tableTwo(index).WithholdingBonus.value) + Number(this.tableTwo(index).WelfareFee.value) + Number(this.tableTwo(index).AccommodationFee.value) + Number(this.tableTwo(index).SocialInsurancePremium.value) + Number(this.tableTwo(index).LifeInsurance.value) + Number(this.tableTwo(index).WorkingMeal.value) + Number(this.tableTwo(index).UniformFee.value) + Number(this.tableTwo(index).CarSticker.value) + Number(this.tableTwo(index).EducationalTrainingFee.value) + Number(this.tableTwo(index).LaborCosts.value) + Number(this.tableTwo(index).ProvidentFund.value)).toFixed(2);
+      this.tableTwo(index).EmploymentFee.value = (Number(this.tableTwo(index).Wage.value) + Number(this.tableTwo(index).WithholdingBonus.value) + Number(this.tableTwo(index).WelfareFee.value) + Number(this.tableTwo(index).AccommodationFee.value) + Number(this.tableTwo(index).SocialInsurancePremium.value) + Number(this.tableTwo(index).LifeInsurance.value) + Number(this.tableTwo(index).WorkingMeal.value) + Number(this.tableTwo(index).UniformFee.value) + Number(this.tableTwo(index).CarSticker.value) + Number(this.tableTwo(index).EducationalTrainingFee.value) + Number(this.tableTwo(index).LaborCosts.value) + Number(this.tableTwo(index).ProvidentFund.value));
     },
 
     /* Type类型为2时 */
@@ -549,9 +588,9 @@ export default {
     },
     tableThreeCalculation(index) {
       /* 租赁费 */
-      this.tableThree(index).RentalFees.value = (Number(this.tableThree(index).StoreRent.value) + Number(this.tableThree(index).EquipmentRent.value)).toFixed(2);
+      this.tableThree(index).RentalFees.value = (Number(this.tableThree(index).StoreRent.value) + Number(this.tableThree(index).EquipmentRent.value));
       /* 设备费用 */
-      this.tableThree(index).EquipmentCost.value = (Number(this.tableThree(index).Depreciation.value) + Number(this.tableThree(index).AmortizationOfTangibleAssets.value) + Number(this.tableThree(index).LowValueConsumablesAmortization.value) + Number(this.tableThree(index).RepairFee.value) + Number(this.tableThree(index).RentalFees.value) + Number(this.tableThree(index).PropertyRent.value)).toFixed(2);
+      this.tableThree(index).EquipmentCost.value = (Number(this.tableThree(index).Depreciation.value) + Number(this.tableThree(index).AmortizationOfTangibleAssets.value) + Number(this.tableThree(index).LowValueConsumablesAmortization.value) + Number(this.tableThree(index).RepairFee.value) + Number(this.tableThree(index).RentalFees.value) + Number(this.tableThree(index).PropertyRent.value));
     },
 
     /* Type类型为3时 */
@@ -615,11 +654,11 @@ export default {
     },
     tableFourCalculation(index) {
       /* 办公费 */
-      this.tableFour(index).FourOfficeFee.value = (Number(this.tableFour(index).CityCallFee.value) + Number(this.tableFour(index).NetworkCommunicationFee.value) + Number(this.tableFour(index).OfficeSupplies.value) + Number(this.tableFour(index).OfficeFeeOtherFee.value) + Number(this.tableFour(index).LongDistanceFee.value) + Number(this.tableFour(index).SMSCharges.value)).toFixed(2);
+      this.tableFour(index).FourOfficeFee.value = (Number(this.tableFour(index).CityCallFee.value) + Number(this.tableFour(index).NetworkCommunicationFee.value) + Number(this.tableFour(index).OfficeSupplies.value) + Number(this.tableFour(index).OfficeFeeOtherFee.value) + Number(this.tableFour(index).LongDistanceFee.value) + Number(this.tableFour(index).SMSCharges.value));
       /* 差旅费 */
-      this.tableFour(index).FourTravelExpenses.value = (Number(this.tableFour(index).CityTransportationFee.value) + Number(this.tableFour(index).TravelExpenses.value)).toFixed(2);
+      this.tableFour(index).FourTravelExpenses.value = (Number(this.tableFour(index).CityTransportationFee.value) + Number(this.tableFour(index).TravelExpenses.value));
       /* 事务费用 */
-      this.tableFour(index).TotalTransactionCost.value = (Number(this.tableFour(index).FourOfficeFee.value) + Number(this.tableFour(index).FourTravelExpenses.value) + Number(this.tableFour(index).PrintingFee.value) + Number(this.tableFour(index).UtilityFee.value) + Number(this.tableFour(index).CommunicationFee.value) + Number(this.tableFour(index).ProductionAdjustment.value) + Number(this.tableFour(index).AuditFees.value) + Number(this.tableFour(index).Tax.value) + Number(this.tableFour(index).Freight.value) + Number(this.tableFour(index).MembershipFee.value) + Number(this.tableFour(index).BookFee.value) + Number(this.tableFour(index).BadDebtProvision.value) + Number(this.tableFour(index).Fees.value) + Number(this.tableFour(index).InitialFee.value) + Number(this.tableFour(index).LitigationCosts.value) + Number(this.tableFour(index).otherFee.value) + Number(this.tableFour(index).ZhongRenFee.value) + Number(this.tableFour(index).TechnicalAdvisoryFee.value)).toFixed(2);
+      this.tableFour(index).TotalTransactionCost.value = (Number(this.tableFour(index).FourOfficeFee.value) + Number(this.tableFour(index).FourTravelExpenses.value) + Number(this.tableFour(index).PrintingFee.value) + Number(this.tableFour(index).UtilityFee.value) + Number(this.tableFour(index).CommunicationFee.value) + Number(this.tableFour(index).ProductionAdjustment.value) + Number(this.tableFour(index).AuditFees.value) + Number(this.tableFour(index).Tax.value) + Number(this.tableFour(index).Freight.value) + Number(this.tableFour(index).MembershipFee.value) + Number(this.tableFour(index).BookFee.value) + Number(this.tableFour(index).BadDebtProvision.value) + Number(this.tableFour(index).Fees.value) + Number(this.tableFour(index).InitialFee.value) + Number(this.tableFour(index).LitigationCosts.value) + Number(this.tableFour(index).otherFee.value) + Number(this.tableFour(index).ZhongRenFee.value) + Number(this.tableFour(index).TechnicalAdvisoryFee.value));
     },
 
     /* Type类型为4时 */
@@ -667,11 +706,11 @@ export default {
     },
     tableFiveCalculation(index) {
       /* 广告费 */
-      this.tableFive(index).AdvertisingFee.value = (Number(this.tableFive(index).AdvertisingFeeCaseSourceReport.value) + Number(this.tableFive(index).AdvertisingFeeCaseSourcePress.value) + Number(this.tableFive(index).AdvertisingFeeCaseSourceTV.value) + Number(this.tableFive(index).AdvertisingFeeCaseSourceKanbanBanner.value) + Number(this.tableFive(index).AdvertisingFeeCaseSourceOther.value) + Number(this.tableFive(index).AdvertisingFeeImageReport.value) + Number(this.tableFive(index).AdvertisingFeeImagePress.value) + Number(this.tableFive(index).AdvertisingFeeImageTV.value) + Number(this.tableFive(index).AdvertisingFeeImageOther.value) + Number(this.tableFive(index).AdvertisingFeeImageKanbanBanner.value)).toFixed(2);
+      this.tableFive(index).AdvertisingFee.value = (Number(this.tableFive(index).AdvertisingFeeCaseSourceReport.value) + Number(this.tableFive(index).AdvertisingFeeCaseSourcePress.value) + Number(this.tableFive(index).AdvertisingFeeCaseSourceTV.value) + Number(this.tableFive(index).AdvertisingFeeCaseSourceKanbanBanner.value) + Number(this.tableFive(index).AdvertisingFeeCaseSourceOther.value) + Number(this.tableFive(index).AdvertisingFeeImageReport.value) + Number(this.tableFive(index).AdvertisingFeeImagePress.value) + Number(this.tableFive(index).AdvertisingFeeImageTV.value) + Number(this.tableFive(index).AdvertisingFeeImageOther.value) + Number(this.tableFive(index).AdvertisingFeeImageKanbanBanner.value));
       /* 行销费 */
-      this.tableFive(index).MarketingFee.value = (Number(this.tableFive(index).MarketingFeeExhibition.value) + Number(this.tableFive(index).MarketingFeePromotions.value) + Number(this.tableFive(index).MarketingFeeAgencyCooperation.value) + Number(this.tableFive(index).MarketingFeeDesignProduction.value) + Number(this.tableFive(index).MarketingFeeSiteLayout.value) + Number(this.tableFive(index).MarketingFeeOther.value)).toFixed(2);
+      this.tableFive(index).MarketingFee.value = (Number(this.tableFive(index).MarketingFeeExhibition.value) + Number(this.tableFive(index).MarketingFeePromotions.value) + Number(this.tableFive(index).MarketingFeeAgencyCooperation.value) + Number(this.tableFive(index).MarketingFeeDesignProduction.value) + Number(this.tableFive(index).MarketingFeeSiteLayout.value) + Number(this.tableFive(index).MarketingFeeOther.value));
       /* 行销費用 */
-      this.tableFive(index).TotalMarketingFee.value = (Number(this.tableFive(index).AdvertisingFee.value) + Number(this.tableFive(index).MarketingFee.value)).toFixed(2);
+      this.tableFive(index).TotalMarketingFee.value = (Number(this.tableFive(index).AdvertisingFee.value) + Number(this.tableFive(index).MarketingFee.value));
     },
 
     /* Type类型为5时 */
@@ -689,7 +728,7 @@ export default {
     },
     tableSixCalculation(index) {
       /* 营业支出 */
-      this.tableSix(index).OperatingExpenses.value = (Number(this.tableTwo(index).EmploymentFee.value) + Number(this.tableThree(index).EquipmentCost.value) + Number(this.tableFour(index).TotalTransactionCost.value) + Number(this.tableFive(index).TotalMarketingFee.value)).toFixed(2);
+      this.tableSix(index).OperatingExpenses.value = (Number(this.tableTwo(index).EmploymentFee.value) + Number(this.tableThree(index).EquipmentCost.value) + Number(this.tableFour(index).TotalTransactionCost.value) + Number(this.tableFive(index).TotalMarketingFee.value));
       /* 管理服务费 */
       this.tableSix(index).ManagementServiceFee.value = (Number(this.tableOne(index).OriginalContractFee.value) * Number(this.SigningRatio['SigningRatio' + (index - 2)]) + 12000).toFixed(2);
       /* 签约金损益 */
@@ -951,11 +990,8 @@ export default {
 
 </script>
 <style lang="less" scoped>
-  input[type=number]:invalid {
-    background-color: red;
-  }
   .table-container{
-    h1{
+    h2{
       text-align: center;
     }
     .repeat-table-container{
