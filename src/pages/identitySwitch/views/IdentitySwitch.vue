@@ -7,6 +7,7 @@
     <el-button type="primary"  @click="joinQuery('sh')">上海中介</el-button>
     <el-button type="primary"  @click="joinQuery('fwc')">上海服务处</el-button>
     <el-button type="primary" class="region" @click="joinQuery('region')">业务一区主管</el-button>
+    <el-button type="primary"  @click="joinQuery('cw')">财务部</el-button>
     <br><br>
     <el-button type="success" @click="joinQuery('szStore')">苏州店长</el-button>
     <el-button type="success" @click="joinQuery('szRegion')">苏州区总监</el-button>
@@ -45,6 +46,9 @@ export default {
           break;
         case index === 'szZj':
           sessionStorage.setItem('userID', '{71796631-3E58-43E9-9BDF-D0F86AC5CFCF}');
+          break;
+        case index === 'cw':
+          sessionStorage.setItem('userID', '{48EF04F8-5902-4F88-A2CC-1C5BB5EA3FA8}');
           break;
         default:
       }

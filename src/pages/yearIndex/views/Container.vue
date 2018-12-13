@@ -32,8 +32,7 @@
                      plain
                      @click="showAllSubject"
           >显示所有科目</el-button>
-          <input type="file" value="" id="file"/>
-          <el-button type="warning" plain @click="importExcelRequest()">导入</el-button>
+          <el-button type="warning" plain @click="dialogExcelImport = true">Excel导入</el-button>
           <el-button type="success"
                      plain
                      @click="exportAllData"
@@ -65,8 +64,8 @@
                   :key="n">
                 <input type="text"
                        :readonly="item.ReadOnly === 1?true:false"
-                       @focus="inputFocus(n+2,item.className)"
-                       @change="AutomaticCalculation(n+2, item.className)"
+                       v-on="item.ReadOnly === 0 ? { focus : ($event) => inputFocus(n+2,item.className, $event), blur : ($event) => addSep($event) } : {}"
+                       @change="AutomaticCalculation(n+2, item.className, $event)"
                        @keyup="handleInputNum"
                        :disabled="inputDisabled"
                 >
@@ -75,7 +74,7 @@
                 <el-button type="warning" @click="deleteCurrentLineData(item.className)" :disabled="(item.ReadOnly === 1?true:false) || deleteBtnDisabled">删除</el-button>
               </td>
               <td>
-                <input type="number">
+                <input type="text">
               </td>
             </tr>
             </tbody>
@@ -93,6 +92,26 @@
     </transition>
     <input type="hidden" value="0" id="zeroVal">
     <iframe src="" frameborder="0" id="exportIframe" ref="exportIframe"></iframe>
+    <el-dialog title="Excel导入" :visible.sync="dialogExcelImport">
+      <el-upload
+        class="upload-excel"
+        :multiple='false'
+        :auto-upload='true'
+        list-type='text'
+        :show-file-list='true'
+        :before-upload="beforeUpload"
+        :drag='true'
+        action=''
+        :limit="1"
+        accept=".xlsx, .xls"
+        :on-exceed="handleExceed"
+        :http-request="uploadFile" >
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip" slot="tip">一次只能上传一个文件，仅限.xlsx或.xls格式</div>
+      </el-upload>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -168,6 +187,7 @@ export default {
       showDraftAndSubmit: false,
       deleteBtnDisabled: '',
       currentLineZero: '',
+      dialogExcelImport: false,
     };
   },
   methods: {
@@ -179,29 +199,32 @@ export default {
       return el;
     },
 
-    inputFocus(i, className) {
+    inputFocus(i, className, event) {
+      const currentEl = event.target;
       if (className === 'F1') {
         this.alertIndex = i;
         this.isAlertShow = true;
       } else {
         this.isCurrentLineEmpty(className);
+        if (currentEl.value !== '') {
+          currentEl.value = this.remSep(currentEl.value);
+        }
       }
     },
 
     handleInputNum(e) {
-      if (e.keyCode !== 8) {
+      if (e.keyCode !== 8 && e.keyCode !== 13) {
         // e.target.value = (e.target.value.match(/^\d*(\.?\d{0,1})/g)[0]) || null;
         // e.target.value = (e.target.value.match(/^[1-9]\d*/g)[0]) || null;
         // e.target.value = (e.target.value.match(/^\d+$/g)[0]) || null;
-
-      }
-      if (!/^\d+$/.test(e.target.value)) {
-        Message({
-          message: '请输入整数',
-          duration: 1000,
-          type: 'warning',
-        });
-        e.target.value = '';
+        if (!/^\d+$/.test(e.target.value)) {
+          Message({
+            message: '请输入整数',
+            duration: 1000,
+            type: 'warning',
+          });
+          e.target.value = '';
+        }
       }
       /*
       if (e.target.value.length === 1) {
@@ -257,15 +280,15 @@ export default {
       console.log(currentLine);
       let baseNum = 0;
       for (let i = 1; i < 13; i += 1) {
-        baseNum = Number(currentLine[i].value) + baseNum;
+        baseNum = this.remSep(currentLine[i].value) + baseNum;
       }
-      currentLine[13].value = baseNum;
+      currentLine[13].value = baseNum.toLocaleString();
     },
 
     getSigningRatio(val) {
       this.SigningRatio['SigningRatio' + (this.alertIndex - 2)] = val;
       this.isAlertShow = false;
-      this.AutomaticCalculation(this.alertIndex, 'F1');
+      this.AutomaticCalculation(this.alertIndex, 'F1', event);
     },
 
     getAfterSubmissionAlertInfo(msg, DZIndex) {
@@ -373,29 +396,48 @@ export default {
       Vue.set(this.pullAllData, 'DZ', index); // 0表示保存草稿  1表示提交审核
     },
 
-    importExcelRequest() {
-      const formData = new FormData();
-      formData.append('File', document.getElementById('file').files[0]);
-      formData.append('userID', this.userID);
-      console.log(formData);
-      axios.post(this.importUrl, formData).then((res) => {
-        console.log(res);
-      }).catch((errMsg) => {
-        console.log(errMsg);
-      });
-/*
-      axios({
-        method: 'POST',
-        url: this.importUrl,
-        headers: { 'content-type': 'application/x-www-form-urlencoded' },
-        data: qs.stringify({ formData }),
+    beforeUpload(file) {
+      console.log('beforeUpload');
+      console.log(file.type);
+      const isText = file.type === 'application/vnd.ms-excel';
+      const isTextComputer = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+      return (isText | isTextComputer);
+    },
 
-      }).then((res) => {
+    handleExceed() {
+      Message({
+        message: '当前限制选择 1 个文件，请删除后继续上传',
+        duration: 3000,
+        type: 'error',
+      });
+    },
+
+    uploadFile(item) {
+      console.log(item);
+      const fileObj = item.file;
+      // FormData 对象
+      const form = new FormData();
+      // 文件对象
+      form.append('File', fileObj);
+      form.append('userID', this.userID);
+      console.log(JSON.stringify(form));
+      // let formTwo = JSON.stringify(form);
+      axios.post(this.importUrl, form).then((res) => {
         console.log(res);
+        Message({
+          message: '文件：' + fileObj.name + '上传成功',
+          duration: 3000,
+          type: 'success',
+        });
+        this.dialogExcelImport = false;
       }).catch((errMsg) => {
         console.log(errMsg);
+        Message({
+          message: '文件：' + fileObj.name + '上传失败',
+          duration: 3000,
+          type: 'error',
+        });
       });
-*/
     },
 
     dataSubmissionRequest(DZIndex) {
@@ -415,7 +457,7 @@ export default {
         const dataClassName = getSubmitData[i].className;
         const allInput = document.querySelectorAll('table.commonTable .' + dataClassName + ' input');
         for (let j = 0; j < 13; j += 1) {
-          submitObj[this.months[j]] = allInput[(j + 1)].value;
+          submitObj[this.months[j]] = this.remSep(allInput[(j + 1)].value);
         }
         submitListsArr.push(submitObj);
       }
@@ -454,7 +496,7 @@ export default {
         this.DraftData.forEach((item) => {
           const allInputEl = document.querySelectorAll('tr.' + item.className + '>td>input');
           for (let i = 0; i < 13; i += 1) {
-            allInputEl[(i + 1)].value = item[this.months[i]];
+            allInputEl[(i + 1)].value = item[this.months[i]].toLocaleString();
             if (item.className === 'F5') {
               this.SigningRatio['SigningRatio' + (i + 1)] = item[this.months[i]];
             }
@@ -501,19 +543,23 @@ export default {
     tableOneCalculation(index) {
       /** 营业收入合计* */
       if (this.tableOne(index).TotalOperatingIncome) {
-        this.tableOne(index).TotalOperatingIncome.value = (Number(this.tableOne(index).OriginalContractFee.value) - Number(this.tableOne(index).DiscountRefund.value));
+        this.tableOne(index).TotalOperatingIncome.value = (Number(this.remSep(this.tableOne(index).OriginalContractFee.value)) - Number(this.remSep(this.tableOne(index).DiscountRefund.value))).toLocaleString();
       }
       /** 減：营业税金* */
       if (this.tableOne(index).BusinessTax) {
-        this.tableOne(index).BusinessTax.value = Number(this.tableOne(index).TotalOperatingIncome.value * 0.05).toFixed(2);
+        // this.tableOne(index).BusinessTax.value = (Number(this.remSep(this.tableOne(index).TotalOperatingIncome.value)) * 0.05.toFixed(2)).toLocaleString();
+        this.tableOne(index).BusinessTax.value = (Number(this.remSep(this.tableOne(index).TotalOperatingIncome.value)) * 0.05).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
       }
       /* 营业收入净额 */
       if (this.tableOne(index).OperatingNetProfit) {
-        this.tableOne(index).OperatingNetProfit.value = (Number(this.tableOne(index).TotalOperatingIncome.value) - Number(this.tableOne(index).BusinessTax.value));
+        this.tableOne(index).OperatingNetProfit.value = ((Number(this.remSep(this.tableOne(index).TotalOperatingIncome.value)) - Number(this.remSep(this.tableOne(index).BusinessTax.value)))).toLocaleString();
       }
       /* 收入合计 */
       if (this.tableOne(index).TotalIncome) {
-        this.tableOne(index).TotalIncome.value = (Number(this.tableOne(index).OperatingNetProfit.value));
+        this.tableOne(index).TotalIncome.value = (Number(this.remSep(this.tableOne(index).OperatingNetProfit.value))).toLocaleString();
       }
     },
 
@@ -554,13 +600,21 @@ export default {
     },
     tableTwoCalculation(index) {
       /* 工资 */
-      this.tableTwo(index).Wage.value = (Number(this.tableTwo(index).FixedSalary.value) + Number(this.tableTwo(index).VariableWage.value));
+      this.tableTwo(index).Wage.value = (Number(this.remSep(this.tableTwo(index).FixedSalary.value)) + Number(this.remSep(this.tableTwo(index).VariableWage.value))).toLocaleString();
       /* 社会保险金 */
-      this.tableTwo(index).SocialInsurancePremium.value = (Number(this.tableTwo(index).Wage.value * 0.305)).toFixed(2);
+      // this.tableTwo(index).SocialInsurancePremium.value = (Number(this.remSep(this.tableTwo(index).Wage.value)) * 0.305.toFixed(2)).toLocaleString();
+      this.tableTwo(index).SocialInsurancePremium.value = (Number(this.remSep(this.tableTwo(index).Wage.value)) * 0.305).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
       /* 公积金 */
-      this.tableTwo(index).ProvidentFund.value = (Number(this.tableTwo(index).Wage.value * 0.07)).toFixed(2);
+      // this.tableTwo(index).ProvidentFund.value = ((Number(this.remSep(this.tableTwo(index).Wage.value)) * 0.07).toFixed(2)).toLocaleString();
+      this.tableTwo(index).ProvidentFund.value = (Number(this.remSep(this.tableTwo(index).Wage.value)) * 0.07).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
       /* 用人费用 */
-      this.tableTwo(index).EmploymentFee.value = (Number(this.tableTwo(index).Wage.value) + Number(this.tableTwo(index).WithholdingBonus.value) + Number(this.tableTwo(index).WelfareFee.value) + Number(this.tableTwo(index).AccommodationFee.value) + Number(this.tableTwo(index).SocialInsurancePremium.value) + Number(this.tableTwo(index).LifeInsurance.value) + Number(this.tableTwo(index).WorkingMeal.value) + Number(this.tableTwo(index).UniformFee.value) + Number(this.tableTwo(index).CarSticker.value) + Number(this.tableTwo(index).EducationalTrainingFee.value) + Number(this.tableTwo(index).LaborCosts.value) + Number(this.tableTwo(index).ProvidentFund.value));
+      this.tableTwo(index).EmploymentFee.value = (Number(this.remSep(this.tableTwo(index).Wage.value)) + Number(this.remSep(this.tableTwo(index).WithholdingBonus.value)) + Number(this.remSep(this.tableTwo(index).WelfareFee.value)) + Number(this.remSep(this.tableTwo(index).AccommodationFee.value)) + Number(this.remSep(this.tableTwo(index).SocialInsurancePremium.value)) + Number(this.remSep(this.tableTwo(index).LifeInsurance.value)) + Number(this.remSep(this.tableTwo(index).WorkingMeal.value)) + Number(this.remSep(this.tableTwo(index).UniformFee.value)) + Number(this.remSep(this.tableTwo(index).CarSticker.value)) + Number(this.remSep(this.tableTwo(index).EducationalTrainingFee.value)) + Number(this.remSep(this.tableTwo(index).LaborCosts.value)) + Number(this.remSep(this.tableTwo(index).ProvidentFund.value))).toLocaleString();
     },
 
     /* Type类型为2时 */
@@ -588,9 +642,9 @@ export default {
     },
     tableThreeCalculation(index) {
       /* 租赁费 */
-      this.tableThree(index).RentalFees.value = (Number(this.tableThree(index).StoreRent.value) + Number(this.tableThree(index).EquipmentRent.value));
+      this.tableThree(index).RentalFees.value = (Number(this.remSep(this.tableThree(index).StoreRent.value)) + Number(this.remSep(this.tableThree(index).EquipmentRent.value))).toLocaleString();
       /* 设备费用 */
-      this.tableThree(index).EquipmentCost.value = (Number(this.tableThree(index).Depreciation.value) + Number(this.tableThree(index).AmortizationOfTangibleAssets.value) + Number(this.tableThree(index).LowValueConsumablesAmortization.value) + Number(this.tableThree(index).RepairFee.value) + Number(this.tableThree(index).RentalFees.value) + Number(this.tableThree(index).PropertyRent.value));
+      this.tableThree(index).EquipmentCost.value = (Number(this.remSep(this.tableThree(index).Depreciation.value)) + Number(this.remSep(this.tableThree(index).AmortizationOfTangibleAssets.value)) + Number(this.remSep(this.tableThree(index).LowValueConsumablesAmortization.value)) + Number(this.remSep(this.tableThree(index).RepairFee.value)) + Number(this.remSep(this.tableThree(index).RentalFees.value)) + Number(this.remSep(this.tableThree(index).PropertyRent.value))).toLocaleString();
     },
 
     /* Type类型为3时 */
@@ -654,11 +708,11 @@ export default {
     },
     tableFourCalculation(index) {
       /* 办公费 */
-      this.tableFour(index).FourOfficeFee.value = (Number(this.tableFour(index).CityCallFee.value) + Number(this.tableFour(index).NetworkCommunicationFee.value) + Number(this.tableFour(index).OfficeSupplies.value) + Number(this.tableFour(index).OfficeFeeOtherFee.value) + Number(this.tableFour(index).LongDistanceFee.value) + Number(this.tableFour(index).SMSCharges.value));
+      this.tableFour(index).FourOfficeFee.value = (Number(this.remSep(this.tableFour(index).CityCallFee.value)) + Number(this.remSep(this.tableFour(index).NetworkCommunicationFee.value)) + Number(this.remSep(this.tableFour(index).OfficeSupplies.value)) + Number(this.remSep(this.tableFour(index).OfficeFeeOtherFee.value)) + Number(this.remSep(this.tableFour(index).LongDistanceFee.value)) + Number(this.remSep(this.tableFour(index).SMSCharges.value))).toLocaleString();
       /* 差旅费 */
-      this.tableFour(index).FourTravelExpenses.value = (Number(this.tableFour(index).CityTransportationFee.value) + Number(this.tableFour(index).TravelExpenses.value));
+      this.tableFour(index).FourTravelExpenses.value = (Number(this.remSep(this.tableFour(index).CityTransportationFee.value)) + Number(this.remSep(this.tableFour(index).TravelExpenses.value))).toLocaleString();
       /* 事务费用 */
-      this.tableFour(index).TotalTransactionCost.value = (Number(this.tableFour(index).FourOfficeFee.value) + Number(this.tableFour(index).FourTravelExpenses.value) + Number(this.tableFour(index).PrintingFee.value) + Number(this.tableFour(index).UtilityFee.value) + Number(this.tableFour(index).CommunicationFee.value) + Number(this.tableFour(index).ProductionAdjustment.value) + Number(this.tableFour(index).AuditFees.value) + Number(this.tableFour(index).Tax.value) + Number(this.tableFour(index).Freight.value) + Number(this.tableFour(index).MembershipFee.value) + Number(this.tableFour(index).BookFee.value) + Number(this.tableFour(index).BadDebtProvision.value) + Number(this.tableFour(index).Fees.value) + Number(this.tableFour(index).InitialFee.value) + Number(this.tableFour(index).LitigationCosts.value) + Number(this.tableFour(index).otherFee.value) + Number(this.tableFour(index).ZhongRenFee.value) + Number(this.tableFour(index).TechnicalAdvisoryFee.value));
+      this.tableFour(index).TotalTransactionCost.value = (Number(this.remSep(this.tableFour(index).FourOfficeFee.value)) + Number(this.remSep(this.tableFour(index).FourTravelExpenses.value)) + Number(this.remSep(this.tableFour(index).PrintingFee.value)) + Number(this.remSep(this.tableFour(index).UtilityFee.value)) + Number(this.remSep(this.tableFour(index).CommunicationFee.value)) + Number(this.remSep(this.tableFour(index).ProductionAdjustment.value)) + Number(this.remSep(this.tableFour(index).AuditFees.value)) + Number(this.remSep(this.tableFour(index).Tax.value)) + Number(this.remSep(this.tableFour(index).Freight.value)) + Number(this.remSep(this.tableFour(index).MembershipFee.value)) + Number(this.remSep(this.tableFour(index).BookFee.value)) + Number(this.remSep(this.tableFour(index).BadDebtProvision.value)) + Number(this.remSep(this.tableFour(index).Fees.value)) + Number(this.remSep(this.tableFour(index).InitialFee.value)) + Number(this.remSep(this.tableFour(index).LitigationCosts.value)) + Number(this.remSep(this.tableFour(index).otherFee.value)) + Number(this.remSep(this.tableFour(index).ZhongRenFee.value)) + Number(this.remSep(this.tableFour(index).TechnicalAdvisoryFee.value))).toLocaleString();
     },
 
     /* Type类型为4时 */
@@ -706,11 +760,11 @@ export default {
     },
     tableFiveCalculation(index) {
       /* 广告费 */
-      this.tableFive(index).AdvertisingFee.value = (Number(this.tableFive(index).AdvertisingFeeCaseSourceReport.value) + Number(this.tableFive(index).AdvertisingFeeCaseSourcePress.value) + Number(this.tableFive(index).AdvertisingFeeCaseSourceTV.value) + Number(this.tableFive(index).AdvertisingFeeCaseSourceKanbanBanner.value) + Number(this.tableFive(index).AdvertisingFeeCaseSourceOther.value) + Number(this.tableFive(index).AdvertisingFeeImageReport.value) + Number(this.tableFive(index).AdvertisingFeeImagePress.value) + Number(this.tableFive(index).AdvertisingFeeImageTV.value) + Number(this.tableFive(index).AdvertisingFeeImageOther.value) + Number(this.tableFive(index).AdvertisingFeeImageKanbanBanner.value));
+      this.tableFive(index).AdvertisingFee.value = (Number(this.remSep(this.tableFive(index).AdvertisingFeeCaseSourceReport.value)) + Number(this.remSep(this.tableFive(index).AdvertisingFeeCaseSourcePress.value)) + Number(this.remSep(this.tableFive(index).AdvertisingFeeCaseSourceTV.value)) + Number(this.remSep(this.tableFive(index).AdvertisingFeeCaseSourceKanbanBanner.value)) + Number(this.remSep(this.tableFive(index).AdvertisingFeeCaseSourceOther.value)) + Number(this.remSep(this.tableFive(index).AdvertisingFeeImageReport.value)) + Number(this.remSep(this.tableFive(index).AdvertisingFeeImagePress.value)) + Number(this.remSep(this.tableFive(index).AdvertisingFeeImageTV.value)) + Number(this.remSep(this.tableFive(index).AdvertisingFeeImageOther.value)) + Number(this.remSep(this.tableFive(index).AdvertisingFeeImageKanbanBanner.value))).toLocaleString();
       /* 行销费 */
-      this.tableFive(index).MarketingFee.value = (Number(this.tableFive(index).MarketingFeeExhibition.value) + Number(this.tableFive(index).MarketingFeePromotions.value) + Number(this.tableFive(index).MarketingFeeAgencyCooperation.value) + Number(this.tableFive(index).MarketingFeeDesignProduction.value) + Number(this.tableFive(index).MarketingFeeSiteLayout.value) + Number(this.tableFive(index).MarketingFeeOther.value));
+      this.tableFive(index).MarketingFee.value = (Number(this.remSep(this.tableFive(index).MarketingFeeExhibition.value)) + Number(this.remSep(this.tableFive(index).MarketingFeePromotions.value)) + Number(this.remSep(this.tableFive(index).MarketingFeeAgencyCooperation.value)) + Number(this.remSep(this.tableFive(index).MarketingFeeDesignProduction.value)) + Number(this.remSep(this.tableFive(index).MarketingFeeSiteLayout.value)) + Number(this.remSep(this.tableFive(index).MarketingFeeOther.value))).toLocaleString();
       /* 行销費用 */
-      this.tableFive(index).TotalMarketingFee.value = (Number(this.tableFive(index).AdvertisingFee.value) + Number(this.tableFive(index).MarketingFee.value));
+      this.tableFive(index).TotalMarketingFee.value = (Number(this.remSep(this.tableFive(index).AdvertisingFee.value)) + Number(this.remSep(this.tableFive(index).MarketingFee.value))).toLocaleString();
     },
 
     /* Type类型为5时 */
@@ -728,14 +782,27 @@ export default {
     },
     tableSixCalculation(index) {
       /* 营业支出 */
-      this.tableSix(index).OperatingExpenses.value = (Number(this.tableTwo(index).EmploymentFee.value) + Number(this.tableThree(index).EquipmentCost.value) + Number(this.tableFour(index).TotalTransactionCost.value) + Number(this.tableFive(index).TotalMarketingFee.value));
+      this.tableSix(index).OperatingExpenses.value = (Number(this.remSep(this.tableTwo(index).EmploymentFee.value)) + Number(this.remSep(this.tableThree(index).EquipmentCost.value)) + Number(this.remSep(this.tableFour(index).TotalTransactionCost.value)) + Number(this.remSep(this.tableFive(index).TotalMarketingFee.value))).toLocaleString();
       /* 管理服务费 */
-      this.tableSix(index).ManagementServiceFee.value = (Number(this.tableOne(index).OriginalContractFee.value) * Number(this.SigningRatio['SigningRatio' + (index - 2)]) + 12000).toFixed(2);
+      // TODO:这里着重测试一下；
+      // this.tableSix(index).ManagementServiceFee.value = (Number(Number(this.remSep(this.tableOne(index).OriginalContractFee.value)) * Number(this.SigningRatio['SigningRatio' + (index - 2)]) + 12000).toFixed(2)).toLocaleString();
+      this.tableSix(index).ManagementServiceFee.value = (Number(this.remSep(this.tableOne(index).OriginalContractFee.value)) * Number(this.SigningRatio['SigningRatio' + (index - 2)]) + 12000).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
       /* 签约金损益 */
-      this.tableSix(index).SigningFeeProfitAndLoss.value = (Number(this.tableOne(index).OperatingNetProfit.value) - Number(this.tableSix(index).OperatingExpenses.value) - Number(this.tableSix(index).ManagementServiceFee.value)).toFixed(2);
+      // this.tableSix(index).SigningFeeProfitAndLoss.value = ((Number(this.remSep(this.tableOne(index).OperatingNetProfit.value)) - Number(this.remSep(this.tableSix(index).OperatingExpenses.value)) - Number(this.remSep(this.tableSix(index).ManagementServiceFee.value))).toFixed(2)).toLocaleString();
+      this.tableSix(index).SigningFeeProfitAndLoss.value = (Number(this.remSep(this.tableOne(index).OperatingNetProfit.value)) - Number(this.remSep(this.tableSix(index).OperatingExpenses.value)) - Number(this.remSep(this.tableSix(index).ManagementServiceFee.value))).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
       /* 签约金损益收益率 */
-      if (Number(this.tableOne(index).TotalIncome.value) !== 0) {
-        this.tableSix(index).ContractedFeeProfitAndLossYield.value = (Number(this.tableSix(index).SigningFeeProfitAndLoss.value) / Number(this.tableOne(index).TotalIncome.value)).toFixed(2);
+      if (Number(this.remSep(this.tableOne(index).TotalIncome.value)) !== 0) {
+        // this.tableSix(index).ContractedFeeProfitAndLossYield.value = ((Number(this.remSep(this.tableSix(index).SigningFeeProfitAndLoss.value)) / Number(this.remSep(this.tableOne(index).TotalIncome.value))).toFixed(2)).toLocaleString();
+        this.tableSix(index).ContractedFeeProfitAndLossYield.value = (Number(this.remSep(this.tableSix(index).SigningFeeProfitAndLoss.value)) / Number(this.remSep(this.tableOne(index).TotalIncome.value))).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
       }
     },
 
@@ -752,10 +819,18 @@ export default {
     },
     tableSevenCalculation(index) {
       /* 业绩损益 */
-      this.tableSeven(index).PerformanceGainsAndLosses.value = (Number(this.tableSeven(index).Performance.value) - Number(this.tableSix(index).ManagementServiceFee.value) - Number(this.tableSix(index).OperatingExpenses.value) - Number(this.tableOne(index).BusinessTax.value)).toFixed(2);
+      // this.tableSeven(index).PerformanceGainsAndLosses.value = ((Number(this.remSep(this.tableSeven(index).Performance.value)) - Number(this.remSep(this.tableSix(index).ManagementServiceFee.value)) - Number(this.remSep(this.tableSix(index).OperatingExpenses.value)) - Number(this.remSep(this.tableOne(index).BusinessTax.value))).toFixed(2)).toLocaleString();
+      this.tableSeven(index).PerformanceGainsAndLosses.value = (Number(this.remSep(this.tableSeven(index).Performance.value)) - Number(this.remSep(this.tableSix(index).ManagementServiceFee.value)) - Number(this.remSep(this.tableSix(index).OperatingExpenses.value)) - Number(this.remSep(this.tableOne(index).BusinessTax.value))).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
       /* 业绩损益收益率 */
       if (Number(this.tableSeven(index).Performance.value) !== 0) {
-        this.tableSeven(index).PerformanceGainsAndLossesRate.value = (Number(this.tableSeven(index).PerformanceGainsAndLosses.value) / Number(this.tableSeven(index).Performance.value)).toFixed(2);
+        // this.tableSeven(index).PerformanceGainsAndLossesRate.value = ((Number(this.remSep(this.tableSeven(index).PerformanceGainsAndLosses.value)) / Number(this.remSep(this.tableSeven(index).Performance.value))).toFixed(2)).toLocaleString();
+        this.tableSeven(index).PerformanceGainsAndLossesRate.value = (Number(this.remSep(this.tableSeven(index).PerformanceGainsAndLosses.value)) / Number(this.remSep(this.tableSeven(index).Performance.value))).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
       }
     },
 
@@ -771,7 +846,7 @@ export default {
     tableEightCalculation(index) {
       /* 单位时间损益 */
       if (Number(this.tableEight(index).AttendanceTime.value) !== 0) {
-        this.tableEight(index).UnitTimeProfitAndLoss.value = (Number(this.tableSix(index).SigningFeeProfitAndLoss.value) / Number(this.tableEight(index).AttendanceTime.value)).toFixed(2);
+        this.tableEight(index).UnitTimeProfitAndLoss.value = ((Number(this.remSep(this.tableSix(index).SigningFeeProfitAndLoss.value)) / Number(this.remSep(this.tableEight(index).AttendanceTime.value))).toFixed(2)).toLocaleString();
       }
     },
 
@@ -852,8 +927,26 @@ export default {
       this.allTableCalculation(index);
     },
 
-    AutomaticCalculation(i, className) {
+    // 去处千分位符号；
+    remSep(val) {
+      if (val === '') {
+        return 0;
+      }
+      const num = val.split(',');
+      return parseFloat(num.join(''));
+    },
+    // 增加千分位；
+    addSep(event) {
+      const currentEl = event.target;
+      if (currentEl.value !== '') {
+        currentEl.value = this.remSep(currentEl.value).toLocaleString();
+      }
+    },
+
+    AutomaticCalculation(i, className, event) {
+      const currentEl = event.target;
       if (className !== 'F1') {
+        currentEl.value = Number(currentEl.value).toLocaleString();
         if (this.isInputValEmpty) {
           this.autoFillTwelveMonthData(i, className);
           this.AllMonthsAutomaticCalculation();
@@ -864,6 +957,7 @@ export default {
         this.currentMonthAutomaticCalculation(i);
       }
       this.oneToTwelveSum(className);
+      currentEl.blur();
     },
 
     judgeInputDisabled() {
@@ -984,7 +1078,6 @@ export default {
   mounted() {
     this.getFillStatus();
     this.judgeInputDisabled();
-    console.log(this.fillStatus);
   },
 };
 
@@ -1069,5 +1162,17 @@ export default {
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border-radius: 3px;
+  }
+</style>
+<style lang="less">
+  .upload-excel{
+    text-align: center;
+    .el-upload.el-upload--text{
+      margin:auto;
+    }
+    .el-upload__tip,.el-upload-list{
+      width: 360px;
+      margin:10px auto 0;
+    }
   }
 </style>
