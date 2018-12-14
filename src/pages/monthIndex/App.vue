@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-import MonthContainer from './views/Container.vue';
+import MonthContainer from './views/Index.vue';
 
 export default {
   name: 'Content',

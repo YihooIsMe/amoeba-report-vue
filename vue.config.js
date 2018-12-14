@@ -25,9 +25,15 @@ module.exports = {
       filename: 'identitySwitch.html',
       title: '权限选择',
     },
+    showYearData: {
+      entry: 'src/pages/showYearData/main.js',
+      template: 'public/index.html',
+      filename: 'showYearData.html',
+      title: '汇总数据展示',
+    },
   },
   devServer: {
     port: 80,
-    index: 'identitySwitch.html',
+    index: 'monthIndex.html',
   },
 };

@@ -363,7 +363,7 @@ export default {
     },
   },
   watch: {
-    'secondSelected': function (newVal) {
+    secondSelected(newVal) {
       console.log(newVal);
     },
   },

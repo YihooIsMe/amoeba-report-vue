@@ -1,5 +1,7 @@
 import Vue from 'vue';
-import { Loading, Button, Icon, Upload, Dialog } from 'element-ui';
+import {
+  Loading, Button, Icon, Upload, Dialog,
+} from 'element-ui';
 import App from './App.vue';
 import router from './router';
 import store from './store';
