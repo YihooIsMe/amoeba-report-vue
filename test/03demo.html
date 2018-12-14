@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>
+<script>
+    function removeThousandSeparators(val){
+        const num = val.split(',');
+        return parseFloat(num.join(''));
+    }
+    console.log(removeThousandSeparators('-3,500'));
+    console.log(removeThousandSeparators('3,500'));
+    console.log(removeThousandSeparators('3,500,000'));
+    console.log(removeThousandSeparators())
+</script>
