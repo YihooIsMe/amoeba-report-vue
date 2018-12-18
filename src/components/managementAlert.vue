@@ -25,7 +25,7 @@
 <script>
 export default {
   name: 'managementAlert',
-  props: ['alertIndex', 'SigningRatio'],
+  props: ['alertIndex', 'SigningRatio', 'applyWhere'],
   data() {
     return {
       selected: '0.1',
@@ -42,7 +42,15 @@ export default {
   },
   watch: {
     alertIndex(newVal) {
-      this.selected = this.SigningRatio['SigningRatio' + (newVal - 2)];
+      switch (true) {
+        case this.applyWhere === 'yearIndex':
+          this.selected = this.SigningRatio['SigningRatio' + (newVal - 2)];
+          break;
+        case this.applyWhere === 'monthIndex':
+          this.selected = this.SigningRatio['SigningRatio' + (newVal - 2)];
+          break;
+        default:
+      }
     },
   },
 };

@@ -3,8 +3,8 @@
     <div class="table-container">
       <h2>阿米巴核算系统--月预定</h2>
       <div class="submitBtn" v-if="submitBtnShow">
-        <div class="top-left">
-          瑞虹一店 2018年9月
+        <div class="top-left" v-if="!!store">
+          {{store + " " + new Date().getFullYear() + '年' + (new Date().getMonth() + 1) + '月'}}
         </div>
         <div class="top-right">
           <el-button type="primary">保存草稿</el-button>
@@ -13,10 +13,10 @@
         </div>
       </div>
       <el-tabs type="border-card" class="tab-container" value="schedule">
-        <el-tab-pane label="主表单">
-          <MainForm></MainForm>
+        <el-tab-pane label="主表单" name="schedule">
+          <MainForm @giveStore="getStore"></MainForm>
         </el-tab-pane>
-        <el-tab-pane label="附表" name="schedule">
+        <el-tab-pane label="附表">
           <ScheduleTable></ScheduleTable>
         </el-tab-pane>
         <el-tab-pane label="营业收入">
@@ -44,7 +44,16 @@ export default {
   data() {
     return {
       submitBtnShow: true,
+      store: '111',
     };
+  },
+  methods: {
+    getStore(val) {
+      this.store = val;
+    },
+  },
+  mounted() {
+    this.getStore();
   },
 };
 </script>
