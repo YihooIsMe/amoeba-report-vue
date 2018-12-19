@@ -1,43 +1,34 @@
 <template>
   <div class="schedule">
-    <ul>
-      <li @click="setTabIndex(0)">归属费用<br><input type="text" readonly value="2222222"/></li>
-      <li @click="setTabIndex(1)">联动收入<br><input type="text" readonly value="2222"/></li>
-      <li @click="setTabIndex(2)">固定工资<br><input type="text" readonly value="2222"/></li>
-      <li @click="setTabIndex(3)">变动工资<br><input type="text" readonly value="2222"/></li>
-      <li @click="setTabIndex(4)">福利费<br><input type="text" readonly value="2222"/></li>
-      <li @click="setTabIndex(5)">工作餐补<br><input type="text" readonly value="2222"/></li>
-      <li @click="setTabIndex(6)">车贴<br><input type="text" readonly value="2222"/></li>
-      <li @click="setTabIndex(7)">管理服务费<br><input type="text" readonly value="2222"/></li>
+    <ul class="scheduleUl">
+      <li v-for="(item, i) in tabList" :key="i" @click="setTabIndex(i)">{{item.Name}}<br><input type="text" readonly value="2222222"/></li>
     </ul>
     <div v-show="tabIndex === 0">
-      <SelectedOwnershipFee></SelectedOwnershipFee>
+      <SelectedOwnershipFee :ownershipFeeData="scheduleTableData[0]"></SelectedOwnershipFee>
     </div>
     <div v-show="tabIndex === 1">
-      <SelectedLinkageIncome></SelectedLinkageIncome>
+      <SelectedLinkageIncome :linkageIncomeData="scheduleTableData[1]"></SelectedLinkageIncome>
     </div>
     <div v-show="tabIndex === 2">
-      <SelectedFixedSalary></SelectedFixedSalary>
+      <SelectedFixedSalary :fixedSalaryData="scheduleTableData[2]"></SelectedFixedSalary>
     </div>
     <div v-show="tabIndex === 3">
-      <SelectedVariableWage></SelectedVariableWage>
+      <SelectedVariableWage :variableWageData="scheduleTableData[3]"></SelectedVariableWage>
     </div>
     <div v-show="tabIndex === 4">
-      <SelectedWelfareFee></SelectedWelfareFee>
+      <SelectedWelfareFee :welfareFeeTableData="scheduleTableData[4]"></SelectedWelfareFee>
     </div>
     <div v-show="tabIndex === 5">
-      <SelectedWorkingMeal></SelectedWorkingMeal>
+      <SelectedWorkingMeal :workingMealData="scheduleTableData[5]"></SelectedWorkingMeal>
     </div>
     <div v-show="tabIndex === 6">
-      <SelectedCarSticker></SelectedCarSticker>
-    </div>
-    <div v-show="tabIndex === 7">
-      <SelectedManagementService></SelectedManagementService>
+      <SelectedCarSticker :carStickerData="scheduleTableData[6]"></SelectedCarSticker>
     </div>
   </div>
 </template>
 
 <script>
+import Vue from 'vue';
 import SelectedOwnershipFee from './ownershipFee.vue';
 import SelectedLinkageIncome from './linkageIncome.vue';
 import SelectedFixedSalary from './fixedSalary.vue';
@@ -45,7 +36,10 @@ import SelectedVariableWage from './variableWage.vue';
 import SelectedWelfareFee from './welfareFee.vue';
 import SelectedWorkingMeal from './workingMeal.vue';
 import SelectedCarSticker from './carSticker.vue';
-import SelectedManagementService from './managementService.vue';
+import '../../../../assets/css/scheduleTable.less';
+import api from '../../../../http/index';
+
+Vue.use(api);
 
 export default {
   name: 'scheduleTable',
@@ -57,17 +51,50 @@ export default {
     SelectedWelfareFee,
     SelectedWorkingMeal,
     SelectedCarSticker,
-    SelectedManagementService,
   },
   data() {
     return {
       tabIndex: 0,
+      scheduleTableData: [[], [], [], [], [], [], []],
+      tabList: [
+        { Name: '归属费用' },
+        { Name: '联动收入' },
+        { Name: '固定工资' },
+        { Name: '变动工资' },
+        { Name: '福利费' },
+        { Name: '工作餐补' },
+        { Name: '车贴' },
+      ],
     };
   },
   methods: {
     setTabIndex(index) {
       this.tabIndex = index;
+      const liElements = document.querySelectorAll('.scheduleUl>li');
+      const liElLen = liElements.length;
+      for (let i = 0; i < liElLen; i += 1) {
+        liElements[i].classList.remove('active');
+      }
+      liElements[index].classList.add('active');
     },
+    firstLoadingRequest() {
+      this.$api.monthScheduleTable({ MonthlyPlanID: 'abc' }).then((res) => {
+        console.log(JSON.parse(res.data));
+        JSON.parse(res.data).forEach((item) => {
+          this.scheduleTableData[item.Type].push(item);
+        });
+      }).catch((err) => {
+        console.log(err);
+      });
+    },
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.setTabIndex(0);
+    });
+  },
+  created() {
+    this.firstLoadingRequest();
   },
 };
 </script>
@@ -76,18 +103,20 @@ export default {
 .schedule{
   position: relative;
   border:1px solid transparent;
+  padding-top:100px;
   ul{
     position: absolute;
     top:20px;
     left:50%;
-    margin-left: -460px;
+    margin-left: -387px;
     li{
       list-style: none;
       float: left;
       width: 100px;
       text-align: center;
-      background-color: #1E9FFF;
-      color:white;
+      background-color: white;
+      color:#1E9FFF;
+      border:1px solid #1E9FFF;
       margin-left:10px;
       -webkit-border-radius: 5px;
       -moz-border-radius: 5px;
@@ -97,13 +126,16 @@ export default {
         width: 90%;
         height:25px !important;
         border:none;
-        background-color: #1E9FFF;
+        background-color: white;
         outline:none;
         text-align: center;
-        color:white;
+        color:#1E9FFF;
         font-size:18px;
         cursor: pointer;
       }
+    }
+    li:first-child{
+      margin-left: 0;
     }
   }
   ul:after{
@@ -112,4 +144,12 @@ export default {
     clear: both;
   }
 }
+  .active{
+    background-color:#1E9FFF !important;
+    color:white !important;
+    input{
+      background-color:#1E9FFF !important;
+      color:white !important;
+    }
+  }
 </style>

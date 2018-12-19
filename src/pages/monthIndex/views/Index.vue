@@ -13,10 +13,10 @@
         </div>
       </div>
       <el-tabs type="border-card" class="tab-container" value="schedule">
-        <el-tab-pane label="主表单" name="schedule">
+        <el-tab-pane label="主表单">
           <MainForm @giveStore="getStore"></MainForm>
         </el-tab-pane>
-        <el-tab-pane label="附表">
+        <el-tab-pane label="附表" name="schedule">
           <ScheduleTable></ScheduleTable>
         </el-tab-pane>
         <el-tab-pane label="营业收入">

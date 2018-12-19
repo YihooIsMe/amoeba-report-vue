@@ -55,7 +55,7 @@
 <script>
 import axios from 'axios';
 import ManagementAlert from '../../../../components/managementAlert.vue';
-import cal from '../../../../assets/comCalculation';
+import cal from '../../../../assets/js/comCalculation';
 
 export default {
   name: 'mainForm',

@@ -5,7 +5,7 @@ import {
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import '../../assets/statisticalReport.css';
+import '../../assets/css/statisticalReport.css';
 
 Vue.config.productionTip = false;
 Vue.use(Loading);
