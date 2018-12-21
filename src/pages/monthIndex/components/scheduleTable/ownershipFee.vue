@@ -11,11 +11,13 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="(item, index) in ownershipFeeData" :key="index">
+        <tr v-for="(item, index) in ownershipFeeData" :key="index" :class="item.className">
           <td>{{item.Name}}</td>
           <td>{{item.Valuation}}</td>
           <td>{{item.Description}}</td>
-          <td><input type="text"/></td>
+          <td><input type="text"
+                     @keyup="handleInputNum"
+                     @change="scheduleCalculation(index + 1, '.ownershipFeeTable', 1, 3, 4)"/></td>
           <td></td>
         </tr>
         </tbody>
@@ -24,9 +26,20 @@
 </template>
 
 <script>
+import sch from '@/assets/js/scheduleTableCalculation';
+
 export default {
   name: 'ownershipFee',
   props: ['ownershipFeeData'],
+  methods: {
+    handleInputNum(e) {
+      sch.scheduleHandleInputNum(e);
+    },
+    scheduleCalculation(a, b, c, d, e) {
+      sch.calculation(a, b, c, d, e);
+      this.$emit('ownershipFeeSum', [0, sch.sumCalculate(4, '.ownershipFeeTable')]);
+    },
+  },
 };
 </script>
 

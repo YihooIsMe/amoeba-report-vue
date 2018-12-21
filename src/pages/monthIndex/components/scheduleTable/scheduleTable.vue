@@ -1,28 +1,49 @@
 <template>
   <div class="schedule">
     <ul class="scheduleUl">
-      <li v-for="(item, i) in tabList" :key="i" @click="setTabIndex(i)">{{item.Name}}<br><input type="text" readonly value="2222222"/></li>
+      <li v-for="(item, i) in tabList" :key="i" @click="setTabIndex(i)">{{item.Name}}<br><input type="text" v-model="item.modelVal" readonly /></li>
     </ul>
     <div v-show="tabIndex === 0">
-      <SelectedOwnershipFee :ownershipFeeData="scheduleTableData[0]"></SelectedOwnershipFee>
+      <SelectedOwnershipFee
+        :ownershipFeeData="scheduleTableData[0]"
+        @ownershipFeeSum="getComponentSum"
+      ></SelectedOwnershipFee>
     </div>
     <div v-show="tabIndex === 1">
-      <SelectedLinkageIncome :linkageIncomeData="scheduleTableData[1]"></SelectedLinkageIncome>
+      <SelectedLinkageIncome
+        :linkageIncomeData="scheduleTableData[1]"
+        @linkageIncomeSum="getComponentSum"
+      ></SelectedLinkageIncome>
     </div>
     <div v-show="tabIndex === 2">
-      <SelectedFixedSalary :fixedSalaryData="scheduleTableData[2]"></SelectedFixedSalary>
+      <SelectedFixedSalary
+        :fixedSalaryData="scheduleTableData[2]"
+        @fixedSalarySum="getComponentSum"
+      ></SelectedFixedSalary>
     </div>
     <div v-show="tabIndex === 3">
-      <SelectedVariableWage :variableWageData="scheduleTableData[3]"></SelectedVariableWage>
+      <SelectedVariableWage
+        :variableWageData="scheduleTableData[3]"
+        @variableWageSum="getComponentSum"
+      ></SelectedVariableWage>
     </div>
     <div v-show="tabIndex === 4">
-      <SelectedWelfareFee :welfareFeeTableData="scheduleTableData[4]"></SelectedWelfareFee>
+      <SelectedWelfareFee
+        :welfareFeeTableData="scheduleTableData[4]"
+        @welfareFeeSum="getComponentSum"
+      ></SelectedWelfareFee>
     </div>
     <div v-show="tabIndex === 5">
-      <SelectedWorkingMeal :workingMealData="scheduleTableData[5]"></SelectedWorkingMeal>
+      <SelectedWorkingMeal
+        :workingMealData="scheduleTableData[5]"
+        @workingMealSum="getComponentSum"
+      ></SelectedWorkingMeal>
     </div>
     <div v-show="tabIndex === 6">
-      <SelectedCarSticker :carStickerData="scheduleTableData[6]"></SelectedCarSticker>
+      <SelectedCarSticker
+        :carStickerData="scheduleTableData[6]"
+        @carStickerSum="getComponentSum"
+      ></SelectedCarSticker>
     </div>
   </div>
 </template>
@@ -36,8 +57,8 @@ import SelectedVariableWage from './variableWage.vue';
 import SelectedWelfareFee from './welfareFee.vue';
 import SelectedWorkingMeal from './workingMeal.vue';
 import SelectedCarSticker from './carSticker.vue';
-import '../../../../assets/css/scheduleTable.less';
-import api from '../../../../http/index';
+import '@/assets/css/scheduleTable.less';
+import api from '@/http/index';
 
 Vue.use(api);
 
@@ -57,14 +78,16 @@ export default {
       tabIndex: 0,
       scheduleTableData: [[], [], [], [], [], [], []],
       tabList: [
-        { Name: '归属费用' },
-        { Name: '联动收入' },
-        { Name: '固定工资' },
-        { Name: '变动工资' },
-        { Name: '福利费' },
-        { Name: '工作餐补' },
-        { Name: '车贴' },
+        { Name: '归属费用', modelVal: 0 },
+        { Name: '联动收入', modelVal: 0 },
+        { Name: '固定工资', modelVal: 0 },
+        { Name: '变动工资', modelVal: 0 },
+        { Name: '福利费', modelVal: 0 },
+        { Name: '工作餐补', modelVal: 0 },
+        { Name: '车贴', modelVal: 0 },
       ],
+      scheduleSubmitData: [],
+      Amoeba_MonthlySSDetail: [],
     };
   },
   methods: {
@@ -78,14 +101,40 @@ export default {
       liElements[index].classList.add('active');
     },
     firstLoadingRequest() {
-      this.$api.monthScheduleTable({ MonthlyPlanID: 'abc' }).then((res) => {
+      this.$api.monthScheduleTable({ MonthlyPlanID: '1111' }).then((res) => {
         console.log(JSON.parse(res.data));
+        this.scheduleSubmitData = JSON.parse(res.data);
         JSON.parse(res.data).forEach((item) => {
           this.scheduleTableData[item.Type].push(item);
         });
       }).catch((err) => {
         console.log(err);
       });
+    },
+    getComponentSum(newVal) {
+      this.tabList[newVal[0]].modelVal = newVal[1];
+    },
+    getScheduleSubmissionData() {
+      this.scheduleSubmitData.forEach((item) => {
+        const sObj = {};
+        // 如果没有草稿,也就是第一次提交的时候,不用传ID;
+        if (this.$store.state.comData.commonData.draft === 1) {
+          sObj.ID = item.ID;
+        }
+        sObj.MonthlyPlanID = this.$store.state.comData.commonData.MPID;
+        sObj.OrganizeId = this.$store.state.comData.commonData.OrganizeId;
+        sObj.CostCode = this.$store.state.comData.commonData.Pr0139;
+        sObj.Years = new Date().getFullYear();
+        sObj.Month = new Date().getMonth() + 1;
+        sObj.ScheduleSubjectID = item.ScheduleSubjectID;
+        if (item.className.indexOf('A') !== -1) {
+          sObj.Amount = Number(document.querySelector('#schedulePanel .' + item.className + '>td:nth-child(4)>input').value);
+        } else {
+          sObj.Amount = Number(document.querySelector('#schedulePanel .' + item.className + '>td:nth-child(3)>input').value);
+        }
+        this.Amoeba_MonthlySSDetail.push(sObj);
+      });
+      this.$store.commit('setScheduleFormData', this.Amoeba_MonthlySSDetail);
     },
   },
   mounted() {

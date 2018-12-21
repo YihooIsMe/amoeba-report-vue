@@ -16,6 +16,15 @@ export const monthScheduleTable = params => {
   });
 };
 
+export const monthMainAndScheduleSub = params => {
+  return axios({
+    url: '/MonthlyPlan',
+    method: 'post',
+    data: params,
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+  });
+};
+
 export const queryAndAddedUserInfo = params => {
   return axios({
     url: '/Organization',
@@ -65,4 +74,5 @@ export default {
   yearLoadingData,
   yearDataSubmission,
   yearUploadFile,
+  monthMainAndScheduleSub,
 };

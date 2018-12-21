@@ -8,7 +8,7 @@
          :key="index"
          class="repeat-table-container">
       <div v-if="tableData.length>0">
-        <table class="KMTable1 commonTable" border="1">
+        <table class="KMTable1 commonTable mainForm" border="1">
           <thead>
           <tr>
             <th>科目</th>
@@ -53,16 +53,17 @@
 </template>
 
 <script>
-import axios from 'axios';
-import ManagementAlert from '../../../../components/managementAlert.vue';
-import cal from '../../../../assets/js/comCalculation';
+import Vue from 'vue';
+import ManagementAlert from '@/components/managementAlert.vue';
+import cal from '@/assets/js/comCalculation';
+import api from '@/http/index';
 
+Vue.use(api);
 export default {
   name: 'mainForm',
   components: { ManagementAlert },
   data() {
     return {
-      getUrl: 'http://10.100.250.153:99/api/Subject',
       userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}',
       responseData: {},
       tableSource: [],
@@ -80,6 +81,7 @@ export default {
       SigningRatio: 0.1,
       isAlertShow: false,
       applyWhere: 'monthIndex',
+      Amoeba_MonthlyPlandetails: [], // 主表的数据;
     };
   },
   methods: {
@@ -124,13 +126,11 @@ export default {
       });
     },
     firstLoadingRequest() {
-      axios.get(this.getUrl, {
-        params: {
-          userID: this.userID,
-          IsYM: 1,
-          Year: 2018,
-          Month: 1,
-        },
+      this.$api.yearLoadingData({
+        userID: this.userID,
+        IsYM: 1,
+        Year: 2018,
+        Month: 1,
       }).then((res) => {
         console.log(JSON.parse(res.data));
         this.responseData = JSON.parse(res.data);
@@ -143,9 +143,30 @@ export default {
         this.$nextTick(() => {
           this.dataInjection(this.tableSource);
         });
+        this.commitComData();
       }).catch((errMsg) => {
         console.log(errMsg);
       });
+    },
+    commitComData() {
+      const comDataObj = {};
+      comDataObj.userID = this.userID;
+      comDataObj.City = this.responseData.City;
+      comDataObj.Company = this.responseData.Company;
+      comDataObj.DepartmentAttribute = this.responseData.DepartmentAttribute;
+      comDataObj.District = this.responseData.District;
+      comDataObj.F_RealName = this.responseData.F_RealName;
+      comDataObj.JobAttribute = this.responseData.JobAttribute;
+      comDataObj.MPID = this.responseData.MPID;
+      comDataObj.OrganizeId = this.responseData.OrganizeId;
+      comDataObj.MPID = this.responseData.MPID;
+      comDataObj.ParentId = this.responseData.ParentId;
+      comDataObj.Pr0111 = this.responseData.Pr0111;
+      comDataObj.Pr0139 = this.responseData.Pr0139;
+      comDataObj.SupervisorNumber = this.responseData.SupervisorNumber;
+      comDataObj.UnitName = this.responseData.UnitName;
+      comDataObj.draft = this.responseData.draft;
+      this.$store.commit('setCommonData', comDataObj);
     },
     injectTableSourceData() {
       this.tableSource.forEach((item) => {
@@ -165,7 +186,6 @@ export default {
     },
     calculatePredeterminedRatio() {
       this.tableSource.forEach((el) => {
-        console.log(cal.allInputEl(el)[1].value);
         if (cal.allInputEl(el)[1].value !== '' && cal.allInputEl(el)[1].value !== '0' && cal.allInputEl(el)[1].value !== '0.0' && cal.allInputEl(el)[1].value !== '0.00') {
           cal.allInputEl(el)[3].value = (cal.remSep(cal.allInputEl(el)[2].value) / cal.remSep(cal.allInputEl(el)[1].value)).toLocaleString();
         }
@@ -186,6 +206,24 @@ export default {
       if (event !== '') {
         currentEl.blur();
       }
+    },
+    getAllSubmissionData() {
+      const draft = this.responseData.draft;
+      this.tableSource.forEach((item) => {
+        const obj = {};
+        if (draft === 1) {
+          obj.ID = item.monthSSID;
+        }
+        obj.MonthlyPlanID = this.responseData.MPID;
+        obj.OrganizeId = this.responseData.OrganizeId;
+        obj.CostCode = this.responseData.Pr0139;
+        obj.Years = new Date().getFullYear();
+        obj.Month = new Date().getMonth() + 1;
+        obj.SubjectID = item.SubjectID;
+        obj.EstimatedAmount = cal.remSep(document.querySelector('#mainFormPanel .' + item.className + '>td:nth-child(3)>input').value);
+        this.Amoeba_MonthlyPlandetails.push(obj);
+      });
+      this.$store.commit('setMainFormData', this.Amoeba_MonthlyPlandetails);
     },
   },
   created() {

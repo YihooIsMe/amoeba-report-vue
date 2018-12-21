@@ -74,10 +74,9 @@
 
 <script>
 import Vue from 'vue';
-import axios from 'axios';
 import { MessageBox } from 'element-ui';
 import VueCookie from 'vue-cookie';
-import api from '../../../http/index';
+import api from '@/http/index';
 
 Vue.component(MessageBox.name, MessageBox);
 Vue.use(VueCookie);
@@ -90,8 +89,6 @@ export default {
       // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}',
       // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}',
       userID: '',
-      getUrl: 'http://10.100.250.153:99/api/Organization',
-      queryUrl: 'http://10.100.250.153:99/api/Review',
       organizationListData: [],
       threeAreas: [
         { F_Id: '{19BDD92C-55A5-4284-A917-5BCC99FAC4E1}', F_FullName: '上海信义' },
@@ -122,22 +119,6 @@ export default {
   },
   methods: {
     getUserRequest(permission) {
-      // axios.get(this.getUrl, {
-      //   params: {
-      //     userID: this.userID,
-      //   },
-      // }).then((res) => {
-      //   console.log(JSON.parse(res.data));
-      //   console.log(JSON.parse(res.data).Company);
-      //   this.Pr0132 = JSON.parse(res.data).Company;
-      //   this.District = JSON.parse(res.data).District;
-      //   this.ParentId = JSON.parse(res.data).ParentId;
-      //   this.OrganizeId = JSON.parse(res.data).OrganizeId;
-      //   this.Permission = JSON.parse(res.data).Permission;
-      //   this.getBusinessOfficeRequest(permission);
-      // }).catch((errMsg) => {
-      //   console.log(errMsg);
-      // });
       this.$api.queryAndAddedUserInfo({ userID: this.userID })
         .then((res) => {
           console.log(JSON.parse(res.data));
@@ -187,31 +168,6 @@ export default {
       this.businessOffice = [];
       this.unitData = [];
       this.fourthSelectStore = [];
-      // axios.get(this.getUrl, {
-      //   params: {
-      //     Pr0132: this.Pr0132,
-      //   },
-      // }).then((res) => {
-      //   console.log(JSON.parse(res.data));
-      //   this.businessOffice = JSON.parse(res.data);
-      //   if (permission !== 1) {
-      //     if (this.District !== '' && this.Permission !== 'C') {
-      //       this.secondSelected = this.District;
-      //     } else if (this.District !== '' && this.Permission === 'C') {
-      //       this.secondSelected = this.ParentId;
-      //     } else if (this.District === '' && this.Permission === 'B') {
-      //       this.secondSelected = this.OrganizeId;
-      //     } else {
-      //       this.secondSelected = this.ParentId;
-      //     }
-      //     this.getUnitDataRequest(permission);
-      //   }
-      //   if (permission === 1) {
-      //     this.secondSelected = '';
-      //   }
-      // }).catch((error) => {
-      //   console.log(error);
-      // });
       this.$api.queryAndAddedUserInfo({ Pr0132: this.Pr0132 })
         .then((res) => {
           console.log(JSON.parse(res.data));
@@ -255,33 +211,6 @@ export default {
         unitDataParams.ParentId = this.secondSelected;
       }
       console.log(unitDataParams);
-      // axios.get(this.getUrl, {
-      //   params: unitDataParams,
-      // }).then((res) => {
-      //   console.log(JSON.parse(res.data));
-      //   this.unitData = JSON.parse(res.data);
-      //   if (permission !== 1) {
-      //     if (this.District !== '' && this.Permission !== 'C') {
-      //       this.thirdSelected = this.ParentId;
-      //       this.getFourthSelectStoreRequest(permission);
-      //     } else if (this.District !== '' && this.Permission === 'C') {
-      //       this.thirdSelected = this.OrganizeId;
-      //       this.getFourthSelectStoreRequest(permission);
-      //     } else if (this.District === '' && this.Permission === 'B') {
-      //       this.thirdSelected = '';
-      //       this.authorityJudgment();
-      //       this.auditTableQueryRequest();
-      //     } else {
-      //       this.thirdSelected = this.OrganizeId;
-      //       this.getFourthSelectStoreRequest(permission);
-      //     }
-      //   }
-      //   if (permission === 1) {
-      //     this.thirdSelected = '';
-      //   }
-      // }).catch((error) => {
-      //   console.log(error);
-      // });
       this.$api.queryAndAddedUserInfo(unitDataParams)
         .then((res) => {
           console.log(JSON.parse(res.data));
@@ -325,28 +254,6 @@ export default {
       } else {
         unitDataParams.ParentId = this.thirdSelected;
       }
-      // axios.get(this.getUrl, {
-      //   params: unitDataParams,
-      // }).then((res) => {
-      //   this.fourthSelectStore = JSON.parse(res.data);
-      //   if (permission !== 1) {
-      //     if (this.District !== '' && this.Permission !== 'C') {
-      //       this.fourthSelectStoreSelected = this.OrganizeId;
-      //     } else if (this.District !== '' && this.Permission === 'C') {
-      //       this.fourthSelectStoreSelected = '';
-      //     } else {
-      //       this.fourthSelectStoreSelected = '';
-      //     }
-      //     this.authorityJudgment();
-      //     this.auditTableQueryRequest();
-      //   }
-      //   if (permission === 1) {
-      //     this.fourthSelectStoreSelected = '';
-      //   }
-      //   console.log(JSON.parse(res.data));
-      // }).catch((error) => {
-      //   console.log(error);
-      // });
       this.$api.queryAndAddedUserInfo(unitDataParams)
         .then((res) => {
           this.fourthSelectStore = JSON.parse(res.data);
@@ -403,14 +310,6 @@ export default {
         }
       }
       console.log(queryArguments);
-      // axios.get(this.queryUrl, {
-      //   params: queryArguments,
-      // }).then((res) => {
-      //   console.log(res.data);
-      //   this.queryTableAllData = res.data;
-      // }).catch((err) => {
-      //   console.log(err);
-      // });
       this.$api.queryAndAddedQuery(queryArguments)
         .then((res) => {
           console.log(res.data);

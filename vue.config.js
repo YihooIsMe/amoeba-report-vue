@@ -1,3 +1,8 @@
+const path = require('path');
+
+function resolve(dir) {
+  return path.join(__dirname, dir);
+}
 module.exports = {
   // baseUrl: './',
   pages: {
@@ -36,4 +41,9 @@ module.exports = {
     port: 80,
     index: 'monthIndex.html',
   },
+  // chainWebpack: config => {
+  //   config.resolve.alias
+  //     .set('@', resolve('src'));
+  // },
+  // vue-cli 3默认的alias的路径为则按照上面的这种方式@/替代src/,如果需要修改,则按照上面的这种形式进行更改;
 };

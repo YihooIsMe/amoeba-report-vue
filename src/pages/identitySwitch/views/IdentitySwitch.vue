@@ -2,7 +2,7 @@
 <div class="switch-btn">
   <h2>请选择进入的身份</h2>
   <div class="container-btn">
-    <el-button type="primary" class="store" @click="joinQuery('store')">瑞虹一店</el-button>
+    <el-button type="primary" class="index" @click="joinQuery('index')">瑞虹一店</el-button>
     <el-button type="primary"  @click="joinQuery('zxb')">资讯部</el-button>
     <el-button type="primary"  @click="joinQuery('sh')">上海中介</el-button>
     <el-button type="primary"  @click="joinQuery('fwc')">上海服务处</el-button>
@@ -23,7 +23,7 @@ export default {
   methods: {
     joinQuery(index) {
       switch (true) {
-        case index === 'store':
+        case index === 'index':
           sessionStorage.setItem('userID', '{85811A95-BB15-4914-8926-82E88F5E6E78}');
           break;
         case index === 'region':

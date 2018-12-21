@@ -119,13 +119,11 @@
 
 <script>
 import Vue from 'vue';
-import qs from 'qs';
-import axios from 'axios';
 import VueCookie from 'vue-cookie';
 import { MessageBox, Message } from 'element-ui';
-import cal from '../../../assets/js/comCalculation';
-import ManagementAlert from '../../../components/managementAlert.vue';
-import api from '../../../http/index';
+import cal from '@/assets/js/comCalculation';
+import ManagementAlert from '@/components/managementAlert.vue';
+import api from '@/http/index';
 
 
 Vue.component(MessageBox.name, MessageBox);
@@ -138,10 +136,6 @@ export default {
   data() {
     return {
       isReadOnly: '',
-      getUrl: 'http://10.100.250.153:99/api/Subject',
-      reviewOrRejectUrl: 'http://10.100.250.153:99/api/Review',
-      exportUrl: 'http://10.100.250.153:99/api/downLoad',
-      importUrl: 'http://10.100.250.153:99/api/ImportExcel',
       userID: '',
       // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 权限大
       // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 权限小
@@ -198,11 +192,6 @@ export default {
   },
   methods: {
     clearData() {
-      // axios.get('http://10.100.250.153:99/api/TEST', { params: {} }).then(() => {
-      //   window.location.reload();
-      // }).catch((errMsg) => {
-      //   console.log(errMsg);
-      // });
       this.$api.yearClearAllData({})
         .then(() => {
           window.location.reload();
@@ -352,46 +341,6 @@ export default {
           Year: this.viewEditorYear,
         };
       }
-      // axios.get(this.getUrl, {
-      //   params: paramsArgs,
-      // }).then((response) => {
-      //   this.responseData = JSON.parse(response.data);
-      //   console.log(this.responseData);
-      //   this.OrganizeId = this.responseData.OrganizeId;
-      //   this.draft = this.responseData.draft;
-      //   this.Pr0139 = this.responseData.Pr0139;
-      //   Vue.set(this.pullAllData, 'OrganizeId', this.OrganizeId);
-      //   Vue.set(this.pullAllData, 'City', this.responseData.City);
-      //   Vue.set(this.pullAllData, 'years', this.years); // 目前years暂无传参；
-      //   Vue.set(this.pullAllData, 'MPID', this.responseData.MPID); // MPID暂无传参；
-      //   Vue.set(this.pullAllData, 'ParentId', this.responseData.ParentId);
-      //   Vue.set(this.pullAllData, 'JobAttribute', this.responseData.JobAttribute);
-      //   Vue.set(this.pullAllData, 'userID', this.responseData.userID);
-      //   Vue.set(this.pullAllData, 'Pr0139', this.responseData.Pr0139);
-      //   Vue.set(this.pullAllData, 'SupervisorNumber', this.responseData.SupervisorNumber);
-      //   Vue.set(this.pullAllData, 'draft', this.draft);
-      //   Vue.set(this.pullAllData, 'F_RealName', this.responseData.F_RealName);
-      //   Vue.set(this.pullAllData, 'UnitName', this.responseData.UnitName);
-      //   Vue.set(this.pullAllData, 'Company', this.responseData.Company);
-      //   Vue.set(this.pullAllData, 'District', this.responseData.District);
-      //   Vue.set(this.pullAllData, 'Pr0111', this.responseData.Pr0111);
-      //   this.tableSource = JSON.parse(response.data).list;
-      //   console.log(this.tableSource);
-      //   this.injectTableSourceData();
-      //   for (let i = 0; i < 8; i += 1) {
-      //     this.tableDataInject.push(this['tableDataSource' + i]);
-      //   }
-      //   this.submitBtnShow = true;
-      //   this.$nextTick(() => {
-      //     for (let j = 3; j < 15; j += 1) {
-      //       document.querySelector('.F5>td:nth-child(' + j + ')>input').value = this.SigningRatio['SigningRatio' + (j - 2)];
-      //     }
-      //   });
-      //   this.$emit('closeFirstFullscreenLoading');
-      //   this.readFromDraftBoxRequest();
-      // }).catch((error) => {
-      //   console.log(error);
-      // });
       this.$api.yearLoadingData(paramsArgs)
         .then((response) => {
           this.responseData = JSON.parse(response.data);
@@ -464,22 +413,6 @@ export default {
       form.append('userID', this.userID);
       console.log(JSON.stringify(form));
       // let formTwo = JSON.stringify(form);这个一直都处于关闭状态;
-      // axios.post(this.importUrl, form).then((res) => {
-      //   console.log(res);
-      //   Message({
-      //     message: '文件：' + fileObj.name + '上传成功',
-      //     duration: 3000,
-      //     type: 'success',
-      //   });
-      //   this.dialogExcelImport = false;
-      // }).catch((errMsg) => {
-      //   console.log(errMsg);
-      //   Message({
-      //     message: '文件：' + fileObj.name + '上传失败',
-      //     duration: 3000,
-      //     type: 'error',
-      //   });
-      // });
       this.$api.yearUploadFile(form)
         .then((res) => {
           console.log(res);
@@ -524,19 +457,6 @@ export default {
       this.setDZValue(DZIndex);
       Vue.set(this.pullAllData, 'list', submitListsArr);
       console.log(this.pullAllData);
-
-      // axios({
-      //   method: 'POST',
-      //   url: this.getUrl,
-      //   data: qs.stringify(this.pullAllData),
-      //   headers: { 'content-type': 'application/x-www-form-urlencoded' },
-      // }).then((res) => {
-      //   console.log(res);
-      //   this.$emit('saveToDraftBoxCompleted');
-      //   this.getAfterSubmissionAlertInfo(res.data.errorMessage, DZIndex);
-      // }).catch((error) => {
-      //   console.log(error);
-      // });
       this.$api.yearDataSubmission(this.pullAllData)
         .then((res) => {
           console.log(res);
@@ -550,30 +470,6 @@ export default {
 
     readFromDraftBoxRequest() {
       this.$emit('getDataFromDraft', '正在读取草稿箱数据，请稍后...');
-      // axios.get(this.getUrl, {
-      //   params: {
-      //     Pr0139: this.Pr0139,
-      //     years: this.years,
-      //   },
-      // }).then((response) => {
-      //   this.$emit('readDraftCompleted');
-      //   this.DraftData = JSON.parse(response.data);
-      //   console.log(this.DraftData);
-      //   if (this.DraftData.length > 0) {
-      //     this.ReviewOrRejectMPID = this.DraftData[0].MPID;
-      //   }
-      //   this.DraftData.forEach((item) => {
-      //     const allInputEl = document.querySelectorAll('tr.' + item.className + '>td>input');
-      //     for (let i = 0; i < 13; i += 1) {
-      //       allInputEl[(i + 1)].value = item[this.months[i]].toLocaleString();
-      //       if (item.className === 'F5') {
-      //         this.SigningRatio['SigningRatio' + (i + 1)] = item[this.months[i]];
-      //       }
-      //     }
-      //   });
-      // }).catch((msg) => {
-      //   console.log(msg);
-      // });
       this.$api.yearLoadingData({
         Pr0139: this.Pr0139,
         years: this.years,
@@ -725,12 +621,10 @@ export default {
     },
 
     ReviewOrReject(index) {
-      axios.get(this.reviewOrRejectUrl, {
-        params: {
-          MPID: this.ReviewOrRejectMPID,
-          status: index,
-          User: VueCookie.get('userID'),
-        },
+      this.$api.queryAndAddedQuery({
+        MPID: this.ReviewOrRejectMPID,
+        status: index,
+        User: VueCookie.get('userID'),
       }).then((res) => {
         console.log(res);
         let content;
