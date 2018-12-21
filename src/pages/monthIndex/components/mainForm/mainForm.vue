@@ -265,25 +265,34 @@ export default {
   },
   watch: {
     sumOwnershipFee(newVal) {
-      document.querySelector('.mainForm>tbody>tr.F2>td:nth-child(3)>input').value = newVal;
+      document.querySelector('.mainForm>tbody>tr.F2>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
+      cal.whereUse('monthIndex');// TODO:每次进行计算需要进行是否为年度或者月度计算；因为服务管理费ABCDE等级不一样；
+      this.currentMonthAutomaticCalculation(3);
+      this.calculatePredeterminedRatio();// TODO:联动收入，归属费用年度计划表中并没有，月度计划新增的，确定计算逻辑的时候要特别注意；
     },
     sumCarSticker(newVal) {
-      document.querySelector('.mainForm>tbody>tr.B10>td:nth-child(3)>input').value = newVal;
+      document.querySelector('.mainForm>tbody>tr.B10>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
+      this.calculatePredeterminedRatio();
     },
     sumFixedSalary(newVal) {
-      document.querySelector('.mainForm>tbody>tr.B1>td:nth-child(3)>input').value = newVal;
+      document.querySelector('.mainForm>tbody>tr.B1>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
+      this.calculatePredeterminedRatio();
     },
     sumLinkageIncome(newVal) {
-      document.querySelector('.mainForm>tbody>tr.A2>td:nth-child(3)>input').value = newVal;
+      document.querySelector('.mainForm>tbody>tr.A2>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
+      this.calculatePredeterminedRatio();
     },
     sumVariableWage(newVal) {
-      document.querySelector('.mainForm>tbody>tr.B2>td:nth-child(3)>input').value = newVal;
+      document.querySelector('.mainForm>tbody>tr.B2>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
+      this.calculatePredeterminedRatio();
     },
     sumWelfareFee(newVal) {
-      document.querySelector('.mainForm>tbody>tr.B4>td:nth-child(3)>input').value = newVal;
+      document.querySelector('.mainForm>tbody>tr.B4>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
+      this.calculatePredeterminedRatio();
     },
     sumWorkingMeal(newVal) {
-      document.querySelector('.mainForm>tbody>tr.B8>td:nth-child(3)>input').value = newVal;
+      document.querySelector('.mainForm>tbody>tr.B8>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
+      this.calculatePredeterminedRatio();
     },
   },
   created() {
