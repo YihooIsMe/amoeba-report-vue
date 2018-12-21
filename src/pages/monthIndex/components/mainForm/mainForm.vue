@@ -82,6 +82,16 @@ export default {
       isAlertShow: false,
       applyWhere: 'monthIndex',
       Amoeba_MonthlyPlandetails: [], // 主表的数据;
+      watObject: {
+        sumCarSticker: 0,
+        sumFixedSalary: 0,
+        sumLinkageIncome: 0,
+        sumOwnershipFee: 0,
+        sumVariableWage: 0,
+        sumWelfareFee: 0,
+        sumWorkingMeal: 0,
+      },
+      scheduleForm: this.$store.state.scheduleForm.sumScheduleForm,
     };
   },
   methods: {
@@ -113,7 +123,7 @@ export default {
     handleInputNum(e) {
       cal.calHandleInputNum(e);
     },
-    dataInjection(data) {
+    dataInjection(data, draft) {
       data.forEach((el) => {
         const elInput = document.querySelectorAll('table.commonTable tr.' + el.className + ' input');
         elInput[0].value = el.Amount;
@@ -123,14 +133,17 @@ export default {
         elInput[5].value = el.AnnualReservation;
         elInput[6].value = el.MPRatio;
         elInput[7].value = el.GrandTotalMP;
+        if (draft === 1) {
+          elInput[1].value = el.MonthData;
+        }
       });
     },
     firstLoadingRequest() {
       this.$api.yearLoadingData({
         userID: this.userID,
         IsYM: 1,
-        Year: 2018,
-        Month: 1,
+        Year: new Date().getFullYear(),
+        Month: new Date().getMonth() + 1,
       }).then((res) => {
         console.log(JSON.parse(res.data));
         this.responseData = JSON.parse(res.data);
@@ -141,7 +154,7 @@ export default {
           this.tableDataInject.push(this['tableDataSource' + i]);
         }
         this.$nextTick(() => {
-          this.dataInjection(this.tableSource);
+          this.dataInjection(this.tableSource, this.responseData.draft);
         });
         this.commitComData();
       }).catch((errMsg) => {
@@ -167,6 +180,7 @@ export default {
       comDataObj.UnitName = this.responseData.UnitName;
       comDataObj.draft = this.responseData.draft;
       this.$store.commit('setCommonData', comDataObj);
+      this.$emit('getScheduleTableData', true);
     },
     injectTableSourceData() {
       this.tableSource.forEach((item) => {
@@ -224,6 +238,52 @@ export default {
         this.Amoeba_MonthlyPlandetails.push(obj);
       });
       this.$store.commit('setMainFormData', this.Amoeba_MonthlyPlandetails);
+    },
+  },
+  computed: {
+    sumOwnershipFee() {
+      return this.scheduleForm.sumOwnershipFee;
+    },
+    sumCarSticker() {
+      return this.scheduleForm.sumCarSticker;
+    },
+    sumFixedSalary() {
+      return this.scheduleForm.sumFixedSalary;
+    },
+    sumLinkageIncome() {
+      return this.scheduleForm.sumLinkageIncome;
+    },
+    sumVariableWage() {
+      return this.scheduleForm.sumVariableWage;
+    },
+    sumWelfareFee() {
+      return this.scheduleForm.sumWelfareFee;
+    },
+    sumWorkingMeal() {
+      return this.scheduleForm.sumWorkingMeal;
+    },
+  },
+  watch: {
+    sumOwnershipFee(newVal) {
+      document.querySelector('.mainForm>tbody>tr.F2>td:nth-child(3)>input').value = newVal;
+    },
+    sumCarSticker(newVal) {
+      document.querySelector('.mainForm>tbody>tr.B10>td:nth-child(3)>input').value = newVal;
+    },
+    sumFixedSalary(newVal) {
+      document.querySelector('.mainForm>tbody>tr.B1>td:nth-child(3)>input').value = newVal;
+    },
+    sumLinkageIncome(newVal) {
+      document.querySelector('.mainForm>tbody>tr.A2>td:nth-child(3)>input').value = newVal;
+    },
+    sumVariableWage(newVal) {
+      document.querySelector('.mainForm>tbody>tr.B2>td:nth-child(3)>input').value = newVal;
+    },
+    sumWelfareFee(newVal) {
+      document.querySelector('.mainForm>tbody>tr.B4>td:nth-child(3)>input').value = newVal;
+    },
+    sumWorkingMeal(newVal) {
+      document.querySelector('.mainForm>tbody>tr.B8>td:nth-child(3)>input').value = newVal;
     },
   },
   created() {

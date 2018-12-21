@@ -64,6 +64,7 @@ Vue.use(api);
 
 export default {
   name: 'scheduleTable',
+  props: ['mainFormSonData'],
   components: {
     SelectedOwnershipFee,
     SelectedLinkageIncome,
@@ -78,16 +79,17 @@ export default {
       tabIndex: 0,
       scheduleTableData: [[], [], [], [], [], [], []],
       tabList: [
-        { Name: '归属费用', modelVal: 0 },
-        { Name: '联动收入', modelVal: 0 },
-        { Name: '固定工资', modelVal: 0 },
-        { Name: '变动工资', modelVal: 0 },
-        { Name: '福利费', modelVal: 0 },
-        { Name: '工作餐补', modelVal: 0 },
-        { Name: '车贴', modelVal: 0 },
+        { Name: '归属费用', modelVal: 0, type: 'sumOwnershipFee' },
+        { Name: '联动收入', modelVal: 0, type: 'sumLinkageIncome' },
+        { Name: '固定工资', modelVal: 0, type: 'sumFixedSalary' },
+        { Name: '变动工资', modelVal: 0, type: 'sumVariableWage' },
+        { Name: '福利费', modelVal: 0, type: 'sumWelfareFee' },
+        { Name: '工作餐补', modelVal: 0, type: 'sumWorkingMeal' },
+        { Name: '车贴', modelVal: 0, type: 'sumCarSticker' },
       ],
       scheduleSubmitData: [],
       Amoeba_MonthlySSDetail: [],
+      scheduleCommonData: this.$store.state.comData.commonData,
     };
   },
   methods: {
@@ -101,7 +103,8 @@ export default {
       liElements[index].classList.add('active');
     },
     firstLoadingRequest() {
-      this.$api.monthScheduleTable({ MonthlyPlanID: '1111' }).then((res) => {
+      const MonthlyPlanID = this.$store.state.comData.commonData.MPID;
+      this.$api.monthScheduleTable({ MonthlyPlanID }).then((res) => {
         console.log(JSON.parse(res.data));
         this.scheduleSubmitData = JSON.parse(res.data);
         JSON.parse(res.data).forEach((item) => {
@@ -113,6 +116,9 @@ export default {
     },
     getComponentSum(newVal) {
       this.tabList[newVal[0]].modelVal = newVal[1];
+      this.tabList.forEach((item) => {
+        this.$store.commit('sumScheduleForm', { type: item.type, sumVal: item.modelVal });
+      });
     },
     getScheduleSubmissionData() {
       this.scheduleSubmitData.forEach((item) => {
@@ -121,6 +127,9 @@ export default {
         if (this.$store.state.comData.commonData.draft === 1) {
           sObj.ID = item.ID;
         }
+        console.log(this.$store.state.comData.commonData);
+        console.log(this.$store.state.comData.commonData.MPID);
+
         sObj.MonthlyPlanID = this.$store.state.comData.commonData.MPID;
         sObj.OrganizeId = this.$store.state.comData.commonData.OrganizeId;
         sObj.CostCode = this.$store.state.comData.commonData.Pr0139;
@@ -143,7 +152,7 @@ export default {
     });
   },
   created() {
-    this.firstLoadingRequest();
+
   },
 };
 </script>

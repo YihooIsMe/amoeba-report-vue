@@ -14,7 +14,7 @@
       </div>
       <el-tabs type="border-card" class="tab-container" value="schedule">
         <el-tab-pane label="主表单" name="schedule">
-          <MainForm @giveStore="getStore" ref="mainForm" id="mainFormPanel"></MainForm>
+          <MainForm @giveStore="getStore" ref="mainForm" id="mainFormPanel" @getScheduleTableData="getSonComData"></MainForm>
         </el-tab-pane>
         <el-tab-pane label="附表">
           <ScheduleTable ref="scheduleTable" id="schedulePanel"></ScheduleTable>
@@ -51,11 +51,16 @@ export default {
       index: '111',
       review: 0,
       mainAndScheduleAllSubmissionData: {},
+      mainFormSonData: false,
     };
   },
   methods: {
     getStore(val) {
       this.index = val;
+    },
+    getSonComData(val) {
+      this.mainFormSonData = val;
+      this.$refs.scheduleTable.firstLoadingRequest();
     },
     dataSubmission(index) {
       this.review = index;
@@ -88,7 +93,7 @@ export default {
         })
         .catch((err) => {
           console.log(err);
-        })
+        });
     },
   },
   mounted() {

@@ -13,9 +13,12 @@
         <tr v-for="(item, i) in fixedSalaryData" :key="i" :class="item.className">
           <td>{{item.Name}}</td>
           <td>{{item.Valuation}}</td>
-          <td><input type="text"
+          <td>
+            <input type="text"
                      @keyup="handleInputNum"
-                     @change="scheduleCalculation(i + 1, '.fixedSalaryTable', 1, 2, 3)"></td>
+                     @change="scheduleCalculation(i + 1, '.fixedSalaryTable', 1, 2, 3)"
+                     :value="$store.state.comData.commonData.draft === 1 ? item.Amount : ''"
+            ></td>
           <td></td>
         </tr>
         </tbody>

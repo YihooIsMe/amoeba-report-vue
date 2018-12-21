@@ -15,9 +15,12 @@
           <td>{{item.Name}}</td>
           <td>{{item.Valuation}}</td>
           <td>{{item.Description}}</td>
-          <td><input type="text"
+          <td>
+            <input type="text"
                      @keyup="handleInputNum"
-                     @change="scheduleCalculation(index + 1, '.ownershipFeeTable', 1, 3, 4)"/></td>
+                     @change="scheduleCalculation(index + 1, '.ownershipFeeTable', 1, 3, 4)"
+                     :value="$store.state.comData.commonData.draft === 1 ? item.Amount : ''"
+            /></td>
           <td></td>
         </tr>
         </tbody>
