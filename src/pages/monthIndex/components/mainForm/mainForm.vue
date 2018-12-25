@@ -111,10 +111,8 @@ export default {
       const currentEl = event.target;
       if (className === 'F1') {
         this.isAlertShow = true;
-      } else {
-        if (currentEl.value !== '') {
-          currentEl.value = cal.remSep(currentEl.value);
-        }
+      } else if (currentEl.value !== '') {
+        currentEl.value = cal.remSep(currentEl.value);
       }
     },
     addSep(event) {

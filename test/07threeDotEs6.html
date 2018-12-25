@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>three dot</title>
+</head>
+<body>
+
+</body>
+</html>
+<script>
+    const arr=[1,2,3,4,5]
+    console.log(...arr)
+    console.log(Math.max.apply(undefined,[1,2,3]))
+    console.log(Math.max([1,2,3]))
+    console.log(Math.max(...[1,2,3]))
+
+    var arr1 = [8]
+    var arr2 = [9,11,12,13]
+    arr1.push(arr2);
+    //[8,[9,11,12,13]]
+    console.log(arr1);
+    Array.prototype.push.apply(arr1,arr2);
+    console.log(arr1);
+    //[8,9,11,12,13]
+
+    var [c, ...d] = [2];
+    console.log(c, d);
+    //c 2
+    //d []
+
+    var obj = {name : 'coco'}
+    var obj1 = {age : 27}
+    var newObj = {...obj, ...obj1};
+    var newObj1 = {obj, obj1};
+    console.log(newObj);//{name: "coco", age: 27}
+    console.log(newObj1);//{name: "coco"} {age: 27}
+</script>

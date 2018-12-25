@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>slot</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+<div id="app">
+    <navigation-link url="/profile">
+        Your Profile
+    </navigation-link>
+
+    <base-layout>
+        <template slot="header">
+            <h1>Here might be a page title</h1>
+        </template>
+
+        <template slot="footer">
+            <p>Here's some contact info</p>
+        </template>
+
+        <p>A paragraph for the main content.</p>
+        <p>And another one.</p>
+    </base-layout>
+
+    <todo-list v-bind:todos="todos">
+        <!-- 将 `slotProps` 定义为插槽作用域的名字 -->
+        <template slot-scope="slotProps">
+            <!-- 为待办项自定义一个模板，-->
+            <!-- 通过 `slotProps` 定制每个待办项。-->
+            <span v-if="slotProps.todo.isComplete">✓</span>
+            {{ slotProps.todo.text }}
+        </template>
+    </todo-list>
+</div>
+</body>
+</html>
+<script>
+    Vue.component('navigation-link', {
+        template: `<a
+  v-bind:href="url"
+  class="nav-link"
+>
+  <slot></slot>
+</a>`,
+        data() {
+            return {
+                url:'abc',
+            }
+        }
+    });
+
+    Vue.component('base-layout', {
+        template:`
+        <div class="container">
+            <header>
+                <slot name="header"></slot>
+            </header>
+            <main>
+                <slot></slot>
+            </main>
+            <footer>
+                <slot name="footer"></slot>
+            </footer>
+        </div>
+        `
+    });
+
+    Vue.component('todo-list',{
+        props:['todos'],
+        template:`
+            <ul>
+                <li
+                    v-for="todo in todos"
+                    v-bind:key="todo.id"
+                >
+                    <slot v-bind:todo="todo">
+                        {{ todo.text }}
+                    </slot>
+                </li>
+            </ul>
+        `,
+    })
+
+    new Vue({
+        el: "#app",
+        data: {
+            todos:[
+                {id:1,text:'study Vue',isComplete:true},
+                {id:2,text:'JavaScript',isComplete:true},
+                {id:3,text:'React',isComplete:true},
+            ]
+        },
+    })
+</script>

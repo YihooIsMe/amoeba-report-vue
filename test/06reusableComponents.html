@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>reusable components</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+<div id="app">
+    <modal :show="show" @changeShow="getShowStatus"></modal>
+</div>
+</body>
+</html>
+<script>
+    Vue.component('modal',{
+        props:['show'],
+        template:`
+            <div v-show="show">
+                <h3>标题</h3>
+                <p>内容</p>
+                <a href="javascript:;" @click="close">关闭</a>
+            </div>`,
+        methods:{
+            close(){
+                this.$emit('changeshow',false);
+            }
+        }
+    });
+    new Vue({
+        el:'#app',
+        data:{
+            show:true,
+        },
+        methods:{
+            getShowStatus(newVal){
+                console.log(2);
+                this.show=newVal;
+            }
+        }
+    })
+</script>
