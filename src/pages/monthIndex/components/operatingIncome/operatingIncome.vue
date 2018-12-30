@@ -3,61 +3,101 @@
     营业收入（白色为预定，灰色为实际）
     <div class="child-operating-income">
       <el-button type="primary" plain size="small" @click="dialogTableVisible = true">新增</el-button>
-      <el-button type="success" plain size="small">删除</el-button>
+      <el-button type="success" plain size="small" @click="deleteSelected">删除</el-button>
       <el-button type="warning" plain size="small" @click="achieveAdjustmentVisible = true">达成匹配调整</el-button>
-      <el-table
-        ref="multipleTable"
-        :data="tableData3"
-        tooltip-effect="dark"
-        style="width: 100%"
-        @selection-change="handleSelectionChange">
-        <el-table-column
-          type="selection"
-          width="55">
-        </el-table-column>
-        <el-table-column
-          label="预定别"
-          width="120">
-          <template slot-scope="scope">{{ scope.row.date }}</template>
-        </el-table-column>
-        <el-table-column
-          prop="name"
-          label="状态"
-          width="120">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="经纪人"
-          show-overflow-tooltip>
-        </el-table-column>
-        <el-table-column
-          label="种类">
-        </el-table-column>
-        <el-table-column
-          label="客户姓名">
-        </el-table-column>
-        <el-table-column
-          label="案件名称/需求简介">
-        </el-table-column>
-        <el-table-column
-          label="目前情况">
-        </el-table-column>
-        <el-table-column
-          label="达成可能性">
-        </el-table-column>
-        <el-table-column
-          label="全佣签约金">
-        </el-table-column>
-        <el-table-column
-          label="折让中人">
-        </el-table-column>
-        <el-table-column
-          label="折让中人">
-        </el-table-column>
-        <el-table-column
-          label="全佣签约金实际">
-        </el-table-column>
-      </el-table>
+      <el-scrollbar wrap-class="list">
+        <el-table
+          ref="multipleTable"
+          :data="addFormArr"
+          tooltip-effect="dark"
+          style="width: 100%"
+          @selection-change="handleSelectionChange">
+          <el-table-column
+            type="selection"
+            width="55">
+          </el-table-column>
+          <el-table-column
+            label="预定别"
+            prop="bookType">
+          </el-table-column>
+          <el-table-column
+            prop="status"
+            label="状态">
+          </el-table-column>
+          <el-table-column
+            label="经纪人" prop="broker">
+          </el-table-column>
+          <el-table-column
+            label="种类"
+            width="100">
+            <template slot-scope="scope">
+              <span v-html="scope.row.customerTypeSpl"></span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="客户姓名"
+            width="120">
+            <template slot-scope="scope">
+              <span v-html="scope.row.customerNameSpl"></span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="案件名称/需求简介"
+            width="120">
+            <template slot-scope="scope">
+              <span v-html="scope.row.objectNameDes"></span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="目前情况"
+            prop="currentSituation">
+          </el-table-column>
+          <el-table-column
+            label="达成可能性"
+            prop="completedPercent">
+          </el-table-column>
+          <el-table-column
+            label="全佣签约金预定"
+            prop="fullCommissionSign">
+          </el-table-column>
+          <el-table-column
+            label="全佣签约金实际"
+            prop="fullCommissionSignActual">
+          </el-table-column>
+          <el-table-column
+            label="全佣签约金预定实际差额"
+            prop="fullCommissionSignDiff">
+          </el-table-column>
+          <el-table-column
+            label="折让中人"
+            prop="discountType">
+          </el-table-column>
+          <el-table-column
+            label="折让中人金额预定"
+            prop="discountAmount">
+          </el-table-column>
+          <el-table-column
+            label="折让中人金额实际"
+            prop="discountAmountActual">
+          </el-table-column>
+          <el-table-column
+            label="折让中人预定实际差异"
+            prop="discountAmountDiff">
+          </el-table-column>
+          <el-table-column
+            label="预估签约金"
+            prop="estimatedContractMoney">
+          </el-table-column>
+          <el-table-column
+            label="实际签约金"
+            prop="relContractMoney">
+          </el-table-column>
+          <el-table-column
+            label="签约金预定实际差异"
+            prop="ContractMoneyDiff">
+          </el-table-column>
+        </el-table>
+      </el-scrollbar>
     </div>
     <div class="performance-title">业绩收入（白色为预定，灰色为实际）</div>
     <div class="child-performance-income">
@@ -66,61 +106,66 @@
       <el-button type="warning" plain size="small">达成匹配调整</el-button>
       <el-table
         ref="multipleTable"
-        :data="tableData3"
+        :data="addFormArr"
         tooltip-effect="dark"
-        style="width: 100%"
-        @selection-change="handleSelectionChange">
+        style="width: 100%">
         <el-table-column
           type="selection"
           width="55">
         </el-table-column>
         <el-table-column
           label="预定别"
+          prop="bookType"
           width="120">
-          <template slot-scope="scope">{{ scope.row.date }}</template>
         </el-table-column>
         <el-table-column
-          prop="name"
+          prop="status"
           label="状态"
           width="120">
         </el-table-column>
         <el-table-column
-          prop="address"
-          label="经纪人"
-          show-overflow-tooltip>
+          label="经纪人" prop="broker">
         </el-table-column>
         <el-table-column
-          label="种类">
+          label="种类" prop="customerType">
         </el-table-column>
         <el-table-column
-          label="客户姓名">
+          label="客户姓名"
+          prop="customerName">
         </el-table-column>
         <el-table-column
-          label="案件名称/需求简介">
+          label="案件名称/需求简介"
+          prop="objectNameDes">
         </el-table-column>
         <el-table-column
-          label="目前情况">
+          label="目前情况"
+          prop="currentSituation">
         </el-table-column>
         <el-table-column
-          label="达成可能性">
+          label="达成可能性"
+          prop="completedPercent">
         </el-table-column>
         <el-table-column
-          label="全佣签约金">
+          label="全佣签约金"
+          prop="fullCommissionSign">
         </el-table-column>
         <el-table-column
-          label="折让中人">
+          label="折让中人"
+          prop="discountType">
         </el-table-column>
         <el-table-column
-          label="折让中人">
+          label="折让中人金额"
+          prop="discountAmount">
         </el-table-column>
         <el-table-column
-          label="全佣签约金实际">
+          label="全佣签约金实际"
+          prop="discountRelAmount">
         </el-table-column>
       </el-table>
     </div>
     <OperatingAdd
       :dialogTableVisible="dialogTableVisible"
-      @changeDialogShow="getDialogShow"></OperatingAdd>
+      @changeDialogShow="getDialogShow" @giveFormDate="getAddFormData"></OperatingAdd>
     <AchieveAdjustment
       :achieveAdjustmentVisible="achieveAdjustmentVisible"
       @closeAchieveDialog="getAchieveDialog"></AchieveAdjustment>
@@ -136,43 +181,42 @@ export default {
   components: { AchieveAdjustment, OperatingAdd },
   data() {
     return {
-      tableData3: [{
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-08',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-06',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-07',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }],
-      multipleSelection: [],
+      addFormArr: [],
       dialogTableVisible: false,
       achieveAdjustmentVisible: false,
+      multipleSelection: [],
+      selectIndexArray: [],
     };
   },
   methods: {
+    getROwIndex(row) {
+      return this.addFormArr.lastIndexOf(row);
+    },
     handleSelectionChange(val) {
+      this.selectIndexArray = [];
+      console.log(val);
       this.multipleSelection = val;
+      const self = this;
+      val.map((el) => {
+        const selectRowIndex = self.getROwIndex(el);
+        if (selectRowIndex !== -1) {
+          self.selectIndexArray.push(selectRowIndex);
+        }
+        return '';
+      });
+    },
+    deleteSelected() {
+      const copyAddFormArr = this.addFormArr.concat();
+      // 特别注意此处的逻辑,删除array的数据后要自动往前挪一步;
+      for (let i = 0; i < this.selectIndexArray.length; i += 1) {
+        if (i === 0) {
+          copyAddFormArr.splice(this.selectIndexArray[i], 1);
+        } else {
+          copyAddFormArr.splice(this.selectIndexArray[i] - 1, 1);
+        }
+      }
+      console.log(copyAddFormArr);
+      this.addFormArr = copyAddFormArr;
     },
     getDialogShow(newVal) {
       this.dialogTableVisible = newVal;
@@ -180,11 +224,35 @@ export default {
     getAchieveDialog(newVal) {
       this.achieveAdjustmentVisible = newVal;
     },
+    getAddFormData(newVal) {
+      const formArrObj = {};
+      formArrObj.bookType = '月预订';
+      formArrObj.status = '达成'; // TODO:后面数据库传入数据;
+      formArrObj.broker = newVal.brokerLabel;
+      formArrObj.saleAndLease = newVal.saleAndLease;
+      formArrObj.customerType = newVal.customerType;
+      formArrObj.customerTypeSpl = (newVal.saleAndLease === '1' ? '买卖' : '租赁') + '(' + (newVal.customerType === '1' ? '业主方' : '买方') + ')';
+      formArrObj.customerNameSpl = newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1];
+      formArrObj.customerName = newVal.customer.split(' ')[0];
+      formArrObj.customerPhone = newVal.customer.split(' ')[1];
+      formArrObj.objectNameDes = newVal.objectNum + '<br>' + newVal.caseName;
+      formArrObj.objectNum = newVal.objectNum;
+      formArrObj.caseName = newVal.caseName;
+      formArrObj.currentSituation = newVal.currentSituation;
+      formArrObj.completedPercent = '70%'; // TODO:暂时先写死;
+      formArrObj.fullCommissionSign = newVal.fullCommissionSign;
+      formArrObj.discountType = newVal.discountType;
+      formArrObj.discountAmount = newVal.discountAmount;
+      formArrObj.discountRelAmount = '100000'; // TODO:暂时先写死;
+      console.log(formArrObj);
+      this.addFormArr.push(formArrObj);
+    },
   },
 };
 </script>
 
 <style scoped>
+
 .operating-income {
   padding: 5px;
 }

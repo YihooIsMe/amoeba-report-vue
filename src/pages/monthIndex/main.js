@@ -8,7 +8,9 @@ import {
   Dialog,
   Form,
   FormItem,
+  Scrollbar,
 } from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
 import '@/assets/css/statisticalReport.css';
 import App from './App.vue';
 import store from './store/index';
@@ -22,6 +24,7 @@ Vue.use(TableColumn);
 Vue.use(Dialog);
 Vue.use(Form);
 Vue.use(FormItem);
+Vue.use(Scrollbar);
 
 new Vue({
   store,

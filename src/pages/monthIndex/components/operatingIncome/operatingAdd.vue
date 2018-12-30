@@ -4,105 +4,147 @@
         title="营业收入预定 - 新增"
         center
         :visible.sync="copyDialogTableVisible"
-        width="550px"
+        width="600px"
         top="5vh"
         custom-class="operate-dialog"
         @close="doClose">
-      <el-form ref="form" :model="form" label-width="120px">
-        <el-form-item label="经纪人">
+      <el-form ref="AddForm" :model="AddForm" :rules="rules" label-width="120px">
+        <el-form-item label="经纪人" prop="broker">
           <el-row :gutter="20">
-            <el-col :span="10">
-              <el-select v-model="form.region" placeholder="请选择经纪人" size="small">
-                <el-option label="区域一" value="shanghai"></el-option>
-                <el-option label="区域二" value="beijing"></el-option>
+            <el-col :span="11">
+              <el-select ref="broker" v-model="AddForm.broker" placeholder="请选择经纪人" size="small" @change="selectBrokerLabel">
+                <el-option v-for="(item, index) in getStoreBrokerData" :key="index" :label="item.F_RealName" :value="item.F_Id"></el-option>
               </el-select>
             </el-col>
           </el-row>
         </el-form-item>
         <el-form-item label="客户类型">
           <el-row :gutter="20">
-            <el-col :span="10">
-              <el-select v-model="form.region1" placeholder="请选择活动区域" size="small">
-                <el-option label="区域一" value="shanghai"></el-option>
-                <el-option label="区域二" value="beijing"></el-option>
+            <el-col :span="11">
+              <el-select v-model="AddForm.saleAndLease" placeholder="请选择类型" size="small">
+                <el-option label="买卖" value="1"></el-option>
+                <el-option label="租赁" value="2"></el-option>
               </el-select>
             </el-col>
-            <el-col :span="10">
-              <el-select v-model="form.region2" placeholder="请选择活动区域" size="small">
-                <el-option label="区域一" value="shanghai"></el-option>
-                <el-option label="区域二" value="beijing"></el-option>
-              </el-select>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="已签立委托">
-          <el-row :gutter="20">
-            <el-col :span="10">
-              <el-radio-group v-model="form.resource">
-                <el-radio label="是"></el-radio>
-                <el-radio label="否"></el-radio>
-              </el-radio-group>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="案件名称">
-          <el-row :gutter="20">
-            <el-col :span="10">
-              <el-input v-model="form.delivery" placeholder="请输入物件编号" size="small" :clearable="true"></el-input>
-            </el-col>
-            <el-col :span="2">
-              <i class="el-icon-search"></i>
-            </el-col>
-            <el-col :span="8">
-              徐家汇花园
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="客户">
-          <el-row :gutter="20">
-            <el-col :span="10">
-              <el-input v-model="form.type" :disabled="true" size="small" :clearable="true"></el-input>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="目前情况">
-          <el-row :gutter="20">
-            <el-col :span="10">
-              <el-select v-model="form.resource" placeholder="请选择活动区域" size="small">
-                <el-option label="D1" value="D1"></el-option>
-                <el-option label="D2" value="D2"></el-option>
+            <el-col :span="11">
+              <el-select v-model="AddForm.customerType" placeholder="请选择客户类型" size="small">
+                <el-option label="业主方" value="1"></el-option>
+                <el-option label="买方" value="2"></el-option>
               </el-select>
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item label="全佣签约金">
+        <div v-if="AddForm.customerType === '1'">
+          <el-form-item label="案件名称">
+            <el-row :gutter="20">
+              <el-col :span="11">
+                <el-form-item prop="objectNum" class="objectNum">
+                  <el-input v-model="AddForm.objectNum" placeholder="请输入物件编号" size="small" :clearable="true"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="2">
+                <i class="el-icon-search" @click="getQueryInfo"></i>
+              </el-col>
+              <el-col :span="7">
+                {{AddForm.caseName}}
+              </el-col>
+            </el-row>
+          </el-form-item>
+          <el-form-item label="客户">
+            <el-row :gutter="20">
+              <el-col :span="11">
+                <el-form-item prop="customer" class="customerName">
+                  <el-input v-model="AddForm.customer" :disabled="true" size="small" :clearable="true"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form-item>
+        </div>
+        <div v-else>
+          <el-form-item label="客户">
+            <el-row :gutter="20">
+              <el-col :span="11">
+                <el-form-item prop="searchCustomer" class="searchCustomer">
+                  <el-input v-model="AddForm.searchCustomer" placeholder="请输入客户手机号" size="small" :clearable="true"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="2">
+                <i class="el-icon-search" @click="getQueryInfo"></i>
+              </el-col>
+              <el-col :span="9">
+                <el-form-item prop="searchCustomerName" class="searchCustomerName">
+                  <el-input v-model="AddForm.searchCustomerName" disabled="true" placeholder="查询获取客户姓名"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form-item>
+          <el-form-item label="需求内容">
+            <el-row :gutter="20">
+              <el-col :span="22">
+                <el-form-item prop="demandContent" class="demandContent">
+                  <el-input type="textarea" :rows="2" placeholder="20字以内" v-model="AddForm.demandContent" resize="none" maxlength="30"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form-item>
+        </div>
+        <el-form-item label="目前情况" prop="currentSituation">
           <el-row :gutter="20">
-            <el-col :span="10">
-              <el-input v-model="form.desc" size="small" :clearable="true"></el-input>
-            </el-col>
-            <el-col :span="10">元</el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="折让中人类型">
-          <el-row :gutter="20">
-            <el-col :span="10">
-              <el-select v-model="form.resource" placeholder="请选择活动区域" size="small">
-                <el-option label="D1" value="D1"></el-option>
-                <el-option label="D2" value="D2"></el-option>
+            <el-col :span="11">
+              <el-select v-model="AddForm.currentSituation" placeholder="请选择目前情况" size="small">
+                <el-option v-for="n in 7" :key="n" :label="`S${n}`" :value="`S${n}`"></el-option>
+                <el-option v-for="n in 7" :key="n+7" :label="`D${n}`" :value="`D${n}`"></el-option>
               </el-select>
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item label="折让中人签约金">
+        <el-form-item label="达成可能性" prop="completedPercent">
           <el-row :gutter="20">
-            <el-col :span="10">
-              <el-input v-model="form.desc" size="small" :clearable="true"></el-input>
+            <el-col :span="11">
+              <el-input size="small" v-model="AddForm.completedPercent"></el-input>
             </el-col>
-            <el-col :span="10">元</el-col>
+            <el-col :span="11">%</el-col>
           </el-row>
         </el-form-item>
-        <div class="submit-btn" style="text-align: center">
-          <el-button type="warning" @click="onSubmit">确认</el-button>
+        <el-form-item label="全佣签约金" prop="fullCommissionSign">
+          <el-row :gutter="20">
+            <el-col :span="11">
+              <el-input v-model.number="AddForm.fullCommissionSign" size="small" :clearable="true"></el-input>
+            </el-col>
+            <el-col :span="11">元</el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="折让中人类型" prop="discountType">
+          <el-row :gutter="20">
+            <el-col :span="11">
+              <el-select v-model="AddForm.discountType" placeholder="请选择折让中人类型" size="small">
+                <el-option
+                  v-for="(item, i) in discountTypeOption"
+                  :label="item.label"
+                  :value="item.label"
+                  :key="i"
+                ></el-option>
+              </el-select>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="折让中人签约金" prop="discountAmount">
+          <el-row :gutter="20">
+            <el-col :span="11">
+              <el-input v-model.number="AddForm.discountAmount" size="small" :clearable="true"></el-input>
+            </el-col>
+            <el-col :span="11">元</el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="预估签约金" prop="estimatedContractMoney">
+          <el-row :gutter="20">
+            <el-col :span="11">
+              <el-input v-model.number="AddForm.estimatedContractMoney" size="small"></el-input>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <div class="submit-btn">
+          <el-button type="warning" @click="onSubmit('AddForm')">确认</el-button>
           <el-button @click="copyDialogTableVisible = false">取消</el-button>
         </div>
       </el-form>
@@ -122,7 +164,9 @@ import {
   RadioGroup,
   Input,
   Icon,
+  Message,
 } from 'element-ui';
+import api from '@/http/index';
 
 Vue.component(Select.name, Select);
 Vue.use(Dialog);
@@ -133,6 +177,7 @@ Vue.use(RadioGroup);
 Vue.use(Input);
 Vue.use(Icon);
 Vue.use(Row);
+Vue.use(api);
 
 export default {
   name: 'operatingAdd',
@@ -142,32 +187,166 @@ export default {
   data() {
     return {
       copyDialogTableVisible: this.dialogTableVisible,
-      form: {
-        name: '',
-        region: '',
-        region1: '',
-        region2: '',
-        date1: '',
-        date2: '',
-        delivery: '',
-        type: '',
-        resource: '',
-        desc: '',
+      getStoreBrokerData: [],
+      brokerLabel: '',
+      discountTypeOption: [
+        { label: '买卖(业主方)' },
+        { label: '买卖(卖方)' },
+        { label: '租赁(出租方)' },
+        { label: '租赁(承租方)' },
+        { label: '买卖(业主方中人)' },
+        { label: '买卖(买方中人)' },
+        { label: '租赁(出租方中人)' },
+        { label: '租赁(承租方中人)' },
+      ], // 折让中人类型
+      AddForm: {
+        id: '',
+        broker: '',
+        saleAndLease: '1',
+        customerType: '1',
+        objectNum: 'SAJ00261787',
+        caseName: '',
+        customer: '',
+        searchCustomer: '8602165120564',
+        searchCustomerName: '',
+        demandContent: '',
+        currentSituation: '',
+        completedPercent: '',
+        fullCommissionSign: '',
+        discountType: '',
+        discountAmount: '',
+        brokerLabel: '',
+        estimatedContractMoney: '',
+      },
+      rules: {
+        broker: [
+          { required: true, message: '请选择经纪人', trigger: 'change' },
+        ],
+        saleAndLease: [
+          { required: true, message: '请选择经纪人', trigger: 'change' },
+        ],
+        customerType: [
+          { required: true, message: '请选择经纪人', trigger: 'change' },
+        ],
+        currentSituation: [
+          { required: true, message: '请选择目前情况', trigger: 'change' },
+        ],
+        completedPercent: [
+          { required: true, message: '请输入达成可能性', trigger: 'blur' },
+        ],
+        fullCommissionSign: [
+          { required: true, message: '请输入全佣签约金', trigger: 'blur' },
+          { type: 'number', message: '全佣签约金必须为数字值', trigger: 'blur' },
+        ],
+        discountType: [
+          { required: true, message: '请选择折让中人类型', trigger: 'change' },
+        ],
+        discountAmount: [
+          { required: true, message: '请输入折让中人金额', trigger: 'blur' },
+          { type: 'number', message: '折让中人金额必须为数字值', trigger: 'blur' },
+        ],
+        objectNum: [
+          { required: true, message: '请输入物件编号' },
+        ],
+        customer: [
+          { required: true, message: '请根据物件编号查询客户相关信息' },
+        ],
+        demandContent: [
+          { required: true, message: '请填写需求内容' },
+        ],
+        searchCustomer: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { type: 'number', message: '折让中人金额必须为数字值', trigger: 'blur' },
+        ],
+        searchCustomerName: [
+          { required: true, message: '请根据手机号查询客户信息' },
+        ],
+        estimatedContractMoney: [
+          { required: true, message: '请输入预估签约金', trigger: 'blur' },
+          { type: 'number', message: '预估签约金必须为数字值', trigger: 'blur' },
+        ],
       },
     };
   },
   methods: {
-    onSubmit() {
+    onSubmit(formName) {
+      console.log(this.$refs[formName].validate);
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.$emit('giveFormDate', this.AddForm);
+          this.copyDialogTableVisible = false;
+          this.$refs[formName].resetFields();
+        } else {
+          console.log('error submit!');
+        }
+      });
       console.log('submit!');
+    },
+    selectBrokerLabel(val) {
+      this.getStoreBrokerData.forEach((item, i) => {
+        const brokerObj = {};
+        if (item.F_Id === val) {
+          brokerObj.label = this.getStoreBrokerData[i].F_RealName;
+          this.AddForm.brokerLabel = brokerObj.label;
+        }
+      });
+      console.log(this.AddForm.brokerLabel);
     },
     doClose() {
       this.$emit('changeDialogShow', false);
+    },
+    getStoreBroker() {
+      this.$api.queryAndAddedUserInfo({ OrganizeID: '{0072F63D-741C-4DED-865A-F75BA73954A8}' })
+        .then((res) => {
+          this.getStoreBrokerData = JSON.parse(res.data);
+          console.log(JSON.parse(res.data));
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    getQueryInfo() {
+      if (this.AddForm.broker === '') {
+        Message({
+          message: '请选择经纪人',
+          duration: 1000,
+          type: 'warning',
+        });
+        this.$refs.broker.focus();
+        return false;
+      }
+      const queryParams = {};
+      queryParams.OwnerID = this.AddForm.broker;
+      queryParams.CustomerType = this.AddForm.customerType;
+      if (this.AddForm.customerType === '1') {
+        queryParams.ObjectNo = this.AddForm.objectNum;
+      } else {
+        queryParams.Phone = this.AddForm.searchCustomer;
+      }
+      this.$api.monthOperatingAdd(queryParams)
+        .then((res) => {
+          if (this.AddForm.customerType === '1') {
+            this.AddForm.customer = JSON.parse(res.data)[0].Name + ' ' + JSON.parse(res.data)[0].PhoneNumber;
+            this.AddForm.caseName = JSON.parse(res.data)[0].CaseName;
+            console.log(JSON.parse(res.data));
+          } else {
+            this.AddForm.searchCustomerName = JSON.parse(res.data)[0].Name;
+            console.log(JSON.parse(res.data));
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      return '';
     },
   },
   watch: {
     dialogTableVisible(newVal) {
       this.copyDialogTableVisible = newVal;
     },
+  },
+  mounted() {
+    this.getStoreBroker();
   },
 };
 </script>
@@ -190,7 +369,7 @@ export default {
     margin-top: 10px;
   }
   .el-form-item{
-    margin-bottom: 0;
+    /*margin-bottom: 0;*/
   }
   .el-dialog--center .el-dialog__body{
     padding-top: 0;
@@ -219,6 +398,14 @@ export default {
     -webkit-border-radius: 5px !important;
     -moz-border-radius: 5px !important;
     border-radius: 5px !important;
+  }
+  .el-form-item__error{
+    left:10px;
+  }
+  .objectNum,.customerName,.searchCustomer,.demandContent,.searchCustomerName{
+    .el-form-item__error{
+      left: 0;
+    }
   }
 }
 </style>

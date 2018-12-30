@@ -66,6 +66,14 @@ export const yearUploadFile = params => {
   });
 };
 
+export const monthOperatingAdd = params => {
+  return axios({
+    url: '/Customer',
+    method: 'get',
+    params,
+  });
+};
+
 export default {
   monthScheduleTable,
   queryAndAddedUserInfo,
@@ -75,4 +83,5 @@ export default {
   yearDataSubmission,
   yearUploadFile,
   monthMainAndScheduleSub,
+  monthOperatingAdd,
 };
