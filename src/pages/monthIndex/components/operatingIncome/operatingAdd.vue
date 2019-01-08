@@ -183,11 +183,11 @@ export default {
   name: 'operatingAdd',
   props: {
     dialogTableVisible: Boolean,
+    getStoreBrokerData: Array,
   },
   data() {
     return {
       copyDialogTableVisible: this.dialogTableVisible,
-      getStoreBrokerData: [],
       brokerLabel: '',
       discountTypeOption: [
         { label: '买卖(业主方)' },
@@ -295,16 +295,6 @@ export default {
     doClose() {
       this.$emit('changeDialogShow', false);
     },
-    getStoreBroker() {
-      this.$api.queryAndAddedUserInfo({ OrganizeID: '{0072F63D-741C-4DED-865A-F75BA73954A8}' })
-        .then((res) => {
-          this.getStoreBrokerData = JSON.parse(res.data);
-          console.log(JSON.parse(res.data));
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
     getQueryInfo() {
       if (this.AddForm.broker === '') {
         Message({
@@ -344,9 +334,6 @@ export default {
     dialogTableVisible(newVal) {
       this.copyDialogTableVisible = newVal;
     },
-  },
-  mounted() {
-    this.getStoreBroker();
   },
 };
 </script>
