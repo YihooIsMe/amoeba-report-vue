@@ -66,7 +66,7 @@
               <el-row :gutter="20">
                 <el-col :span="11">
                   <el-form-item prop="searchCustomer" class="searchCustomer">
-                    <el-input v-model="performanceAddForm.searchCustomer" placeholder="请输入客户手机号" size="small" :clearable="true"></el-input>
+                    <el-input v-model.number="performanceAddForm.searchCustomer" placeholder="请输入客户手机号" size="small" :clearable="true"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="2">
@@ -74,7 +74,7 @@
                 </el-col>
                 <el-col :span="9">
                   <el-form-item prop="searchCustomerName" class="searchCustomerName">
-                    <el-input v-model="performanceAddForm.searchCustomerName" disabled="true" placeholder="查询获取客户姓名"></el-input>
+                    <el-input v-model="performanceAddForm.searchCustomerName" :disabled="true" placeholder="查询获取客户姓名"></el-input>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -102,7 +102,7 @@
           <el-form-item label="达成可能性" prop="completedPercent">
             <el-row :gutter="20">
               <el-col :span="11">
-                <el-input size="small" v-model="performanceAddForm.completedPercent"></el-input>
+                <el-input size="small" v-model.number="performanceAddForm.completedPercent"></el-input>
               </el-col>
               <el-col :span="11">%</el-col>
             </el-row>
@@ -144,7 +144,8 @@ export default {
         objectNum: 'SAJ00261787',
         caseName: '',
         customer: '',
-        searchCustomer: '8602165120564',
+        customerID: '',
+        searchCustomer: 8602165120564,
         searchCustomerName: '',
         demandContent: '',
         currentSituation: '',
@@ -167,6 +168,7 @@ export default {
         ],
         completedPercent: [
           { required: true, message: '请输入达成可能性', trigger: 'blur' },
+          { type: 'number', message: '请输入数字', trigger: 'blur' },
         ],
         recoveryPerformance: [
           { required: true, message: '请输入本月收回业绩', trigger: 'blur' },
@@ -183,7 +185,7 @@ export default {
         ],
         searchCustomer: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
-          { type: 'number', message: '折让中人金额必须为数字值', trigger: 'blur' },
+          { type: 'number', message: '手机号必须为数字值', trigger: 'blur' },
         ],
         searchCustomerName: [
           { required: true, message: '请根据手机号查询客户信息' },
@@ -205,7 +207,7 @@ export default {
     onSubmit(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$emit('giveFormDate', this.performanceAddForm);
+          this.$emit('givePerFormDate', this.performanceAddForm);
           this.copyDialogPerformance = false;
           this.$refs[formName].resetFields();
         } else {
@@ -245,6 +247,7 @@ export default {
             this.performanceAddForm.searchCustomerName = JSON.parse(res.data)[0].Name;
             console.log(JSON.parse(res.data));
           }
+          this.performanceAddForm.customerID = JSON.parse(res.data)[0].ID;
         })
         .catch((err) => {
           console.log(err);

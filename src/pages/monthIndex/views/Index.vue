@@ -20,7 +20,7 @@
           <ScheduleTable ref="scheduleTable" id="schedulePanel"></ScheduleTable>
         </el-tab-pane>
         <el-tab-pane label="营业收入" name="schedule">
-          <OperatingIncome id="operateIncomePanel"></OperatingIncome>
+          <OperatingIncome ref="operateIncome" id="operateIncomePanel"></OperatingIncome>
         </el-tab-pane>
         <el-tab-pane label="任务单">
           <MissionList id="missionListPanel"></MissionList>
@@ -66,6 +66,7 @@ export default {
       this.review = index;
       this.$refs.mainForm.getAllSubmissionData();
       this.$refs.scheduleTable.getScheduleSubmissionData();
+      this.$refs.operateIncome.getAllOperateSubmissionData();
       this.setMainAndScheduleAllSubmissionData();
     },
     setMainAndScheduleAllSubmissionData() {
@@ -86,6 +87,8 @@ export default {
       this.mainAndScheduleAllSubmissionData.Pr0111 = storeCommonData.Pr0111;
       this.mainAndScheduleAllSubmissionData.Amoeba_MonthlyPlandetails = this.$store.state.mainForm.mainFormData;
       this.mainAndScheduleAllSubmissionData.Amoeba_MonthlySSDetail = this.$store.state.scheduleForm.scheduleFormData;
+      this.mainAndScheduleAllSubmissionData.MonthSigningGoldYD = this.$store.state.operatingForm.operatingFormData;
+      this.mainAndScheduleAllSubmissionData.MonthPerformanceYD = this.$store.state.operatingForm.performanceFormData;
       console.log(this.mainAndScheduleAllSubmissionData);
       this.$api.monthMainAndScheduleSub(this.mainAndScheduleAllSubmissionData)
         .then((res) => {

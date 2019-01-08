@@ -127,9 +127,6 @@ export default {
         if (this.$store.state.comData.commonData.draft === 1) {
           sObj.ID = item.ID;
         }
-        console.log(this.$store.state.comData.commonData);
-        console.log(this.$store.state.comData.commonData.MPID);
-
         sObj.MonthlyPlanID = this.$store.state.comData.commonData.MPID;
         sObj.OrganizeId = this.$store.state.comData.commonData.OrganizeId;
         sObj.CostCode = this.$store.state.comData.commonData.Pr0139;

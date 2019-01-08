@@ -65,7 +65,7 @@
             <el-row :gutter="20">
               <el-col :span="11">
                 <el-form-item prop="searchCustomer" class="searchCustomer">
-                  <el-input v-model="AddForm.searchCustomer" placeholder="请输入客户手机号" size="small" :clearable="true"></el-input>
+                  <el-input v-model.number="AddForm.searchCustomer" placeholder="请输入客户手机号" size="small" :clearable="true"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="2">
@@ -73,7 +73,7 @@
               </el-col>
               <el-col :span="9">
                 <el-form-item prop="searchCustomerName" class="searchCustomerName">
-                  <el-input v-model="AddForm.searchCustomerName" disabled="true" placeholder="查询获取客户姓名"></el-input>
+                  <el-input v-model="AddForm.searchCustomerName" :disabled="true" placeholder="查询获取客户姓名"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -207,7 +207,8 @@ export default {
         objectNum: 'SAJ00261787',
         caseName: '',
         customer: '',
-        searchCustomer: '8602165120564',
+        customerID: '',
+        searchCustomer: 8602165120564,
         searchCustomerName: '',
         demandContent: '',
         currentSituation: '',
@@ -256,7 +257,7 @@ export default {
         ],
         searchCustomer: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
-          { type: 'number', message: '折让中人金额必须为数字值', trigger: 'blur' },
+          { type: 'number', message: '手机号必须为数字值', trigger: 'blur' },
         ],
         searchCustomerName: [
           { required: true, message: '请根据手机号查询客户信息' },
@@ -276,6 +277,7 @@ export default {
           this.$emit('giveFormDate', this.AddForm);
           this.copyDialogTableVisible = false;
           this.$refs[formName].resetFields();
+          this.AddForm.caseName = '';
         } else {
           console.log('error submit!');
         }
@@ -323,6 +325,7 @@ export default {
             this.AddForm.searchCustomerName = JSON.parse(res.data)[0].Name;
             console.log(JSON.parse(res.data));
           }
+          this.AddForm.customerID = JSON.parse(res.data)[0].ID;
         })
         .catch((err) => {
           console.log(err);

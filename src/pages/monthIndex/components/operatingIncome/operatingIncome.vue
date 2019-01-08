@@ -3,7 +3,7 @@
     营业收入（白色为预定，灰色为实际）
     <div class="child-operating-income">
       <el-button type="primary" plain size="small" @click="dialogTableVisible = true">新增</el-button>
-      <el-button type="success" plain size="small" @click="deleteSelected">删除</el-button>
+      <el-button type="success" plain size="small" @click="deleteSelected('operate')">删除</el-button>
       <el-button type="warning" plain size="small" @click="achieveAdjustmentVisible = true">达成匹配调整</el-button>
       <el-table
         ref="multipleTable"
@@ -24,7 +24,7 @@
           label="状态">
         </el-table-column>
         <el-table-column
-          label="经纪人" prop="broker">
+          label="经纪人" prop="brokerLabel">
         </el-table-column>
         <el-table-column
           label="种类"
@@ -100,13 +100,14 @@
     <div class="performance-title">业绩收入（白色为预定，灰色为实际）</div>
     <div class="child-performance-income">
       <el-button type="primary" plain size="small" @click="dialogPerformance = true">新增</el-button>
-      <el-button type="success" plain size="small">删除</el-button>
+      <el-button type="success" plain size="small" @click="deleteSelected('performance')">删除</el-button>
       <el-button type="warning" plain size="small">达成匹配调整</el-button>
       <el-table
         ref="multipleTable"
         :data="addPerformanceArr"
         tooltip-effect="dark"
-        style="width: 100%">
+        style="width: 100%"
+        @selection-change="handleSelectionChangePer">
         <el-table-column
           type="selection"
           width="55">
@@ -122,18 +123,25 @@
           width="120">
         </el-table-column>
         <el-table-column
-          label="经纪人" prop="broker">
+          label="经纪人" prop="brokerLabel">
         </el-table-column>
         <el-table-column
-          label="种类" prop="customerType">
+          label="种类">
+          <template slot-scope="scope">
+            <span v-html="scope.row.customerTypeSpl"></span>
+          </template>
         </el-table-column>
         <el-table-column
-          label="客户姓名"
-          prop="customerName">
+          label="客户姓名">
+          <template slot-scope="scope">
+            <span v-html="scope.row.customerNameSpl"></span>
+          </template>
         </el-table-column>
         <el-table-column
-          label="案件名称/需求简介"
-          prop="objectNameDes">
+          label="案件名称/需求简介">
+          <template slot-scope="scope">
+            <span v-html="scope.row.objectNameDes"></span>
+          </template>
         </el-table-column>
         <el-table-column
           label="目前情况"
@@ -145,7 +153,7 @@
         </el-table-column>
         <el-table-column
           label="本月收回业绩(预定)"
-          prop="fullCommissionSign">
+          prop="recoveryPerformance">
         </el-table-column>
         <el-table-column
           label="本月收回业绩(实际)"
@@ -169,11 +177,12 @@
       :dialogPerformance="dialogPerformance"
       :getStoreBrokerData="getStoreBrokerData"
       @changePerformanceDialog="getPerformanceShow"
-      @giveFormDate=""></PerformanceAdd>
+      @givePerFormDate="getPerformData"></PerformanceAdd>
   </div>
 </template>
 
 <script>
+import Vue from 'vue';
 import OperatingAdd from './operatingAdd.vue';
 import AchieveAdjustment from './achieveAdjustment.vue';
 import PerformanceAdd from './performanceAdd.vue';
@@ -189,13 +198,20 @@ export default {
       dialogPerformance: false,
       achieveAdjustmentVisible: false,
       multipleSelection: [],
+      multipleSelectionPer: [],
       selectIndexArray: [],
+      selectIndexArrayPer: [],
       getStoreBrokerData: [],
+      MonthSigningGoldYD: [],
+      MonthPerformanceYD: [],
     };
   },
   methods: {
     getROwIndex(row) {
       return this.addFormArr.lastIndexOf(row);
+    },
+    getROwIndexPer(row) {
+      return this.addPerformanceArr.lastIndexOf(row);
     },
     handleSelectionChange(val) {
       this.selectIndexArray = [];
@@ -209,19 +225,58 @@ export default {
         }
         return '';
       });
+      this.selectIndexArray = this.selectIndexArray.sort(this.sortNumber);
     },
-    deleteSelected() {
-      const copyAddFormArr = this.addFormArr.concat();
-      // 特别注意此处的逻辑,删除array的数据后要自动往前挪一步;
-      for (let i = 0; i < this.selectIndexArray.length; i += 1) {
-        if (i === 0) {
-          copyAddFormArr.splice(this.selectIndexArray[i], 1);
+    handleSelectionChangePer(val) {
+      this.selectIndexArrayPer = [];
+      console.log(val);
+      this.multipleSelectionPer = val;
+      const self = this;
+      val.map((el) => {
+        const selectRowIndexPer = self.getROwIndexPer(el);
+        if (selectRowIndexPer !== -1) {
+          self.selectIndexArrayPer.push(selectRowIndexPer);
+        }
+        return '';
+      });
+      this.selectIndexArrayPer = this.selectIndexArrayPer.sort(this.sortNumber);
+    },
+    sortNumber(a, b) {
+      return a - b;
+    },
+    deleteSelected(sel) {
+      if (sel === 'operate') {
+        if (this.multipleSelection.length === this.addFormArr.length) {
+          this.addFormArr = [];
         } else {
-          copyAddFormArr.splice(this.selectIndexArray[i] - 1, 1);
+          const copyAddFormArr = this.addFormArr.concat();
+          // 特别注意此处的逻辑,删除array的数据后要自动往前挪一步;
+          for (let i = 0; i < this.selectIndexArray.length; i += 1) {
+            if (i === 0) {
+              copyAddFormArr.splice(this.selectIndexArray[i], 1);
+            } else {
+              copyAddFormArr.splice(this.selectIndexArray[i] - 1, 1);
+            }
+          }
+          console.log(copyAddFormArr);
+          this.addFormArr = copyAddFormArr;
+        }
+      } else {
+        if (this.multipleSelectionPer.length === this.addPerformanceArr.length) {
+          this.addPerformanceArr = [];
+        } else {
+          const copyAddPerformanceArr = this.addPerformanceArr.concat();
+          for (let i = 0; i < this.selectIndexArrayPer.length; i += 1) {
+            if (i === 0) {
+              copyAddPerformanceArr.splice(this.selectIndexArrayPer[i], 1);
+            } else {
+              copyAddPerformanceArr.splice(this.selectIndexArrayPer[i] - 1, 1);
+            }
+          }
+          console.log(copyAddPerformanceArr);
+          this.addPerformanceArr = copyAddPerformanceArr;
         }
       }
-      console.log(copyAddFormArr);
-      this.addFormArr = copyAddFormArr;
     },
     getDialogShow(newVal) {
       this.dialogTableVisible = newVal;
@@ -236,9 +291,11 @@ export default {
       const formArrObj = {};
       formArrObj.bookType = '月预订';
       formArrObj.status = '达成'; // TODO:后面数据库传入数据;
-      formArrObj.broker = newVal.brokerLabel;
+      formArrObj.broker = newVal.broker;
+      formArrObj.brokerLabel = newVal.brokerLabel;
       formArrObj.saleAndLease = newVal.saleAndLease;
       formArrObj.customerType = newVal.customerType;
+      formArrObj.customerID = newVal.customerID;
       formArrObj.customerTypeSpl = (newVal.saleAndLease === '1' ? '买卖' : '租赁') + '(' + (newVal.customerType === '1' ? '业主方' : '买方') + ')';
       formArrObj.customerNameSpl = newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1];
       formArrObj.customerName = newVal.customer.split(' ')[0];
@@ -248,15 +305,19 @@ export default {
       formArrObj.caseName = newVal.caseName;
       formArrObj.currentSituation = newVal.currentSituation;
       formArrObj.completedPercent = '70%'; // TODO:暂时先写死;
-      formArrObj.recoveryPerformance = '';
+      formArrObj.recoveryPerformance = newVal.recoveryPerformance;
+      Vue.set(formArrObj, 'discountType', 12345);
+      this.addPerformanceArr.push(formArrObj);
     },
     getAddFormData(newVal) {
       const formArrObj = {};
       formArrObj.bookType = '月预订';
       formArrObj.status = '达成'; // TODO:后面数据库传入数据;
-      formArrObj.broker = newVal.brokerLabel;
+      formArrObj.broker = newVal.broker;
+      formArrObj.brokerLabel = newVal.brokerLabel;
       formArrObj.saleAndLease = newVal.saleAndLease;
       formArrObj.customerType = newVal.customerType;
+      formArrObj.customerID = newVal.customerID;
       formArrObj.customerTypeSpl = (newVal.saleAndLease === '1' ? '买卖' : '租赁') + '(' + (newVal.customerType === '1' ? '业主方' : '买方') + ')';
       formArrObj.customerNameSpl = newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1];
       formArrObj.customerName = newVal.customer.split(' ')[0];
@@ -270,7 +331,11 @@ export default {
       formArrObj.discountType = newVal.discountType;
       formArrObj.discountAmount = newVal.discountAmount;
       formArrObj.discountRelAmount = '100000'; // TODO:暂时先写死;
+      formArrObj.estimatedContractMoney = newVal.estimatedContractMoney;
       console.log(formArrObj);
+      Vue.set(formArrObj, 'fullCommissionSignActual', 12345);
+      Vue.set(formArrObj, 'discountAmountActual', 12345);
+      Vue.set(formArrObj, 'relContractMoney', 12345);
       this.addFormArr.push(formArrObj);
     },
     getStoreBroker() {
@@ -282,6 +347,56 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+    },
+    getAllOperateSubmissionData() {
+      this.getOperateSubmissionData();
+      this.getPerformanceSubmissionData();
+    },
+    getOperateSubmissionData() {
+      this.addFormArr.forEach((el) => {
+        const addFormObj = {};
+        addFormObj.PreordainID = this.$store.state.comData.commonData.MPID;
+        addFormObj.Status = el.status;
+        addFormObj.PersonnelID = el.broker;
+        addFormObj.PersonnelName = el.brokerLabel;
+        addFormObj.CaseName = el.objectNum;
+        addFormObj.ObjectName = el.caseName;
+        addFormObj.CaseType = el.saleAndLease;
+        addFormObj.CustomerType = el.customerType;
+        addFormObj.CustomerID = el.customerID;
+        addFormObj.CustomerName = el.customerName;
+        addFormObj.CustomerPhone = el.customerPhone;
+        addFormObj.CurrentSituation = el.currentSituation;
+        addFormObj.AchievePossibility = el.completedPercent;
+        addFormObj.SigningGoldYD = el.estimatedContractMoney;
+        addFormObj.SigningGoldSJ = el.relContractMoney;
+        addFormObj.DiscountType = el.discountType;
+        addFormObj.DiscountGoldYD = el.discountAmount;
+        addFormObj.DiscountGoldSJ = el.discountAmountActual;
+        addFormObj.FullCommissionYD = el.fullCommissionSign;
+        addFormObj.FullCommissionSJ = el.fullCommissionSignActual;
+        this.MonthSigningGoldYD.push(addFormObj);
+      });
+      this.$store.commit('setOperatingForm', this.MonthSigningGoldYD);
+    },
+    getPerformanceSubmissionData() {
+      this.addPerformanceArr.forEach((el) => {
+        const addPerFormData = {};
+        addPerFormData.PreordainID = this.$store.state.comData.commonData.MPID;
+        addPerFormData.CustomerID = el.customerID;
+        addPerFormData.CustomerName = el.customerName;
+        addPerFormData.CaseType = el.saleAndLease;
+        addPerFormData.CustomerType = el.customerType;
+        addPerFormData.CaseName = el.objectNum;
+        addPerFormData.CurrentSituation = el.currentSituation;
+        addPerFormData.AchievePossibility = el.completedPercent;
+        addPerFormData.PersonnelID = el.broker;
+        addPerFormData.PersonnelName = el.brokerLabel;
+        addPerFormData.PerformanceYD = el.recoveryPerformance;
+        addPerFormData.PerformanceSJ = el.discountType;
+        this.MonthPerformanceYD.push(addPerFormData);
+      });
+      this.$store.commit('setPerformanceForm', this.MonthPerformanceYD);
     },
   },
   mounted() {
