@@ -214,7 +214,6 @@ export default {
           console.log('error submit!');
         }
       });
-      console.log('submit!');
     },
     doClose() {
       this.$emit('changePerformanceDialog', false);

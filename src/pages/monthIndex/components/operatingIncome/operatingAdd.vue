@@ -271,7 +271,6 @@ export default {
   },
   methods: {
     onSubmit(formName) {
-      console.log(this.$refs[formName].validate);
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$emit('giveFormDate', this.AddForm);
@@ -282,7 +281,6 @@ export default {
           console.log('error submit!');
         }
       });
-      console.log('submit!');
     },
     selectBrokerLabel(val) {
       this.getStoreBrokerData.forEach((item, i) => {
@@ -292,7 +290,6 @@ export default {
           this.AddForm.brokerLabel = brokerObj.label;
         }
       });
-      console.log(this.AddForm.brokerLabel);
     },
     doClose() {
       this.$emit('changeDialogShow', false);

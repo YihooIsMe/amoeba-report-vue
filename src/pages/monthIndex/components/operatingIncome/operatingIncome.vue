@@ -109,18 +109,15 @@
         style="width: 100%"
         @selection-change="handleSelectionChangePer">
         <el-table-column
-          type="selection"
-          width="55">
+          type="selection">
         </el-table-column>
         <el-table-column
           label="预定别"
-          prop="bookType"
-          width="120">
+          prop="bookType">
         </el-table-column>
         <el-table-column
           prop="status"
-          label="状态"
-          width="120">
+          label="状态">
         </el-table-column>
         <el-table-column
           label="经纪人" prop="brokerLabel">
@@ -304,7 +301,7 @@ export default {
       formArrObj.objectNum = newVal.objectNum;
       formArrObj.caseName = newVal.caseName;
       formArrObj.currentSituation = newVal.currentSituation;
-      formArrObj.completedPercent = '70%'; // TODO:暂时先写死;
+      formArrObj.completedPercent = newVal.completedPercent + '%'; // TODO:暂时先写死;
       formArrObj.recoveryPerformance = newVal.recoveryPerformance;
       Vue.set(formArrObj, 'discountType', 12345);
       this.addPerformanceArr.push(formArrObj);
@@ -326,7 +323,7 @@ export default {
       formArrObj.objectNum = newVal.objectNum;
       formArrObj.caseName = newVal.caseName;
       formArrObj.currentSituation = newVal.currentSituation;
-      formArrObj.completedPercent = '70%'; // TODO:暂时先写死;
+      formArrObj.completedPercent = newVal.completedPercent + '%'; // TODO:暂时先写死;
       formArrObj.fullCommissionSign = newVal.fullCommissionSign;
       formArrObj.discountType = newVal.discountType;
       formArrObj.discountAmount = newVal.discountAmount;
@@ -397,6 +394,22 @@ export default {
         this.MonthPerformanceYD.push(addPerFormData);
       });
       this.$store.commit('setPerformanceForm', this.MonthPerformanceYD);
+    },
+    operateFirstRequest() {
+      // console.log(this.$store.state.operatingForm.operatingFormData);
+      // console.log(this.$store.state.operatingForm.performanceFormData);
+      this.MonthSigningGoldYD = this.$store.state.operatingForm.operatingFormData;
+      this.MonthPerformanceYD = this.$store.state.operatingForm.performanceFormData;
+    },
+  },
+  computed: {
+    isCompleted() {
+      return this.$store.state.operatingForm.operatingFormData;
+    },
+  },
+  watch: {
+    isCompleted() {
+      this.operateFirstRequest();
     },
   },
   mounted() {

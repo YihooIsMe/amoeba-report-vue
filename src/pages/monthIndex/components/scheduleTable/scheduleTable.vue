@@ -107,9 +107,11 @@ export default {
       this.$api.monthScheduleTable({ MonthlyPlanID }).then((res) => {
         console.log(JSON.parse(res.data));
         this.scheduleSubmitData = JSON.parse(res.data);
-        JSON.parse(res.data).forEach((item) => {
+        JSON.parse(res.data).ScheduleSubject.forEach((item) => {
           this.scheduleTableData[item.Type].push(item);
         });
+        this.$store.commit('setOperatingForm', JSON.parse(res.data).MonthSigningGoldYD);
+        this.$store.commit('setPerformanceForm', JSON.parse(res.data).MonthPerformanceYD);
       }).catch((err) => {
         console.log(err);
       });
@@ -121,7 +123,7 @@ export default {
       });
     },
     getScheduleSubmissionData() {
-      this.scheduleSubmitData.forEach((item) => {
+      this.scheduleSubmitData.ScheduleSubject.forEach((item) => {
         const sObj = {};
         // 如果没有草稿,也就是第一次提交的时候,不用传ID;
         if (this.$store.state.comData.commonData.draft === 1) {
