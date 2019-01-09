@@ -286,20 +286,29 @@ export default {
     },
     getPerformData(newVal) {
       const formArrObj = {};
+      if (newVal.customerType === '1') {
+        formArrObj.customerNameSpl = newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1];
+        formArrObj.customerName = newVal.customer.split(' ')[0];
+        formArrObj.customerPhone = newVal.customer.split(' ')[1];
+        formArrObj.objectNameDes = newVal.objectNum + '<br>' + newVal.caseName;
+        formArrObj.objectNum = newVal.objectNum;
+        formArrObj.caseName = newVal.caseName;
+      } else {
+        formArrObj.customerNameSpl = newVal.searchCustomerName + '<br>' + newVal.searchCustomer;
+        formArrObj.customerName = newVal.searchCustomerName;
+        formArrObj.customerPhone = newVal.searchCustomer;
+        formArrObj.objectNameDes = newVal.demandContent;
+        formArrObj.objectNum = '';
+        formArrObj.caseName = newVal.demandContent;
+      }
       formArrObj.bookType = '月预订';
-      formArrObj.status = '达成'; // TODO:后面数据库传入数据;
+      formArrObj.status = 0; // TODO:后面数据库传入数据;
       formArrObj.broker = newVal.broker;
       formArrObj.brokerLabel = newVal.brokerLabel;
       formArrObj.saleAndLease = newVal.saleAndLease;
       formArrObj.customerType = newVal.customerType;
       formArrObj.customerID = newVal.customerID;
       formArrObj.customerTypeSpl = (newVal.saleAndLease === '1' ? '买卖' : '租赁') + '(' + (newVal.customerType === '1' ? '业主方' : '买方') + ')';
-      formArrObj.customerNameSpl = newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1];
-      formArrObj.customerName = newVal.customer.split(' ')[0];
-      formArrObj.customerPhone = newVal.customer.split(' ')[1];
-      formArrObj.objectNameDes = newVal.objectNum + '<br>' + newVal.caseName;
-      formArrObj.objectNum = newVal.objectNum;
-      formArrObj.caseName = newVal.caseName;
       formArrObj.currentSituation = newVal.currentSituation;
       formArrObj.completedPercent = newVal.completedPercent + '%'; // TODO:暂时先写死;
       formArrObj.recoveryPerformance = newVal.recoveryPerformance;
@@ -308,20 +317,33 @@ export default {
     },
     getAddFormData(newVal) {
       const formArrObj = {};
+      if (newVal.customerType === '1') {
+        formArrObj.customerNameSpl = newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1];
+        formArrObj.customerName = newVal.customer.split(' ')[0];
+        formArrObj.customerPhone = newVal.customer.split(' ')[1];
+        formArrObj.objectNameDes = newVal.objectNum + '<br>' + newVal.caseName;
+        formArrObj.objectNum = newVal.objectNum;
+        formArrObj.caseName = newVal.caseName;
+      } else {
+        formArrObj.customerNameSpl = newVal.searchCustomerName + '<br>' + newVal.searchCustomer;
+        formArrObj.customerName = newVal.searchCustomerName;
+        formArrObj.customerPhone = newVal.searchCustomer;
+        formArrObj.objectNameDes = newVal.demandContent;
+        formArrObj.objectNum = '';
+        formArrObj.caseName = newVal.demandContent;
+      }
       formArrObj.bookType = '月预订';
       formArrObj.status = '达成'; // TODO:后面数据库传入数据;
       formArrObj.broker = newVal.broker;
+      formArrObj.searchCustomer = newVal.searchCustomer;
+      formArrObj.searchCustomerName = newVal.searchCustomerName;
+      formArrObj.demandContent = newVal.demandContent;
       formArrObj.brokerLabel = newVal.brokerLabel;
       formArrObj.saleAndLease = newVal.saleAndLease;
       formArrObj.customerType = newVal.customerType;
       formArrObj.customerID = newVal.customerID;
       formArrObj.customerTypeSpl = (newVal.saleAndLease === '1' ? '买卖' : '租赁') + '(' + (newVal.customerType === '1' ? '业主方' : '买方') + ')';
-      formArrObj.customerNameSpl = newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1];
-      formArrObj.customerName = newVal.customer.split(' ')[0];
-      formArrObj.customerPhone = newVal.customer.split(' ')[1];
-      formArrObj.objectNameDes = newVal.objectNum + '<br>' + newVal.caseName;
-      formArrObj.objectNum = newVal.objectNum;
-      formArrObj.caseName = newVal.caseName;
+
       formArrObj.currentSituation = newVal.currentSituation;
       formArrObj.completedPercent = newVal.completedPercent + '%'; // TODO:暂时先写死;
       formArrObj.fullCommissionSign = newVal.fullCommissionSign;
@@ -350,19 +372,27 @@ export default {
       this.getPerformanceSubmissionData();
     },
     getOperateSubmissionData() {
+      this.MonthSigningGoldYD = [];
       this.addFormArr.forEach((el) => {
         const addFormObj = {};
+        if (el.customerType === '1') {
+          addFormObj.CaseName = el.objectNum;
+          addFormObj.ObjectName = el.caseName;
+          addFormObj.CustomerName = el.customerName;
+          addFormObj.CustomerPhone = el.customerPhone;
+        } else {
+          addFormObj.CustomerName = el.searchCustomerName;
+          addFormObj.CustomerPhone = el.searchCustomer;
+          addFormObj.CaseName = el.demandContent;
+          addFormObj.ObjectName = '';
+        }
         addFormObj.PreordainID = this.$store.state.comData.commonData.MPID;
         addFormObj.Status = el.status;
         addFormObj.PersonnelID = el.broker;
         addFormObj.PersonnelName = el.brokerLabel;
-        addFormObj.CaseName = el.objectNum;
-        addFormObj.ObjectName = el.caseName;
         addFormObj.CaseType = el.saleAndLease;
         addFormObj.CustomerType = el.customerType;
         addFormObj.CustomerID = el.customerID;
-        addFormObj.CustomerName = el.customerName;
-        addFormObj.CustomerPhone = el.customerPhone;
         addFormObj.CurrentSituation = el.currentSituation;
         addFormObj.AchievePossibility = el.completedPercent;
         addFormObj.SigningGoldYD = el.estimatedContractMoney;
@@ -377,14 +407,25 @@ export default {
       this.$store.commit('setOperatingForm', this.MonthSigningGoldYD);
     },
     getPerformanceSubmissionData() {
+      this.MonthPerformanceYD = [];
       this.addPerformanceArr.forEach((el) => {
         const addPerFormData = {};
+        if (el.customerType === '1') {
+          addPerFormData.CaseName = el.objectNum;
+          addPerFormData.ObjectName = el.caseName;
+          addPerFormData.CustomerName = el.customerName;
+          addPerFormData.CustomerPhone = el.customerPhone;
+        } else {
+          addPerFormData.CustomerName = el.searchCustomerName;
+          addPerFormData.CustomerPhone = el.searchCustomer;
+          addPerFormData.CaseName = el.demandContent;
+          addPerFormData.ObjectName = '';
+        }
         addPerFormData.PreordainID = this.$store.state.comData.commonData.MPID;
         addPerFormData.CustomerID = el.customerID;
-        addPerFormData.CustomerName = el.customerName;
+        addPerFormData.Status = el.status;
         addPerFormData.CaseType = el.saleAndLease;
         addPerFormData.CustomerType = el.customerType;
-        addPerFormData.CaseName = el.objectNum;
         addPerFormData.CurrentSituation = el.currentSituation;
         addPerFormData.AchievePossibility = el.completedPercent;
         addPerFormData.PersonnelID = el.broker;
@@ -398,13 +439,70 @@ export default {
     operateFirstRequest() {
       // console.log(this.$store.state.operatingForm.operatingFormData);
       // console.log(this.$store.state.operatingForm.performanceFormData);
-      this.MonthSigningGoldYD = this.$store.state.operatingForm.operatingFormData;
-      this.MonthPerformanceYD = this.$store.state.operatingForm.performanceFormData;
+      // this.MonthSigningGoldYD = this.$store.state.operatingForm.operatingFormData;
+      // this.MonthPerformanceYD = this.$store.state.operatingForm.performanceFormData;
+      this.firstInjectAddFormArr();
+      this.firstInjectAddPerformanceArr();
+    },
+    firstInjectAddFormArr() {
+      this.$store.state.operatingForm.operatingFormData.forEach((el) => {
+        const addFormObj = {};
+        addFormObj.customerNameSpl = el.CustomerName + '<br>' + el.CustomerPhone;
+        addFormObj.customerName = el.CustomerName;
+        addFormObj.customerPhone = el.CustomerPhone;
+        addFormObj.objectNameDes = el.CaseName + '<br>' + el.ObjectName;
+        addFormObj.objectNum = el.CaseName;
+        addFormObj.caseName = el.ObjectName;
+        addFormObj.bookType = '月预订';
+        addFormObj.status = el.Status === 0 ? '未达成' : '达成'; // TODO:后面数据库传入数据;
+        addFormObj.broker = el.PersonnelID;
+        addFormObj.brokerLabel = el.PersonnelName;
+        addFormObj.saleAndLease = el.CaseType;
+        addFormObj.customerType = el.CustomerType;
+        addFormObj.customerID = el.CustomerID;
+        addFormObj.customerTypeSpl = (el.CaseType === '1' ? '买卖' : '租赁') + '(' + (el.CustomerType === '1' ? '业主方' : '买方') + ')';
+        addFormObj.currentSituation = el.CurrentSituation;
+        addFormObj.completedPercent = el.AchievePossibility; // TODO:暂时先写死;
+        addFormObj.fullCommissionSign = el.FullCommissionYD;
+        addFormObj.discountType = el.DiscountType;
+        addFormObj.discountAmount = el.DiscountGoldYD;
+        addFormObj.discountRelAmount = el.DiscountGoldSJ; // TODO:暂时先写死;
+        addFormObj.estimatedContractMoney = el.SigningGoldYD;
+        Vue.set(addFormObj, 'fullCommissionSignActual', el.FullCommissionSJ);
+        Vue.set(addFormObj, 'discountAmountActual', el.DiscountGoldSJ);
+        Vue.set(addFormObj, 'relContractMoney', el.SigningGoldSJ);
+        this.addFormArr.push(addFormObj);
+      });
+    },
+    firstInjectAddPerformanceArr() {
+      this.$store.state.operatingForm.performanceFormData.forEach((el) => {
+        const addPerFormObj = {};
+        addPerFormObj.bookType = '月预订';
+        addPerFormObj.status = el.Status === 0 ? '未达成' : '达成';
+        // addPerFormObj.status = '达成'; // TODO:后面数据库传入数据;
+        addPerFormObj.broker = el.PersonnelID;
+        addPerFormObj.brokerLabel = el.PersonnelName;
+        addPerFormObj.saleAndLease = el.CaseType;
+        addPerFormObj.customerType = el.CustomerType;
+        addPerFormObj.customerID = el.CustomerID;
+        addPerFormObj.customerTypeSpl = (el.CaseType === '1' ? '买卖' : '租赁') + '(' + (el.CustomerType === '1' ? '业主方' : '买方') + ')';
+        addPerFormObj.customerNameSpl = el.CustomerName + '<br>' + el.CustomerPhone;
+        addPerFormObj.customerName = el.CustomerName;
+        addPerFormObj.customerPhone = el.CustomerPhone;
+        addPerFormObj.objectNameDes = el.CaseName + '<br>' + el.ObjectName;
+        addPerFormObj.objectNum = el.CaseName;
+        addPerFormObj.caseName = el.ObjectName;
+        addPerFormObj.currentSituation = el.CurrentSituation;
+        addPerFormObj.completedPercent = el.AchievePossibility; // TODO:暂时先写死;
+        addPerFormObj.recoveryPerformance = el.PerformanceYD;
+        Vue.set(addPerFormObj, 'discountType', el.PerformanceSJ);
+        this.addPerformanceArr.push(addPerFormObj);
+      });
     },
   },
   computed: {
     isCompleted() {
-      return this.$store.state.operatingForm.operatingFormData;
+      return this.$store.state.scheduleForm.isCompleted;
     },
   },
   watch: {

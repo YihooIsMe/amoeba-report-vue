@@ -112,6 +112,7 @@ export default {
         });
         this.$store.commit('setOperatingForm', JSON.parse(res.data).MonthSigningGoldYD);
         this.$store.commit('setPerformanceForm', JSON.parse(res.data).MonthPerformanceYD);
+        this.$store.commit('setCompleted', true);
       }).catch((err) => {
         console.log(err);
       });

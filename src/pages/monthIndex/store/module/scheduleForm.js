@@ -10,6 +10,7 @@ const scheduleForm = {
       sumWelfareFee: 0,
       sumWorkingMeal: 0,
     },
+    isCompleted: false,
   },
   mutations: {
     setScheduleFormData: (state, data) => {
@@ -17,6 +18,9 @@ const scheduleForm = {
     },
     sumScheduleForm: (state, data) => {
       state.sumScheduleForm[data.type] = data.sumVal;
+    },
+    setCompleted: (state, data) => {
+      state.isCompleted = data;
     },
   },
   action: {
