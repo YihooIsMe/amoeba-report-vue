@@ -101,7 +101,7 @@
     <div class="child-performance-income">
       <el-button type="primary" plain size="small" @click="dialogPerformance = true">新增</el-button>
       <el-button type="success" plain size="small" @click="deleteSelected('performance')">删除</el-button>
-      <el-button type="warning" plain size="small">达成匹配调整</el-button>
+      <el-button type="warning" plain size="small" @click="perAchieveAdjustmentVisible = true">达成匹配调整</el-button>
       <el-table
         ref="multipleTable"
         :data="addPerformanceArr"
@@ -175,6 +175,9 @@
       :getStoreBrokerData="getStoreBrokerData"
       @changePerformanceDialog="getPerformanceShow"
       @givePerFormDate="getPerformData"></PerformanceAdd>
+    <AchievePeradjustment
+      :perAchieveAdjustmentVisible="perAchieveAdjustmentVisible"
+      @closePerAchieveDialog="getPerAchieveDialog"></AchievePeradjustment>
   </div>
 </template>
 
@@ -182,11 +185,17 @@
 import Vue from 'vue';
 import OperatingAdd from './operatingAdd.vue';
 import AchieveAdjustment from './achieveAdjustment.vue';
+import AchievePeradjustment from './achievePeradjustment.vue';
 import PerformanceAdd from './performanceAdd.vue';
 
 export default {
   name: 'operatingIncome',
-  components: { PerformanceAdd, AchieveAdjustment, OperatingAdd },
+  components: {
+    PerformanceAdd,
+    AchieveAdjustment,
+    OperatingAdd,
+    AchievePeradjustment,
+  },
   data() {
     return {
       addFormArr: [],
@@ -194,6 +203,7 @@ export default {
       dialogTableVisible: false,
       dialogPerformance: false,
       achieveAdjustmentVisible: false,
+      perAchieveAdjustmentVisible: false,
       multipleSelection: [],
       multipleSelectionPer: [],
       selectIndexArray: [],
@@ -258,7 +268,7 @@ export default {
           console.log(copyAddFormArr);
           this.addFormArr = copyAddFormArr;
         }
-      } else {
+      } else if (sel === 'performance') {
         if (this.multipleSelectionPer.length === this.addPerformanceArr.length) {
           this.addPerformanceArr = [];
         } else {
@@ -283,6 +293,9 @@ export default {
     },
     getAchieveDialog(newVal) {
       this.achieveAdjustmentVisible = newVal;
+    },
+    getPerAchieveDialog(newVal) {
+      this.perAchieveAdjustmentVisible = newVal;
     },
     getPerformData(newVal) {
       const formArrObj = {};
@@ -490,6 +503,7 @@ export default {
         addFormObj.discountAmount = el.DiscountGoldYD;
         addFormObj.discountRelAmount = el.DiscountGoldSJ; // TODO:暂时先写死;
         addFormObj.estimatedContractMoney = el.SigningGoldYD;
+        addFormObj.fullCommissionSignDiff = el.FullCommissionDifference;
         Vue.set(addFormObj, 'fullCommissionSignActual', el.FullCommissionSJ);
         Vue.set(addFormObj, 'discountAmountActual', el.DiscountGoldSJ);
         Vue.set(addFormObj, 'relContractMoney', el.SigningGoldSJ);
