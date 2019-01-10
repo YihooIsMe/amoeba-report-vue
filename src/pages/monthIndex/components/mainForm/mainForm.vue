@@ -64,7 +64,8 @@ export default {
   components: { ManagementAlert },
   data() {
     return {
-      userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}',
+      // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 瑞虹一店;
+      userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 咨询部;
       responseData: {},
       tableSource: [],
       tableDataSource0: [], // Type类型为0的数据;
@@ -301,6 +302,9 @@ export default {
 
 <style lang="less" scoped>
   table.KMTable1.commonTable{
+    .F5{
+      display: none;
+    }
     th{
       width: 11.1%;
     }

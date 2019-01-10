@@ -210,6 +210,7 @@ export default {
           this.$emit('givePerFormDate', this.performanceAddForm);
           this.copyDialogPerformance = false;
           this.$refs[formName].resetFields();
+          this.performanceAddForm.caseName = '';
         } else {
           console.log('error submit!');
         }

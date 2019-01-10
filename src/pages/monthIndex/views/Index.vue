@@ -32,6 +32,7 @@
 
 <script>
 import Vue from 'vue';
+import { Message } from 'element-ui';
 import MainForm from '../components/mainForm/mainForm.vue';
 import ScheduleTable from '../components/scheduleTable/scheduleTable.vue';
 import OperatingIncome from '../components/operatingIncome/operatingIncome.vue';
@@ -52,6 +53,7 @@ export default {
       review: 0,
       mainAndScheduleAllSubmissionData: {},
       mainFormSonData: false,
+      loadingCover: '',
     };
   },
   methods: {
@@ -63,6 +65,12 @@ export default {
       this.$refs.scheduleTable.firstLoadingRequest();
     },
     dataSubmission(index) {
+      this.loadingCover = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)',
+      });
       this.review = index;
       this.$refs.mainForm.getAllSubmissionData();
       this.$refs.scheduleTable.getScheduleSubmissionData();
@@ -93,6 +101,17 @@ export default {
       this.$api.monthMainAndScheduleSub(this.mainAndScheduleAllSubmissionData)
         .then((res) => {
           console.log(res);
+          this.loadingCover.close();
+          let type;
+          if (res.data.isSuccess === false) {
+            type = 'error';
+          } else {
+            type = 'success';
+          }
+          Message({
+            message: res.data.errorMessage,
+            type,
+          });
         })
         .catch((err) => {
           console.log(err);

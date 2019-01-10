@@ -39,7 +39,7 @@ module.exports = {
   },
   devServer: {
     port: 80,
-    index: 'monthIndex.html',
+    index: 'identitySwitch.html',
   },
   // chainWebpack: config => {
   //   config.resolve.alias

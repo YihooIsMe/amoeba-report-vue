@@ -143,7 +143,7 @@ export default {
     /* 租赁费 */
     this.tableThree(index).RentalFees.value = (this.remSep(this.tableThree(index).StoreRent.value) + this.remSep(this.tableThree(index).EquipmentRent.value)).toLocaleString();
     /* 设备费用 */
-    this.tableThree(index).EquipmentCost.value = (this.remSep(this.tableThree(index).Depreciation.value) + this.remSep(this.tableThree(index).AmortizationOfTangibleAssets.value) + this.remSep(this.tableThree(index).LowValueConsumablesAmortization.value) + this.remSep(this.tableThree(index).RepairFee.value) + this.remSep(this.tableThree(index).RentalFees.value) + this.remSep(this.tableThree(index).PropertyRent.value)).toLocaleString();
+    this.tableThree(index).EquipmentCost.value = (this.remSep(this.tableThree(index).Depreciation.value) + this.remSep(this.tableThree(index).AmortizationOfTangibleAssets.value) + this.remSep(this.tableThree(index).LowValueConsumablesAmortization.value) + this.remSep(this.tableThree(index).RepairFee.value) + this.remSep(this.tableThree(index).RentalFees.value) + this.remSep(this.tableThree(index).PropertyRent ? this.tableThree(index).PropertyRent.value : 0)).toLocaleString();
   },
 
   /* Type类型为3时 */
@@ -189,8 +189,6 @@ export default {
       TechnicalAdvisoryFee: document.querySelector('tr.D28>td:nth-child(' + index + ') input'),
       /* 规费 */
       Fees: document.querySelector('tr.D21>td:nth-child(' + index + ') input'),
-      /* 加盟费 */
-      InitialFee: document.querySelector('tr.D22>td:nth-child(' + index + ') input'),
       /* 中人费 */
       ZhongRenFee: document.querySelector('tr.D30>td:nth-child(' + index + ') input'),
       /* 诉讼费 */
@@ -211,7 +209,7 @@ export default {
     /* 差旅费 */
     this.tableFour(index).FourTravelExpenses.value = (this.remSep(this.tableFour(index).CityTransportationFee.value) + this.remSep(this.tableFour(index).TravelExpenses.value)).toLocaleString();
     /* 事务费用 */
-    this.tableFour(index).TotalTransactionCost.value = (this.remSep(this.tableFour(index).FourOfficeFee.value) + this.remSep(this.tableFour(index).FourTravelExpenses.value) + this.remSep(this.tableFour(index).PrintingFee.value) + this.remSep(this.tableFour(index).UtilityFee.value) + this.remSep(this.tableFour(index).CommunicationFee.value) + this.remSep(this.tableFour(index).ProductionAdjustment.value) + this.remSep(this.tableFour(index).AuditFees.value) + this.remSep(this.tableFour(index).Tax.value) + this.remSep(this.tableFour(index).Freight.value) + this.remSep(this.tableFour(index).MembershipFee.value) + this.remSep(this.tableFour(index).BookFee.value) + this.remSep(this.tableFour(index).BadDebtProvision.value) + this.remSep(this.tableFour(index).Fees.value) + this.remSep(this.tableFour(index).InitialFee.value) + this.remSep(this.tableFour(index).LitigationCosts.value) + this.remSep(this.tableFour(index).otherFee.value) + this.remSep(this.tableFour(index).ZhongRenFee.value) + this.remSep(this.tableFour(index).TechnicalAdvisoryFee.value)).toLocaleString();
+    this.tableFour(index).TotalTransactionCost.value = (this.remSep(this.tableFour(index).FourOfficeFee.value) + this.remSep(this.tableFour(index).FourTravelExpenses.value) + this.remSep(this.tableFour(index).PrintingFee.value) + this.remSep(this.tableFour(index).UtilityFee.value) + this.remSep(this.tableFour(index).CommunicationFee.value) + this.remSep(this.tableFour(index).ProductionAdjustment.value) + this.remSep(this.tableFour(index).AuditFees ? this.tableFour(index).AuditFees.value : 0) + this.remSep(this.tableFour(index).Tax ? this.tableFour(index).Tax.value : 0) + this.remSep(this.tableFour(index).Freight.value) + this.remSep(this.tableFour(index).MembershipFee ? this.tableFour(index).MembershipFee.value : 0) + this.remSep(this.tableFour(index).BookFee.value) + this.remSep(this.tableFour(index).BadDebtProvision ? this.tableFour(index).BadDebtProvision.value : 0) + this.remSep(this.tableFour(index).Fees ? this.tableFour(index).Fees.value : 0) + this.remSep(this.tableFour(index).LitigationCosts ? this.tableFour(index).LitigationCosts.value : 0) + this.remSep(this.tableFour(index).otherFee.value) + this.remSep(this.tableFour(index).ZhongRenFee ? this.tableFour(index).ZhongRenFee.value : 0) + this.remSep(this.tableFour(index).TechnicalAdvisoryFee ? this.tableFour(index).TechnicalAdvisoryFee.value : 0)).toLocaleString();
   },
 
   /* Type类型为4时 */
@@ -219,34 +217,14 @@ export default {
     return {
       /* 广告费-案源-派报 */
       AdvertisingFeeCaseSourceReport: document.querySelector('tr.E1>td:nth-child(' + index + ') input'),
-      /* 广告费-案源-报刊 */
-      AdvertisingFeeCaseSourcePress: document.querySelector('tr.E2>td:nth-child(' + index + ') input'),
-      /* 广告费-案源-电视 */
-      AdvertisingFeeCaseSourceTV: document.querySelector('tr.E3>td:nth-child(' + index + ') input'),
       /* 广告费-案源-看板横幅 */
       AdvertisingFeeCaseSourceKanbanBanner: document.querySelector('tr.E4>td:nth-child(' + index + ') input'),
       /* 广告费-案源-其他 */
       AdvertisingFeeCaseSourceOther: document.querySelector('tr.E5>td:nth-child(' + index + ') input'),
-      /* 广告费-形象-派报 */
-      AdvertisingFeeImageReport: document.querySelector('tr.E6>td:nth-child(' + index + ') input'),
-      /* 广告费-形象-报刊 */
-      AdvertisingFeeImagePress: document.querySelector('tr.E7>td:nth-child(' + index + ') input'),
-      /* 广告费-形象-电视 */
-      AdvertisingFeeImageTV: document.querySelector('tr.E8>td:nth-child(' + index + ') input'),
-      /* 广告费-形象-看板横幅 */
-      AdvertisingFeeImageKanbanBanner: document.querySelector('tr.E17>td:nth-child(' + index + ') input'),
-      /* 广告费-形象-其他 */
-      AdvertisingFeeImageOther: document.querySelector('tr.E9>td:nth-child(' + index + ') input'),
-      /* 行销费-展会 */
-      MarketingFeeExhibition: document.querySelector('tr.E10>td:nth-child(' + index + ') input'),
       /* 行销费-促销活动 */
       MarketingFeePromotions: document.querySelector('tr.E11>td:nth-child(' + index + ') input'),
-      /* 行销费-代理合作 */
-      MarketingFeeAgencyCooperation: document.querySelector('tr.E12>td:nth-child(' + index + ') input'),
       /* 行销费-设计制作 */
       MarketingFeeDesignProduction: document.querySelector('tr.E13>td:nth-child(' + index + ') input'),
-      /* 行销费-现场布置 */
-      MarketingFeeSiteLayout: document.querySelector('tr.E14>td:nth-child(' + index + ') input'),
       /* 行销费-其他 */
       MarketingFeeOther: document.querySelector('tr.E15>td:nth-child(' + index + ') input'),
       /* 广告费 */
@@ -259,9 +237,9 @@ export default {
   },
   tableFiveCalculation(index) {
     /* 广告费 */
-    this.tableFive(index).AdvertisingFee.value = (this.remSep(this.tableFive(index).AdvertisingFeeCaseSourceReport.value) + this.remSep(this.tableFive(index).AdvertisingFeeCaseSourcePress.value) + this.remSep(this.tableFive(index).AdvertisingFeeCaseSourceTV.value) + this.remSep(this.tableFive(index).AdvertisingFeeCaseSourceKanbanBanner.value) + this.remSep(this.tableFive(index).AdvertisingFeeCaseSourceOther.value) + this.remSep(this.tableFive(index).AdvertisingFeeImageReport.value) + this.remSep(this.tableFive(index).AdvertisingFeeImagePress.value) + this.remSep(this.tableFive(index).AdvertisingFeeImageTV.value) + this.remSep(this.tableFive(index).AdvertisingFeeImageOther.value) + this.remSep(this.tableFive(index).AdvertisingFeeImageKanbanBanner.value)).toLocaleString();
+    this.tableFive(index).AdvertisingFee.value = (this.remSep(this.tableFive(index).AdvertisingFeeCaseSourceReport.value) + this.remSep(this.tableFive(index).AdvertisingFeeCaseSourceKanbanBanner.value) + this.remSep(this.tableFive(index).AdvertisingFeeCaseSourceOther.value)).toLocaleString();
     /* 行销费 */
-    this.tableFive(index).MarketingFee.value = (this.remSep(this.tableFive(index).MarketingFeeExhibition.value) + this.remSep(this.tableFive(index).MarketingFeePromotions.value) + this.remSep(this.tableFive(index).MarketingFeeAgencyCooperation.value) + this.remSep(this.tableFive(index).MarketingFeeDesignProduction.value) + this.remSep(this.tableFive(index).MarketingFeeSiteLayout.value) + this.remSep(this.tableFive(index).MarketingFeeOther.value)).toLocaleString();
+    this.tableFive(index).MarketingFee.value = (this.remSep(this.tableFive(index).MarketingFeePromotions.value) + this.remSep(this.tableFive(index).MarketingFeeDesignProduction.value) + this.remSep(this.tableFive(index).MarketingFeeOther.value)).toLocaleString();
     /* 行销費用 */
     this.tableFive(index).TotalMarketingFee.value = (this.remSep(this.tableFive(index).AdvertisingFee.value) + this.remSep(this.tableFive(index).MarketingFee.value)).toLocaleString();
   },
@@ -286,25 +264,33 @@ export default {
     // TODO:这里着重测试一下；
     if (this.fromWhere === 'yearIndex') {
       // this.tableSix(index).ManagementServiceFee.value = (Number(Number(this.remSep(this.tableOne(index).OriginalContractFee.value)) * Number(this.getVueSigningRatio['SigningRatio' + (index - 2)]) + 12000).toFixed(2)).toLocaleString();
-      this.tableSix(index).ManagementServiceFee.value = (this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio['SigningRatio' + (index - 2)]) + 12000).toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
+      if (this.tableSix(index).ManagementServiceFee) {
+        this.tableSix(index).ManagementServiceFee.value = (this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio['SigningRatio' + (index - 2)]) + 12000).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      }
     } else {
-      this.tableSix(index).ManagementServiceFee.value = (this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio) + 12000).toLocaleString(undefined, {
+      if (this.tableSix(index).ManagementServiceFee) {
+        this.tableSix(index).ManagementServiceFee.value = (this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio) + 12000).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+
+      }
+    }
+
+    /* 签约金损益 */
+    // this.tableSix(index).SigningFeeProfitAndLoss.value = ((Number(this.remSep(this.tableOne(index).OperatingNetProfit.value)) - Number(this.remSep(this.tableSix(index).OperatingExpenses.value)) - Number(this.remSep(this.tableSix(index).ManagementServiceFee.value))).toFixed(2)).toLocaleString();
+    if (this.tableSix(index).SigningFeeProfitAndLoss) {
+      this.tableSix(index).SigningFeeProfitAndLoss.value = (this.remSep(this.tableOne(index).OperatingNetProfit.value) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableSix(index).ManagementServiceFee.value)).toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       });
     }
 
-    /* 签约金损益 */
-    // this.tableSix(index).SigningFeeProfitAndLoss.value = ((Number(this.remSep(this.tableOne(index).OperatingNetProfit.value)) - Number(this.remSep(this.tableSix(index).OperatingExpenses.value)) - Number(this.remSep(this.tableSix(index).ManagementServiceFee.value))).toFixed(2)).toLocaleString();
-    this.tableSix(index).SigningFeeProfitAndLoss.value = (this.remSep(this.tableOne(index).OperatingNetProfit.value) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableSix(index).ManagementServiceFee.value)).toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
     /* 签约金损益收益率 */
-    if (Number(this.remSep(this.tableOne(index).TotalIncome.value)) !== 0) {
+    if (this.tableSix(index).ContractedFeeProfitAndLossYield && Number(this.remSep(this.tableOne(index).TotalIncome.value)) !== 0) {
       // this.tableSix(index).ContractedFeeProfitAndLossYield.value = ((Number(this.remSep(this.tableSix(index).SigningFeeProfitAndLoss.value)) / Number(this.remSep(this.tableOne(index).TotalIncome.value))).toFixed(2)).toLocaleString();
       this.tableSix(index).ContractedFeeProfitAndLossYield.value = (this.remSep(this.tableSix(index).SigningFeeProfitAndLoss.value) / this.remSep(this.tableOne(index).TotalIncome.value)).toLocaleString(undefined, {
         minimumFractionDigits: 2,
@@ -327,12 +313,15 @@ export default {
   tableSevenCalculation(index) {
     /* 业绩损益 */
     // this.tableSeven(index).PerformanceGainsAndLosses.value = ((Number(this.remSep(this.tableSeven(index).Performance.value)) - Number(this.remSep(this.tableSix(index).ManagementServiceFee.value)) - Number(this.remSep(this.tableSix(index).OperatingExpenses.value)) - Number(this.remSep(this.tableOne(index).BusinessTax.value))).toFixed(2)).toLocaleString();
-    this.tableSeven(index).PerformanceGainsAndLosses.value = (this.remSep(this.tableSeven(index).Performance.value) - this.remSep(this.tableSix(index).ManagementServiceFee.value) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableOne(index).BusinessTax.value)).toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
+    if (this.tableSeven(index).PerformanceGainsAndLosses) {
+      console.log(this.tableSeven(index).PerformanceGainsAndLosses);
+      this.tableSeven(index).PerformanceGainsAndLosses.value = (this.remSep(this.tableSeven(index).Performance.value) - this.remSep(this.tableSix(index).ManagementServiceFee.value) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableOne(index).BusinessTax.value)).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
     /* 业绩损益收益率 */
-    if (Number(this.tableSeven(index).Performance.value) !== 0) {
+    if (this.tableSeven(index).PerformanceGainsAndLossesRate && Number(this.tableSeven(index).Performance.value) !== 0) {
       // this.tableSeven(index).PerformanceGainsAndLossesRate.value = ((Number(this.remSep(this.tableSeven(index).PerformanceGainsAndLosses.value)) / Number(this.remSep(this.tableSeven(index).Performance.value))).toFixed(2)).toLocaleString();
       this.tableSeven(index).PerformanceGainsAndLossesRate.value = (this.remSep(this.tableSeven(index).PerformanceGainsAndLosses.value) / this.remSep(this.tableSeven(index).Performance.value)).toLocaleString(undefined, {
         minimumFractionDigits: 2,
@@ -352,13 +341,13 @@ export default {
   },
   tableEightCalculation(index) {
     /* 单位时间损益 */
-    if (Number(this.tableEight(index).AttendanceTime.value) !== 0) {
+    if (this.tableEight(index).UnitTimeProfitAndLoss && Number(this.tableEight(index).AttendanceTime.value) !== 0) {
       this.tableEight(index).UnitTimeProfitAndLoss.value = ((this.remSep(this.tableSix(index).SigningFeeProfitAndLoss.value) / this.remSep(this.tableEight(index).AttendanceTime.value)).toFixed(2)).toLocaleString();
     }
   },
   // 去处千分位符号；
   remSep(val) {
-    if (val === '') {
+    if (val === '' || val === 0) {
       return 0;
     }
     const num = val.split(',');

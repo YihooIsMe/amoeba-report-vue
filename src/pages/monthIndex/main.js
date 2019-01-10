@@ -8,12 +8,13 @@ import {
   Dialog,
   Form,
   FormItem,
-  Scrollbar,
+  Loading,
 } from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import '@/assets/css/statisticalReport.css';
 import App from './App.vue';
 import store from './store/index';
+
 
 Vue.config.productionTip = false;
 Vue.use(Button);
@@ -24,7 +25,7 @@ Vue.use(TableColumn);
 Vue.use(Dialog);
 Vue.use(Form);
 Vue.use(FormItem);
-Vue.use(Scrollbar);
+Vue.use(Loading);
 
 new Vue({
   store,

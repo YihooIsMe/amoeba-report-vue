@@ -304,6 +304,9 @@ export default {
       formArrObj.bookType = '月预订';
       formArrObj.status = 0; // TODO:后面数据库传入数据;
       formArrObj.broker = newVal.broker;
+      formArrObj.searchCustomer = newVal.searchCustomer;
+      formArrObj.searchCustomerName = newVal.searchCustomerName;
+      formArrObj.demandContent = newVal.demandContent;
       formArrObj.brokerLabel = newVal.brokerLabel;
       formArrObj.saleAndLease = newVal.saleAndLease;
       formArrObj.customerType = newVal.customerType;
@@ -447,12 +450,31 @@ export default {
     firstInjectAddFormArr() {
       this.$store.state.operatingForm.operatingFormData.forEach((el) => {
         const addFormObj = {};
+        if (el.CustomerType === '1') {
+          addFormObj.objectNum = el.CaseName;
+          addFormObj.caseName = el.ObjectName;
+          addFormObj.customerName = el.CustomerName;
+          addFormObj.customerPhone = el.CustomerPhone;
+
+          addFormObj.searchCustomerName = '';
+          addFormObj.searchCustomer = 8602165120564;
+          addFormObj.demandContent = '';
+        } else {
+          addFormObj.objectNum = 'SAJ00261787';// TODO:这里到时候应当改为el.ObjectName;
+          addFormObj.caseName = '';
+          addFormObj.customerName = '';
+          addFormObj.customerPhone = '';
+
+          addFormObj.searchCustomerName = el.CustomerName;
+          addFormObj.searchCustomer = el.CustomerPhone;
+          addFormObj.demandContent = el.CaseName;
+        }
         addFormObj.customerNameSpl = el.CustomerName + '<br>' + el.CustomerPhone;
-        addFormObj.customerName = el.CustomerName;
-        addFormObj.customerPhone = el.CustomerPhone;
+        // addFormObj.customerName = el.CustomerName;
+        // addFormObj.customerPhone = el.CustomerPhone;
         addFormObj.objectNameDes = el.CaseName + '<br>' + el.ObjectName;
-        addFormObj.objectNum = el.CaseName;
-        addFormObj.caseName = el.ObjectName;
+        // addFormObj.objectNum = el.CaseName;
+        // addFormObj.caseName = el.ObjectName;
         addFormObj.bookType = '月预订';
         addFormObj.status = el.Status === 0 ? '未达成' : '达成'; // TODO:后面数据库传入数据;
         addFormObj.broker = el.PersonnelID;
@@ -477,6 +499,26 @@ export default {
     firstInjectAddPerformanceArr() {
       this.$store.state.operatingForm.performanceFormData.forEach((el) => {
         const addPerFormObj = {};
+        if (el.CustomerType === '1') {
+          addPerFormObj.objectNum = el.CaseName;
+          addPerFormObj.caseName = el.ObjectName;
+          addPerFormObj.customerName = el.CustomerName;
+          addPerFormObj.customerPhone = el.customerPhone;
+
+          addPerFormObj.searchCustomerName = '';
+          addPerFormObj.searchCustomer = 8602165120564;
+          addPerFormObj.demandContent = '';
+        } else {
+          addPerFormObj.searchCustomerName = el.CustomerName;
+          addPerFormObj.searchCustomer = el.CustomerPhone;
+          addPerFormObj.demandContent = el.CaseName;
+
+          addPerFormObj.objectNum = 'SAJ00261787';
+          addPerFormObj.caseName = '';
+          addPerFormObj.customerName = '';
+          addPerFormObj.customerPhone = '';
+        }
+
         addPerFormObj.bookType = '月预订';
         addPerFormObj.status = el.Status === 0 ? '未达成' : '达成';
         // addPerFormObj.status = '达成'; // TODO:后面数据库传入数据;
@@ -487,11 +529,11 @@ export default {
         addPerFormObj.customerID = el.CustomerID;
         addPerFormObj.customerTypeSpl = (el.CaseType === '1' ? '买卖' : '租赁') + '(' + (el.CustomerType === '1' ? '业主方' : '买方') + ')';
         addPerFormObj.customerNameSpl = el.CustomerName + '<br>' + el.CustomerPhone;
-        addPerFormObj.customerName = el.CustomerName;
-        addPerFormObj.customerPhone = el.CustomerPhone;
+        // addPerFormObj.customerName = el.CustomerName;
+        // addPerFormObj.customerPhone = el.CustomerPhone;
         addPerFormObj.objectNameDes = el.CaseName + '<br>' + el.ObjectName;
-        addPerFormObj.objectNum = el.CaseName;
-        addPerFormObj.caseName = el.ObjectName;
+        // addPerFormObj.objectNum = el.CaseName;
+        // addPerFormObj.caseName = el.ObjectName;
         addPerFormObj.currentSituation = el.CurrentSituation;
         addPerFormObj.completedPercent = el.AchievePossibility; // TODO:暂时先写死;
         addPerFormObj.recoveryPerformance = el.PerformanceYD;

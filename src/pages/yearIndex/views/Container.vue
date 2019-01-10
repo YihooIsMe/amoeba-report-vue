@@ -274,6 +274,15 @@ export default {
         baseNum = cal.remSep(currentLine[i].value) + baseNum;
       }
       currentLine[13].value = baseNum.toLocaleString();
+      // 全部行自动计算;
+      // this.tableSource.forEach((el) => {
+      //   const currentLine = document.querySelectorAll('table.KMTable1.commonTable tr.' + el.className + ' input');
+      //   let baseNum = 0;
+      //   for (let i = 1; i < 13; i += 1) {
+      //     baseNum = cal.remSep(currentLine[i].value) + baseNum;
+      //   }
+      //   currentLine[13].value = baseNum.toLocaleString();
+      // });
     },
 
     getSigningRatio(val) {
