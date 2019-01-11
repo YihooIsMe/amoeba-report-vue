@@ -74,6 +74,14 @@ export const monthOperatingAdd = params => {
   });
 };
 
+export const monthQueryAndAdd = params => {
+  return axios({
+    url: '/MonthReview',
+    method: 'get',
+    params,
+  });
+};
+
 export default {
   monthScheduleTable,
   queryAndAddedUserInfo,
@@ -84,4 +92,5 @@ export default {
   yearUploadFile,
   monthMainAndScheduleSub,
   monthOperatingAdd,
+  monthQueryAndAdd,
 };

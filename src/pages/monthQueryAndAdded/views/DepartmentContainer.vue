@@ -1,6 +1,6 @@
 <template>
-    <div class="year-query-container">
-      <h1>核算表系统年度计划</h1>
+    <div class="month-query-container">
+      <h1>核算表系统月度计划</h1>
       <div class="department">
       <ul class="department-list">
         <li>部门:</li>
@@ -30,26 +30,30 @@
         </li>
       </ul>
         <ul class="year-select">
-          <li>年度:</li>
+          <li>年月:</li>
           <li>
-          <select v-model="yearSelected">
-            <option v-for="n in 30" :key="n">{{2008 + n}}</option>
-          </select>
-        </li></ul>
+            <select v-model="yearSelected">
+              <option v-for="n in 30" :key="n">{{2008 + n}}</option>
+            </select>
+            年
+          </li>
+          <li>
+            <select class="month-select"  v-model="monthSelected">
+              <option v-for="n in 12" :key="n">{{n}}</option>
+            </select>
+            月
+          </li>
+        </ul>
         <div class="button-container">
           <el-button type="primary" @click="auditTableQueryRequest">查询</el-button>
           <el-button type="success" @click="linkToIndex">新增</el-button>
-<!--
-          <router-link to="/index" class="addBtn">新增</router-link>
-          <router-views/>
--->
         </div>
       </div>
       <div v-if="queryTableAllData.length>0">
         <table class="show-query-table" border="1">
           <thead>
           <tr>
-            <th>年度</th>
+            <th>年度/月度</th>
             <th>部门</th>
             <th>主管</th>
             <th>状态</th>
@@ -59,7 +63,7 @@
           </thead>
           <tbody>
           <tr v-for="(item, index) in queryTableAllData" :key="index">
-            <td>{{copyYearSelected}}</td>
+            <td>{{copyYearSelected}}/{{copyMonthSelected}}</td>
             <td>{{item.F_FullName}}</td>
             <td>{{item.F_RealName}}</td>
             <td>{{item.Status}}</td>
@@ -104,7 +108,9 @@ export default {
       OrganizeId: '',
       FourthParentId: '',
       yearSelected: (new Date().getFullYear() + 1).toString(),
+      monthSelected: (new Date().getMonth() + 1).toString(),
       copyYearSelected: '',
+      copyMonthSelected: '',
       // Permission: 'S',
       Permission: '',
       selectDisabled: ['', '', '', ''],
@@ -151,7 +157,7 @@ export default {
       VueCookie.set('userID', this.userID);
       VueCookie.set('fromWhichBtn', 'newAdded');
       this.getApprovalStatus();
-      window.location = 'yearIndex.html';
+      window.location = 'monthIndex.html';
     },
 
     getApprovalStatus() {
@@ -289,6 +295,7 @@ export default {
         page: this.page,
         rows: this.rows,
         years: this.yearSelected,
+        Month: this.monthSelected,
       };
       for (let i = 3; i >= 0; i -= 1) {
         if (this.querySelectorArr[i] !== '') {
@@ -311,9 +318,10 @@ export default {
         }
       }
       console.log(queryArguments);
-      this.$api.queryAndAddedQuery(queryArguments)
+      this.$api.monthQueryAndAdd(queryArguments)
         .then((res) => {
           this.copyYearSelected = this.yearSelected;
+          this.copyMonthSelected = this.monthSelected;
           console.log(res.data);
           this.queryTableAllData = res.data;
         })
@@ -356,7 +364,7 @@ export default {
       VueCookie.set('CreateByUser', item.CreateByUser);
       VueCookie.set('fromWhichBtn', 'viewEditorBtn');
       VueCookie.set('viewEditorYear', this.yearSelected);
-      window.location = 'yearIndex.html';
+      window.location = 'monthIndex.html';
     },
   },
   watch: {
@@ -372,73 +380,76 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.year-query-container{
+.month-query-container{
   h1{
     text-align: center;
   }
-  .department-list li,.year-select li{
-    list-style: none;
-    float: left;
+}
+.department-list li,.year-select li{
+  list-style: none;
+  float: left;
+  height:30px;
+  line-height: 30px;
+  select{
     height:30px;
-    line-height: 30px;
-    select{
-      height:30px;
-      margin-left:30px;
-    }
+    margin-left:30px;
   }
-  .department-list,.year-select{
-    height:30px;
+  .month-select{
+    margin-left: 10px;
   }
-  .year-select{
-    select{
-      width: 78px;
-    }
+}
+.department-list,.year-select{
+  height:30px;
+}
+.year-select{
+  select{
+    width: 78px;
   }
-  .addBtn{
-    width: 70px;
-    height: 40px;
-    display: inline-block;
-    line-height: 1;
-    white-space: nowrap;
-    cursor: pointer;
-    background-color: #67c23a;
-    border-color: #67c23a;
-    color: white;
-    -webkit-appearance: none;
-    text-align: center;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    outline: 0;
-    margin: 0;
-    -webkit-transition: .1s;
-    transition: .1s;
-    font-weight: 500;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-    padding: 12px 20px;
-    font-size: 14px;
-    border-radius: 4px;
-    text-decoration: none;
+}
+.addBtn{
+  width: 70px;
+  height: 40px;
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  background-color: #67c23a;
+  border-color: #67c23a;
+  color: white;
+  -webkit-appearance: none;
+  text-align: center;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  outline: 0;
+  margin: 0;
+  -webkit-transition: .1s;
+  transition: .1s;
+  font-weight: 500;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  padding: 12px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  text-decoration: none;
+}
+.department{
+  position: relative;
+}
+.button-container{
+  position: absolute;
+  top:18px;
+  left:800px;
+  a,button{
+    margin-left:30px;
   }
-  .department{
-    position: relative;
-  }
-  .button-container{
-    position: absolute;
-    top:18px;
-    left:800px;
-    a,button{
-      margin-left:30px;
-    }
-  }
-  .show-query-table{
-    width: 100%;
-    text-align: center;
-    border-collapse: collapse;
-  }
-  .show-query-table td{
-    padding:5px 0;
-  }
+}
+.show-query-table{
+  width: 100%;
+  text-align: center;
+  border-collapse: collapse;
+}
+.show-query-table td{
+  padding:5px 0;
 }
 </style>

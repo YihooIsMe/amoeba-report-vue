@@ -2,16 +2,34 @@
 <div class="switch-btn">
   <h2>请选择进入的身份</h2>
   <div class="container-btn">
-    <el-button type="primary" class="index" @click="joinQuery('index')">瑞虹一店</el-button>
-    <el-button type="primary"  @click="joinQuery('zxb')">资讯部</el-button>
-    <el-button type="primary"  @click="joinQuery('sh')">上海中介</el-button>
-    <el-button type="primary"  @click="joinQuery('fwc')">上海服务处</el-button>
-    <el-button type="primary" class="region" @click="joinQuery('region')">业务一区主管</el-button>
-    <el-button type="primary"  @click="joinQuery('cw')">财务部</el-button>
-    <br><br>
-    <el-button type="success" @click="joinQuery('szStore')">苏州店长</el-button>
-    <el-button type="success" @click="joinQuery('szRegion')">苏州区总监</el-button>
-    <el-button type="success" @click="joinQuery('szZj')">苏州中介</el-button>
+    <el-tabs type="border-card">
+      <el-tab-pane label="年度身份选择">
+        <el-button type="primary" class="index" @click="joinQuery('index', 'year')">瑞虹一店</el-button>
+        <el-button type="primary"  @click="joinQuery('zxb', 'year')">资讯部</el-button>
+        <el-button type="primary"  @click="joinQuery('sh', 'year')">上海中介</el-button>
+        <el-button type="primary"  @click="joinQuery('fwc', 'year')">上海服务处</el-button>
+        <el-button type="primary" class="region" @click="joinQuery('region', 'year')">业务一区主管</el-button>
+        <el-button type="primary"  @click="joinQuery('cw', 'year')">财务部</el-button>
+        <br><br>
+        <el-button type="success" @click="joinQuery('szStore', 'year')">苏州店长</el-button>
+        <el-button type="success" @click="joinQuery('szRegion', 'year')">苏州区总监</el-button>
+        <el-button type="success" @click="joinQuery('szZj', 'year')">苏州中介</el-button>
+      </el-tab-pane>
+    </el-tabs>
+    <el-tabs type="border-card">
+      <el-tab-pane label="月度身份选择">
+        <el-button type="primary" class="index" @click="joinQuery('index', 'month')">瑞虹一店</el-button>
+        <el-button type="primary"  @click="joinQuery('zxb', 'month')">资讯部</el-button>
+        <el-button type="primary"  @click="joinQuery('sh', 'month')">上海中介</el-button>
+        <el-button type="primary"  @click="joinQuery('fwc', 'month')">上海服务处</el-button>
+        <el-button type="primary" class="region" @click="joinQuery('region', 'month')">业务一区主管</el-button>
+        <el-button type="primary"  @click="joinQuery('cw', 'month')">财务部</el-button>
+        <br><br>
+        <el-button type="success" @click="joinQuery('szStore', 'month')">苏州店长</el-button>
+        <el-button type="success" @click="joinQuery('szRegion', 'month')">苏州区总监</el-button>
+        <el-button type="success" @click="joinQuery('szZj', 'month')">苏州中介</el-button>
+      </el-tab-pane>
+    </el-tabs>
   </div>
   <h4 class="red">注意：此页面只为方便演示而用！</h4>
 </div>
@@ -21,7 +39,7 @@
 export default {
   name: 'IdentitySwitch',
   methods: {
-    joinQuery(index) {
+    joinQuery(index, page) {
       switch (true) {
         case index === 'index':
           sessionStorage.setItem('userID', '{85811A95-BB15-4914-8926-82E88F5E6E78}');
@@ -52,21 +70,31 @@ export default {
           break;
         default:
       }
-      window.location = 'yearQueryAndAdded.html';
+      if (page === 'year') {
+        window.location = 'yearQueryAndAdded.html';
+      } else if (page === 'month') {
+        window.location = 'monthQueryAndAdded.html';
+      }
     },
   },
 };
 </script>
 
 <style lang="less" scoped>
-h2{
-  text-align: center;
-}
-  .container-btn{
-    margin:50px auto;
+  .switch-btn{
+    h2{
+      text-align: center;
+    }
+    .container-btn{
+      margin:auto;
+    }
+    .red{
+      color:red;
+      text-align: right;
+    }
+    .el-tabs{
+      margin-top: 20px;
+    }
   }
-  .red{
-    color:red;
-    text-align: right;
-  }
+
 </style>

@@ -1,8 +1,8 @@
-const path = require('path');
-
-function resolve(dir) {
-  return path.join(__dirname, dir);
-}
+// const path = require('path');
+//
+// function resolve(dir) {
+//   return path.join(__dirname, dir);
+// }
 module.exports = {
   // baseUrl: './',
   pages: {
@@ -16,6 +16,12 @@ module.exports = {
       entry: 'src/pages/yearQueryAndAdded/main.js',
       template: 'public/index.html',
       filename: 'yearQueryAndAdded.html',
+      title: '核算表系统年度计划查询及新增',
+    },
+    monthQuery: {
+      entry: 'src/pages/monthQueryAndAdded/main.js',
+      template: 'public/index.html',
+      filename: 'monthQueryAndAdded.html',
       title: '核算表系统年度计划查询及新增',
     },
     monthQueryAndAdded: {
@@ -39,8 +45,16 @@ module.exports = {
   },
   devServer: {
     port: 80,
-    index: 'identitySwitch.html',
+    index: 'monthQueryAndAdded.html',
   },
+  // configureWebpack: {
+  //   optimization: {
+  //     splitChunks: {
+  //       minSize: 10000,
+  //       maxSize: 250000,
+  //     },
+  //   },
+  // },
   // chainWebpack: config => {
   //   config.resolve.alias
   //     .set('@', resolve('src'));
