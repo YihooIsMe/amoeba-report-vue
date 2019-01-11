@@ -18,6 +18,7 @@ module.exports = {
     'prefer-destructuring': 'off',
     'func-names': ['error', 'as-needed'],
     'linebreak-style': 'off',
+    'no-param-reassign': ['error', { 'props': false }]
   },
   parserOptions: {
     parser: 'babel-eslint',

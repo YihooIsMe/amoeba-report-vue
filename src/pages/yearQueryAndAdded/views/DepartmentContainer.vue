@@ -327,23 +327,44 @@ export default {
         if (this.Permission === 'D') {
           this.selectDisabled[i] = true;
         } else if (this.Permission === 'C') {
-          if (i === 3) {
-            this.selectDisabled[i] = false;
-          } else {
-            this.selectDisabled[i] = true;
+          switch (i === 3) {
+            case true:
+              this.selectDisabled[i] = false;
+              break;
+            default:
+              this.selectDisabled[i] = true;
           }
+          // if (i === 3) {
+          //   this.selectDisabled[i] = false;
+          // } else {
+          //   this.selectDisabled[i] = true;
+          // }
         } else if (this.Permission === 'B') {
-          if (i >= 2) {
-            this.selectDisabled[i] = false;
-          } else {
-            this.selectDisabled[i] = true;
+          switch (i >= 2) {
+            case true:
+              this.selectDisabled[i] = false;
+              break;
+            default:
+              this.selectDisabled[i] = true;
           }
+          // if (i >= 2) {
+          //   this.selectDisabled[i] = false;
+          // } else {
+          //   this.selectDisabled[i] = true;
+          // }
         } else if (this.Permission === 'A') {
-          if (i >= 1) {
-            this.selectDisabled[i] = false;
-          } else {
-            this.selectDisabled[i] = true;
+          switch (i >= 1) {
+            case true:
+              this.selectDisabled[i] = false;
+              break;
+            default:
+              this.selectDisabled[i] = true;
           }
+          // if (i >= 1) {
+          //   this.selectDisabled[i] = false;
+          // } else {
+          //   this.selectDisabled[i] = true;
+          // }
         } else if (this.Permission === 'S') {
           this.selectDisabled[i] = false;
         }

@@ -1,86 +1,66 @@
 import axios from './api';
 
-export const yearClearAllData = params => {
-  return axios({
-    url: '/TEST',
-    method: 'get',
-    params,
-  });
-};
+export const yearClearAllData = params => axios({
+  url: '/TEST',
+  method: 'get',
+  params,
+});
 
-export const monthScheduleTable = params => {
-  return axios({
-    url: '/MonthlyPlan',
-    method: 'get',
-    params,
-  });
-};
+export const monthScheduleTable = params => axios({
+  url: '/MonthlyPlan',
+  method: 'get',
+  params,
+});
 
-export const monthMainAndScheduleSub = params => {
-  return axios({
-    url: '/MonthlyPlan',
-    method: 'post',
-    data: params,
-    headers: { 'content-type': 'application/x-www-form-urlencoded' },
-  });
-};
+export const monthMainAndScheduleSub = params => axios({
+  url: '/MonthlyPlan',
+  method: 'post',
+  data: params,
+  headers: { 'content-type': 'application/x-www-form-urlencoded' },
+});
 
-export const queryAndAddedUserInfo = params => {
-  return axios({
-    url: '/Organization',
-    method: 'get',
-    params,
-  });
-};
+export const queryAndAddedUserInfo = params => axios({
+  url: '/Organization',
+  method: 'get',
+  params,
+});
 
-export const queryAndAddedQuery = params => {
-  return axios({
-    url: '/Review',
-    method: 'get',
-    params,
-  });
-};
+export const queryAndAddedQuery = params => axios({
+  url: '/Review',
+  method: 'get',
+  params,
+});
 
-export const yearLoadingData = params => {
-  return axios({
-    url: '/Subject',
-    method: 'get',
-    params,
-  });
-};
+export const yearLoadingData = params => axios({
+  url: '/Subject',
+  method: 'get',
+  params,
+});
 
-export const yearDataSubmission = params => {
-  return axios({
-    url: '/Subject',
-    method: 'POST',
-    data: params,
-    headers: { 'content-type': 'application/x-www-form-urlencoded' },
-  });
-};
+export const yearDataSubmission = params => axios({
+  url: '/Subject',
+  method: 'POST',
+  data: params,
+  headers: { 'content-type': 'application/x-www-form-urlencoded' },
+});
 
-export const yearUploadFile = params => {
-  return axios({
-    url: '/ImportExcel',
-    method: 'POST',
-    data: params,
-  });
-};
+export const yearUploadFile = params => axios({
+  url: '/ImportExcel',
+  method: 'POST',
+  data: params,
+});
 
-export const monthOperatingAdd = params => {
-  return axios({
-    url: '/Customer',
-    method: 'get',
-    params,
-  });
-};
+export const monthOperatingAdd = params => axios({
+  url: '/Customer',
+  method: 'get',
+  params,
+});
 
-export const monthQueryAndAdd = params => {
-  return axios({
-    url: '/MonthReview',
-    method: 'get',
-    params,
-  });
-};
+export const monthQueryAndAdd = params => axios({
+  url: '/MonthReview',
+  method: 'get',
+  params,
+});
 
 export default {
   monthScheduleTable,
