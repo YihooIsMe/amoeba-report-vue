@@ -13,13 +13,13 @@
         </div>
       </div>
       <el-tabs type="border-card" class="tab-container" value="schedule">
-        <el-tab-pane label="主表单">
+        <el-tab-pane label="主表单" name="schedule">
           <MainForm @giveStore="getStore" ref="mainForm" id="mainFormPanel" @getScheduleTableData="getSonComData"></MainForm>
         </el-tab-pane>
         <el-tab-pane label="附表">
           <ScheduleTable ref="scheduleTable" id="schedulePanel"></ScheduleTable>
         </el-tab-pane>
-        <el-tab-pane label="营业收入" name="schedule">
+        <el-tab-pane label="营业收入">
           <OperatingIncome ref="operateIncome" id="operateIncomePanel"></OperatingIncome>
         </el-tab-pane>
         <el-tab-pane label="任务单">
@@ -83,6 +83,7 @@ export default {
       this.mainAndScheduleAllSubmissionData.Month = new Date().getMonth() + 1;
       this.mainAndScheduleAllSubmissionData.MonthlyPlanID = storeCommonData.MPID;
       this.mainAndScheduleAllSubmissionData.CostCode = storeCommonData.Pr0139;
+      this.mainAndScheduleAllSubmissionData.OrganizeId = storeCommonData.OrganizeId;
       this.mainAndScheduleAllSubmissionData.ParentId = storeCommonData.ParentId;
       this.mainAndScheduleAllSubmissionData.Company = storeCommonData.Company;
       this.mainAndScheduleAllSubmissionData.District = storeCommonData.District;

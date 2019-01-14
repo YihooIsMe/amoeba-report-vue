@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-import DepartmentContainer from './views/DepartmentContainer.vue';
+import DepartmentContainer from './views/monthDepartmentContainer.vue';
 
 export default {
   name: 'Content',

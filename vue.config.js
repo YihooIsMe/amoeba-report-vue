@@ -44,8 +44,8 @@ module.exports = {
     },
   },
   devServer: {
-    port: 80,
-    index: 'monthQueryAndAdded.html',
+    port: 85,
+    index: 'monthIndex.html',
   },
   // configureWebpack: {
   //   optimization: {

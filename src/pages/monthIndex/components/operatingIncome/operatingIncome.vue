@@ -10,7 +10,9 @@
         :data="addFormArr"
         tooltip-effect="dark"
         style="width: 100%"
+        stripe
         @selection-change="handleSelectionChange">
+        <!--TODO:selectable可以控制复选框是否禁用-->
         <el-table-column
           type="selection"
           width="55">
@@ -35,7 +37,7 @@
         </el-table-column>
         <el-table-column
           label="客户姓名"
-          width="120">
+          width="125">
           <template slot-scope="scope">
             <span v-html="scope.row.customerNameSpl"></span>
           </template>
@@ -65,10 +67,12 @@
         </el-table-column>
         <el-table-column
           label="全佣签约金预定实际差额"
+          width="110"
           prop="fullCommissionSignDiff">
         </el-table-column>
         <el-table-column
           label="折让中人"
+          width="100"
           prop="discountType">
         </el-table-column>
         <el-table-column
@@ -81,6 +85,7 @@
         </el-table-column>
         <el-table-column
           label="折让中人预定实际差异"
+          width="110"
           prop="discountAmountDiff">
         </el-table-column>
         <el-table-column
@@ -93,6 +98,7 @@
         </el-table-column>
         <el-table-column
           label="签约金预定实际差异"
+          width="100"
           prop="ContractMoneyDiff">
         </el-table-column>
       </el-table>
@@ -107,41 +113,50 @@
         :data="addPerformanceArr"
         tooltip-effect="dark"
         style="width: 100%"
+        stripe
         @selection-change="handleSelectionChangePer">
         <el-table-column
           type="selection">
         </el-table-column>
         <el-table-column
           label="预定别"
+          width="80"
           prop="bookType">
         </el-table-column>
         <el-table-column
           prop="status"
+          width="80"
           label="状态">
         </el-table-column>
         <el-table-column
-          label="经纪人" prop="brokerLabel">
+          label="经纪人"
+          width="80"
+          prop="brokerLabel">
         </el-table-column>
         <el-table-column
-          label="种类">
+          label="种类"
+          width="100">
           <template slot-scope="scope">
             <span v-html="scope.row.customerTypeSpl"></span>
           </template>
         </el-table-column>
         <el-table-column
-          label="客户姓名">
+          label="客户姓名"
+          width="120">
           <template slot-scope="scope">
             <span v-html="scope.row.customerNameSpl"></span>
           </template>
         </el-table-column>
         <el-table-column
-          label="案件名称/需求简介">
+          label="案件名称/需求简介"
+          width="120">
           <template slot-scope="scope">
             <span v-html="scope.row.objectNameDes"></span>
           </template>
         </el-table-column>
         <el-table-column
           label="目前情况"
+          width="80"
           prop="currentSituation">
         </el-table-column>
         <el-table-column

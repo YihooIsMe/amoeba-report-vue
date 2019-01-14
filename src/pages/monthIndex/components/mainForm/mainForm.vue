@@ -29,7 +29,7 @@
             <td>{{item.Name}}</td>
             <td v-for="n in 8" :key="n">
               <input type="text"
-                     :readonly="item.ReadOnly === 1?true:false"
+                     :readonly="isReadOnly(item, n)"
                      v-on="n === 2 && item.ReadOnly === 0 ? { focus : ($event) => inputFocus(item.className, $event), blur : ($event) => addSep($event)} : {}"
                      @keyup="handleInputNum"
                      @change="AutomaticCalculation(3, item.className, $event)"
@@ -64,8 +64,8 @@ export default {
   components: { ManagementAlert },
   data() {
     return {
-      // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 瑞虹一店;
-      userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 咨询部;
+      userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 瑞虹一店;
+      // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 咨询部;
       responseData: {},
       tableSource: [],
       tableDataSource0: [], // Type类型为0的数据;
@@ -237,6 +237,16 @@ export default {
         this.Amoeba_MonthlyPlandetails.push(obj);
       });
       this.$store.commit('setMainFormData', this.Amoeba_MonthlyPlandetails);
+    },
+    isReadOnly(item, n) {
+      return item.ReadOnly === 1
+        || n !== 2
+        || item.className === 'F2'
+        || item.className === 'B1'
+        || item.className === 'B2'
+        || item.className === 'B4'
+        || item.className === 'B8'
+        || item.className === 'B10';
     },
   },
   computed: {

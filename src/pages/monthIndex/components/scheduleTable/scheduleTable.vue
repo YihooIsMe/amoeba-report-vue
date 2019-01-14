@@ -15,7 +15,7 @@
         @linkageIncomeSum="getComponentSum"
       ></SelectedLinkageIncome>
     </div>
-    <div v-show="tabIndex === 2">
+    <div v-show="tabIndex === 2">f
       <SelectedFixedSalary
         :fixedSalaryData="scheduleTableData[2]"
         @fixedSalarySum="getComponentSum"
@@ -118,7 +118,7 @@ export default {
       });
     },
     getComponentSum(newVal) {
-      this.tabList[newVal[0]].modelVal = newVal[1];
+      this.tabList[newVal[0]].modelVal = newVal[1].toFixed(2);
       this.tabList.forEach((item) => {
         this.$store.commit('sumScheduleForm', { type: item.type, sumVal: item.modelVal });
       });
@@ -166,6 +166,7 @@ export default {
     position: absolute;
     top:20px;
     left:50%;
+    padding-left: 0;
     margin-left: -387px;
     li{
       list-style: none;
