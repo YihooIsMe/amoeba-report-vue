@@ -16,7 +16,7 @@
           <td>
             <input type="text"
                      @keyup="handleInputNum"
-                     @change="scheduleCalculation(i + 1, '.variableWageTable', 1, 2, 3)"
+                     @change="scheduleCalculation(variableWageData.length, '.variableWageTable', 1, 2, 3)"
                      :value="$store.state.comData.commonData.draft === 1 ? item.Amount : ''"
             /></td>
           <td></td>
@@ -40,6 +40,21 @@ export default {
       sch.calculation(a, b, c, d, e);
       this.$emit('variableWageSum', [3, sch.sumCalculate(3, '.variableWageTable')]);
     },
+  },
+  computed: {
+    isLoadCompleted() {
+      return this.$store.state.scheduleForm.variableWageLoadCompleted;
+    },
+  },
+  watch: {
+    isLoadCompleted() {
+      this.scheduleCalculation(this.variableWageData.length, '.variableWageTable', 1, 2, 3);
+    },
+  },
+  updated() {
+    this.$nextTick(() => {
+      this.$store.commit('setVariableWageLoadCompleted', true);
+    });
   },
 };
 </script>

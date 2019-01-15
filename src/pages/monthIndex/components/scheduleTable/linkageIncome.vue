@@ -16,7 +16,7 @@
           <td>
             <input type="text"
                      @keyup="handleInputNum"
-                     @change="scheduleCalculation(i + 1, '.linkageIncomeTable', 1, 2, 3)"
+                     @change="scheduleCalculation(linkageIncomeData.length, '.linkageIncomeTable', 1, 2, 3)"
                      :value="$store.state.comData.commonData.draft === 1 ? item.Amount : ''"
             /></td>
           <td></td>
@@ -40,6 +40,21 @@ export default {
       sch.calculation(a, b, c, d, e);
       this.$emit('linkageIncomeSum', [1, sch.sumCalculate(3, '.linkageIncomeTable')]);
     },
+  },
+  computed: {
+    isLoadCompleted() {
+      return this.$store.state.scheduleForm.linkageIncomeLoadCompleted;
+    },
+  },
+  watch: {
+    isLoadCompleted() {
+      this.scheduleCalculation(this.linkageIncomeData.length, '.linkageIncomeTable', 1, 2, 3);
+    },
+  },
+  updated() {
+    this.$nextTick(() => {
+      this.$store.commit('setLinkageIncomeLoadCompleted', true);
+    });
   },
 };
 </script>

@@ -343,7 +343,7 @@ export default {
       formArrObj.currentSituation = newVal.currentSituation;
       formArrObj.completedPercent = newVal.completedPercent + '%'; // TODO:暂时先写死;
       formArrObj.recoveryPerformance = newVal.recoveryPerformance;
-      Vue.set(formArrObj, 'discountType', 12345);
+      // Vue.set(formArrObj, 'discountType', 12345);
       this.addPerformanceArr.push(formArrObj);
     },
     getAddFormData(newVal) {
@@ -381,11 +381,10 @@ export default {
       formArrObj.discountType = newVal.discountType;
       formArrObj.discountAmount = newVal.discountAmount;
       formArrObj.discountRelAmount = '100000'; // TODO:暂时先写死;
-      formArrObj.estimatedContractMoney = newVal.estimatedContractMoney;
       console.log(formArrObj);
-      Vue.set(formArrObj, 'fullCommissionSignActual', 12345);
-      Vue.set(formArrObj, 'discountAmountActual', 12345);
-      Vue.set(formArrObj, 'relContractMoney', 12345);
+      // Vue.set(formArrObj, 'fullCommissionSignActual', 12345);
+      // Vue.set(formArrObj, 'discountAmountActual', 12345);
+      // Vue.set(formArrObj, 'relContractMoney', 12345);
       this.addFormArr.push(formArrObj);
     },
     getStoreBroker() {
@@ -433,6 +432,7 @@ export default {
         addFormObj.DiscountGoldSJ = el.discountAmountActual;
         addFormObj.FullCommissionYD = el.fullCommissionSign;
         addFormObj.FullCommissionSJ = el.fullCommissionSignActual;
+        addFormObj.OrganizationID = this.$store.state.comData.commonData.OrganizationID;
         this.MonthSigningGoldYD.push(addFormObj);
       });
       this.$store.commit('setOperatingForm', this.MonthSigningGoldYD);
@@ -463,6 +463,7 @@ export default {
         addPerFormData.PersonnelName = el.brokerLabel;
         addPerFormData.PerformanceYD = el.recoveryPerformance;
         addPerFormData.PerformanceSJ = el.discountType;
+        addPerFormData.OrganizationID = this.$store.state.comData.commonData.OrganizationID;
         this.MonthPerformanceYD.push(addPerFormData);
       });
       this.$store.commit('setPerformanceForm', this.MonthPerformanceYD);
@@ -519,6 +520,8 @@ export default {
         addFormObj.discountRelAmount = el.DiscountGoldSJ; // TODO:暂时先写死;
         addFormObj.estimatedContractMoney = el.SigningGoldYD;
         addFormObj.fullCommissionSignDiff = el.FullCommissionDifference;
+        addFormObj.ContractMoneyDiff = el.SigningGoldDifference;
+        addFormObj.discountAmountDiff = el.DiscountGoldDifference;
         Vue.set(addFormObj, 'fullCommissionSignActual', el.FullCommissionSJ);
         Vue.set(addFormObj, 'discountAmountActual', el.DiscountGoldSJ);
         Vue.set(addFormObj, 'relContractMoney', el.SigningGoldSJ);
@@ -566,6 +569,7 @@ export default {
         addPerFormObj.currentSituation = el.CurrentSituation;
         addPerFormObj.completedPercent = el.AchievePossibility; // TODO:暂时先写死;
         addPerFormObj.recoveryPerformance = el.PerformanceYD;
+        addPerFormObj.discountAmount = el.PerformanceDifference;
         Vue.set(addPerFormObj, 'discountType', el.PerformanceSJ);
         this.addPerformanceArr.push(addPerFormObj);
       });

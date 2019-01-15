@@ -18,7 +18,7 @@
           <td>
             <input type="text"
                      @keyup="handleInputNum"
-                     @change="scheduleCalculation(index + 1, '.ownershipFeeTable', 1, 3, 4)"
+                     @change="scheduleCalculation(ownershipFeeData.length, '.ownershipFeeTable', 1, 3, 4)"
                      :value="$store.state.comData.commonData.draft === 1 ? item.Amount : ''"
             /></td>
           <td></td>
@@ -42,6 +42,21 @@ export default {
       sch.calculation(a, b, c, d, e);
       this.$emit('ownershipFeeSum', [0, sch.sumCalculate(4, '.ownershipFeeTable')]);
     },
+  },
+  computed: {
+    isOwnershipFeeLoadCompleted() {
+      return this.$store.state.scheduleForm.ownershipFeeLoadCompleted;
+    },
+  },
+  watch: {
+    isOwnershipFeeLoadCompleted(newVal) {
+      this.scheduleCalculation(this.ownershipFeeData.length, '.ownershipFeeTable', 1, 3, 4);
+    },
+  },
+  updated() {
+    this.$nextTick(() => {
+      this.$store.commit('setOwnershipFeeLoadCompleted', true);
+    });
   },
 };
 </script>

@@ -23,11 +23,13 @@
             type="success"
             icon="el-icon-success"
             v-if="showReviewAndReject"
+            @click="reviewAndReject(2)"
           >审核通过</el-button>
           <el-button
             type="danger"
             icon="el-icon-error"
             v-if="showReviewAndReject"
+            @click="reviewAndReject(3)"
           >驳回</el-button>
           <el-button type="warning">Excel导出</el-button>
         </div>
@@ -53,13 +55,14 @@
 <script>
 import Vue from 'vue';
 import VueCookie from 'vue-cookie';
-import { Message } from 'element-ui';
+import { MessageBox, Message } from 'element-ui';
 import MainForm from '../components/mainForm/mainForm.vue';
 import ScheduleTable from '../components/scheduleTable/scheduleTable.vue';
 import OperatingIncome from '../components/operatingIncome/operatingIncome.vue';
 import MissionList from '../components/missonList/missionList.vue';
 import api from '@/http/index';
 
+Vue.component(MessageBox.name, MessageBox);
 Vue.use(api);
 Vue.use(VueCookie);
 
@@ -187,6 +190,29 @@ export default {
           this.inputDisabled = true;
         }
       }
+    },
+    reviewAndReject(index) {
+      this.$api.queryAndAddedQuery({
+        MPID: this.$store.state.comData.commonData.MPID,
+        status: index,
+        User: VueCookie.get('monthUserID'),
+        IsYM: 1,
+      }).then(() => {
+        let content;
+        if (index === 2) {
+          content = '您已经审核通过!';
+        } else {
+          content = '您已经驳回了！';
+        }
+        MessageBox.alert(content, '提示', {
+          confirmButtonText: '确定',
+          callback(action) {
+            console.log(action);
+          },
+        });
+      }).catch((errMsg) => {
+        console.log(errMsg);
+      })
     },
   },
   mounted() {

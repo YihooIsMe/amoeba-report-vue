@@ -16,7 +16,7 @@
           <td>
             <input type="text"
                      @keyup="handleInputNum"
-                     @change="scheduleCalculation(i + 1, '.carStickerTable', 1, 2, 3)"
+                     @change="scheduleCalculation(carStickerData.length, '.carStickerTable', 1, 2, 3)"
                      :value="$store.state.comData.commonData.draft === 1 ? item.Amount : ''"
             /></td>
           <td></td>
@@ -40,6 +40,21 @@ export default {
       sch.calculation(a, b, c, d, e);
       this.$emit('carStickerSum', [6, sch.sumCalculate(3, '.carStickerTable')]);
     },
+  },
+  computed: {
+    isLoadCompleted() {
+      return this.$store.state.scheduleForm.carStickerLoadCompleted;
+    },
+  },
+  watch: {
+    isLoadCompleted() {
+      this.scheduleCalculation(this.carStickerData.length, '.carStickerTable', 1, 2, 3);
+    },
+  },
+  updated() {
+    this.$nextTick(() => {
+      this.$store.commit('setCarStickerLoadCompleted', true);
+    });
   },
 };
 </script>

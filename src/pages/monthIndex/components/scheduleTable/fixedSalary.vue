@@ -16,7 +16,7 @@
           <td>
             <input type="text"
                      @keyup="handleInputNum"
-                     @change="scheduleCalculation(i + 1, '.fixedSalaryTable', 1, 2, 3)"
+                     @change="scheduleCalculation(fixedSalaryData.length, '.fixedSalaryTable', 1, 2, 3)"
                      :value="$store.state.comData.commonData.draft === 1 ? item.Amount : ''"
             ></td>
           <td></td>
@@ -40,6 +40,21 @@ export default {
       sch.calculation(a, b, c, d, e);
       this.$emit('fixedSalarySum', [2, sch.sumCalculate(3, '.fixedSalaryTable')]);
     },
+  },
+  computed: {
+    isLoadCompleted() {
+      return this.$store.state.scheduleForm.fixedSalaryLoadCompleted;
+    },
+  },
+  watch: {
+    isLoadCompleted() {
+      this.scheduleCalculation(this.fixedSalaryData.length, '.fixedSalaryTable', 1, 2, 3);
+    },
+  },
+  updated() {
+    this.$nextTick(() => {
+      this.$store.commit('setFixedSalaryLoadCompleted', true);
+    });
   },
 };
 </script>

@@ -16,7 +16,7 @@
           <td>
             <input type="text"
                      @keyup="handleInputNum"
-                     @change="scheduleCalculation(i + 1, '.workingMealTable', 1, 2, 3)"
+                     @change="scheduleCalculation(workingMealData.length, '.workingMealTable', 1, 2, 3)"
                      :value="$store.state.comData.commonData.draft === 1 ? item.Amount : ''"
             /></td>
           <td></td>
@@ -40,6 +40,21 @@ export default {
       sch.calculation(a, b, c, d, e);
       this.$emit('workingMealSum', [5, sch.sumCalculate(3, '.workingMealTable')]);
     },
+  },
+  computed: {
+    isLoadCompleted() {
+      return this.$store.state.scheduleForm.workingMealLoadCompleted;
+    },
+  },
+  watch: {
+    isLoadCompleted() {
+      this.scheduleCalculation(this.workingMealData.length, '.workingMealTable', 1, 2, 3);
+    },
+  },
+  updated() {
+    this.$nextTick(() => {
+      this.$store.commit('setWorkingMealLoadCompleted', true);
+    });
   },
 };
 </script>

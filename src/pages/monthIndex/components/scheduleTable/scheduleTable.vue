@@ -7,42 +7,49 @@
       <SelectedOwnershipFee
         :ownershipFeeData="scheduleTableData[0]"
         @ownershipFeeSum="getComponentSum"
+        ref="ownershipFee"
       ></SelectedOwnershipFee>
     </div>
     <div v-show="tabIndex === 1">
       <SelectedLinkageIncome
         :linkageIncomeData="scheduleTableData[1]"
         @linkageIncomeSum="getComponentSum"
+        ref="linkageIncome"
       ></SelectedLinkageIncome>
     </div>
-    <div v-show="tabIndex === 2">f
+    <div v-show="tabIndex === 2">
       <SelectedFixedSalary
         :fixedSalaryData="scheduleTableData[2]"
         @fixedSalarySum="getComponentSum"
+        ref="fixedSalary"
       ></SelectedFixedSalary>
     </div>
     <div v-show="tabIndex === 3">
       <SelectedVariableWage
         :variableWageData="scheduleTableData[3]"
         @variableWageSum="getComponentSum"
+        ref="variableWage"
       ></SelectedVariableWage>
     </div>
     <div v-show="tabIndex === 4">
       <SelectedWelfareFee
         :welfareFeeTableData="scheduleTableData[4]"
         @welfareFeeSum="getComponentSum"
+        ref="welfareFee"
       ></SelectedWelfareFee>
     </div>
     <div v-show="tabIndex === 5">
       <SelectedWorkingMeal
         :workingMealData="scheduleTableData[5]"
         @workingMealSum="getComponentSum"
+        ref="workingMeal"
       ></SelectedWorkingMeal>
     </div>
     <div v-show="tabIndex === 6">
       <SelectedCarSticker
         :carStickerData="scheduleTableData[6]"
         @carStickerSum="getComponentSum"
+        ref="carSticker"
       ></SelectedCarSticker>
     </div>
   </div>
@@ -134,7 +141,7 @@ export default {
         sObj.OrganizeId = this.$store.state.comData.commonData.OrganizeId;
         sObj.CostCode = this.$store.state.comData.commonData.Pr0139;
         sObj.Years = new Date().getFullYear();
-        sObj.Month = new Date().getMonth() + 1;
+        sObj.Month = new Date().getMonth() + 2;
         sObj.ScheduleSubjectID = item.ScheduleSubjectID;
         if (item.className.indexOf('A') !== -1) {
           sObj.Amount = Number(document.querySelector('#schedulePanel .' + item.className + '>td:nth-child(4)>input').value);

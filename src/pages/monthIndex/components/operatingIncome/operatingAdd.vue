@@ -136,13 +136,6 @@
             <el-col :span="11">元</el-col>
           </el-row>
         </el-form-item>
-        <el-form-item label="预估签约金" prop="estimatedContractMoney">
-          <el-row :gutter="20">
-            <el-col :span="11">
-              <el-input v-model.number="AddForm.estimatedContractMoney" size="small"></el-input>
-            </el-col>
-          </el-row>
-        </el-form-item>
         <div class="submit-btn">
           <el-button type="warning" @click="onSubmit('AddForm')">确认</el-button>
           <el-button @click="copyDialogTableVisible = false">取消</el-button>
@@ -217,7 +210,6 @@ export default {
         discountType: '',
         discountAmount: '',
         brokerLabel: '',
-        estimatedContractMoney: '',
       },
       rules: {
         broker: [
@@ -261,10 +253,6 @@ export default {
         ],
         searchCustomerName: [
           { required: true, message: '请根据手机号查询客户信息' },
-        ],
-        estimatedContractMoney: [
-          { required: true, message: '请输入预估签约金', trigger: 'blur' },
-          { type: 'number', message: '预估签约金必须为数字值', trigger: 'blur' },
         ],
       },
     };

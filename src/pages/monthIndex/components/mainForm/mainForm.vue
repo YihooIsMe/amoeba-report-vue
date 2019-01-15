@@ -260,7 +260,7 @@ export default {
         obj.OrganizeId = this.responseData.OrganizeId;
         obj.CostCode = this.responseData.Pr0139;
         obj.Years = new Date().getFullYear();
-        obj.Month = new Date().getMonth() + 1;
+        obj.Month = new Date().getMonth() + 2;
         obj.SubjectID = item.SubjectID;
         obj.EstimatedAmount = cal.remSep(document.querySelector('#mainFormPanel .' + item.className + '>td:nth-child(3)>input').value);
         this.Amoeba_MonthlyPlandetails.push(obj);
@@ -333,8 +333,10 @@ export default {
       this.calculatePredeterminedRatio();
     },
   },
-  created() {
-    this.firstLoadingRequest();
+  mounted() {
+    this.$nextTick(() => {
+      this.firstLoadingRequest();
+    });
   },
 };
 </script>

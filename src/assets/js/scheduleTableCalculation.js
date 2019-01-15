@@ -15,8 +15,10 @@ export default {
   },
 
   calculation(a, b, c, d, e) {
-    const currentTrAllTd = document.querySelectorAll(b + '>tbody>tr:nth-child(' + a + ')>td');
-    currentTrAllTd[e].innerHTML = Number(currentTrAllTd[c].innerHTML) * Number(currentTrAllTd[d].getElementsByTagName('input')[0].value);
+    for (let i = 0; i < a; i += 1) {
+      const currentTrAllTd = document.querySelectorAll(b + '>tbody>tr:nth-child(' + (i + 1) + ')>td');
+      currentTrAllTd[e].innerHTML = Number(currentTrAllTd[c].innerHTML) * Number(currentTrAllTd[d].getElementsByTagName('input')[0].value);
+    }
   },
 
   sumCalculate(i, className) {

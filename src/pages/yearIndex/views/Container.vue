@@ -192,7 +192,7 @@ export default {
   },
   methods: {
     clearData() {
-      this.$api.yearClearAllData({})
+      this.$api.yearClearAllData({ i: 0 })
         .then(() => {
           window.location.reload();
         })
@@ -634,6 +634,7 @@ export default {
         MPID: this.ReviewOrRejectMPID,
         status: index,
         User: VueCookie.get('userID'),
+        IsYM: 0, // 0是年,1是月;
       }).then((res) => {
         console.log(res);
         let content;
