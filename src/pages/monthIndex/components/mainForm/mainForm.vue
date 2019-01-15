@@ -54,17 +54,24 @@
 
 <script>
 import Vue from 'vue';
+import VueCookie from 'vue-cookie';
 import ManagementAlert from '@/components/managementAlert.vue';
 import cal from '@/assets/js/comCalculation';
 import api from '@/http/index';
 
 Vue.use(api);
+Vue.use(VueCookie);
+
 export default {
   name: 'mainForm',
   components: { ManagementAlert },
   data() {
     return {
-      userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 瑞虹一店;
+      userID: '',
+      CreateByUser: '',
+      viewEditorYear: '',
+      viewEditorMonth: '',
+      // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 瑞虹一店;
       // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 咨询部;
       responseData: {},
       tableSource: [],
@@ -138,12 +145,34 @@ export default {
       });
     },
     firstLoadingRequest() {
-      this.$api.yearLoadingData({
-        userID: this.userID,
-        IsYM: 1,
-        Year: new Date().getFullYear(),
-        Month: new Date().getMonth() + 1,
-      }).then((res) => {
+      this.userID = VueCookie.get('monthUserID');
+      this.CreateByUser = VueCookie.get('monthCreateByUser');
+      this.viewEditorYear = VueCookie.get('monthViewEditorYear');
+      this.viewEditorMonth = VueCookie.get('monthViewEditorMonth');
+      let paramsArgs;
+      if (VueCookie.get('monthFromWhichBtn') === 'newAdded') {
+        paramsArgs = {
+          userID: this.userID,
+          IsYM: 1,
+          Year: new Date().getFullYear(),
+          Month: new Date().getMonth() + 2,
+        };
+      }
+      if (VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn') {
+        paramsArgs = {
+          userID: this.CreateByUser,
+          IsYM: 1,
+          Year: this.viewEditorYear,
+          Month: this.viewEditorMonth,
+        };
+      }
+      // const params = {
+      //   userID: this.userID,
+      //   IsYM: 1,
+      //   Year: new Date().getFullYear(),
+      //   Month: new Date().getMonth() + 1,
+      // };
+      this.$api.yearLoadingData(paramsArgs).then((res) => {
         console.log(JSON.parse(res.data));
         this.responseData = JSON.parse(res.data);
         this.$emit('giveStore', this.responseData.UnitName);

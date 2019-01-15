@@ -107,8 +107,8 @@ export default {
       District: '',
       OrganizeId: '',
       FourthParentId: '',
-      yearSelected: (new Date().getFullYear() + 1).toString(),
-      monthSelected: (new Date().getMonth() + 1).toString(),
+      yearSelected: (new Date().getFullYear()).toString(),
+      monthSelected: (new Date().getMonth() + 2).toString(),
       copyYearSelected: '',
       copyMonthSelected: '',
       // Permission: 'S',
@@ -154,19 +154,19 @@ export default {
     },
 
     linkToIndex() {
-      VueCookie.set('userID', this.userID);
-      VueCookie.set('fromWhichBtn', 'newAdded');
+      VueCookie.set('monthUserID', this.userID);
+      VueCookie.set('monthFromWhichBtn', 'newAdded');
       this.getApprovalStatus();
       window.location = 'monthIndex.html';
     },
 
     getApprovalStatus() {
       if (this.queryTableAllData.length === 1 && this.queryTableAllData[0].CreateByUser === null) {
-        VueCookie.set('fillStatus', '未填写');
+        VueCookie.set('monthFillStatus', '未填写');
       } else {
         this.queryTableAllData.forEach((item) => {
           if (this.userID === item.CreateByUser) {
-            VueCookie.set('fillStatus', item.Status);
+            VueCookie.set('monthFillStatus', item.Status);
           }
         });
       }
@@ -380,17 +380,13 @@ export default {
     },
 
     viewEditor(item) {
-      VueCookie.set('userID', this.userID);
-      VueCookie.set('fillStatus', item.Status);
-      VueCookie.set('CreateByUser', item.CreateByUser);
-      VueCookie.set('fromWhichBtn', 'viewEditorBtn');
-      VueCookie.set('viewEditorYear', this.yearSelected);
+      VueCookie.set('monthUserID', this.userID);
+      VueCookie.set('monthFillStatus', item.Status);
+      VueCookie.set('monthCreateByUser', item.CreateByUser);
+      VueCookie.set('monthFromWhichBtn', 'viewEditorBtn');
+      VueCookie.set('monthViewEditorYear', this.yearSelected);
+      VueCookie.set('monthViewEditorMonth', this.monthSelected);
       window.location = 'monthIndex.html';
-    },
-  },
-  watch: {
-    secondSelected(newVal) {
-      console.log(newVal);
     },
   },
   created() {
