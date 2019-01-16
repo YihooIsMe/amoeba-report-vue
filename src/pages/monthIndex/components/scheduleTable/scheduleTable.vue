@@ -144,9 +144,9 @@ export default {
         sObj.Month = new Date().getMonth() + 2;
         sObj.ScheduleSubjectID = item.ScheduleSubjectID;
         if (item.className.indexOf('A') !== -1) {
-          sObj.Amount = Number(document.querySelector('#schedulePanel .' + item.className + '>td:nth-child(4)>input').value);
+          sObj.Amount = Number(document.querySelector('.schedulePanel .' + item.className + '>td:nth-child(4)>input').value);
         } else {
-          sObj.Amount = Number(document.querySelector('#schedulePanel .' + item.className + '>td:nth-child(3)>input').value);
+          sObj.Amount = Number(document.querySelector('.schedulePanel .' + item.className + '>td:nth-child(3)>input').value);
         }
         this.Amoeba_MonthlySSDetail.push(sObj);
       });

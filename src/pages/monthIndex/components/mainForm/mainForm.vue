@@ -1,8 +1,13 @@
 <template>
   <div class="main-form">
     <div class="main-form-btn">
-      <el-button type="primary" plain size="small">隐藏所有细项</el-button>
-      <div class="red mt10">说明：白色为输入，蓝色数据编辑【附表】【营业收入】后自动计算。当月实际，次月财务做账后会有数据。本表单主管审核后数据锁定。</div>
+      <el-button
+        type="primary"
+        plain
+        size="small"
+        @click="hideSubjectWithZero"
+      >{{hideSubject}}</el-button>
+      <div class="red mt10">说明：白色为输入，灰色数据编辑【附表】【营业收入】后自动计算。当月实际，次月财务做账后会有数据。本表单主管审核后数据锁定。</div>
     </div>
     <div v-for="(tableData, index) in tableDataInject"
          :key="index"
@@ -11,7 +16,7 @@
         <table class="KMTable1 commonTable mainForm" border="1">
           <thead>
           <tr>
-            <th>科目</th>
+            <th><i class="el-icon-arrow-down" @click="toggleSubject($event)" id="toggle-icon">科目</i></th>
             <th>11月实际</th>
             <th>12月预定</th>
             <th>12月实际</th>
@@ -30,7 +35,7 @@
             <td v-for="n in 8" :key="n">
               <input type="text"
                      :readonly="isReadOnly(item, n)"
-                     v-on="n === 2 && item.ReadOnly === 0 ? { focus : ($event) => inputFocus(item.className, $event), blur : ($event) => addSep($event)} : {}"
+                     v-on="n === 2 && item.ReadOnly === 0 && !isReadOnly(item, n) ? { focus : ($event) => inputFocus(item.className, $event), blur : ($event) => addSep($event)} : {}"
                      @keyup="handleInputNum"
                      @change="AutomaticCalculation(3, item.className, $event)"
               >
@@ -100,9 +105,13 @@ export default {
         sumWorkingMeal: 0,
       },
       scheduleForm: this.$store.state.scheduleForm.sumScheduleForm,
+      isZero: false,
     };
   },
   methods: {
+    toggleSubject(event) {
+      cal.toggleSubject(event);
+    },
     getForClassName(el) {
       return el;
     },
@@ -143,6 +152,21 @@ export default {
           elInput[1].value = el.MonthData;
         }
       });
+    },
+    hideSubjectWithZero() {
+      if (!this.isZero) {
+        this.isZero = true;
+        this.tableSource.forEach((item) => {
+          const inputEl = document.querySelector('table.mainForm tr.' + item.className + ' td:nth-child(3) input');
+          console.log(inputEl.value);
+          if (inputEl.value === '' || inputEl.value === '0' || inputEl.value === '0.0' || inputEl.value === '0.00') {
+            document.querySelector('table.mainForm tr.' + item.className).style.display = 'none';
+          }
+        });
+      } else {
+        this.isZero = false;
+        window.location.reload();
+      }
     },
     firstLoadingRequest() {
       this.userID = VueCookie.get('monthUserID');
@@ -200,7 +224,6 @@ export default {
       comDataObj.JobAttribute = this.responseData.JobAttribute;
       comDataObj.MPID = this.responseData.MPID;
       comDataObj.OrganizeId = this.responseData.OrganizeId;
-      comDataObj.MPID = this.responseData.MPID;
       comDataObj.ParentId = this.responseData.ParentId;
       comDataObj.Pr0111 = this.responseData.Pr0111;
       comDataObj.Pr0139 = this.responseData.Pr0139;
@@ -262,20 +285,26 @@ export default {
         obj.Years = new Date().getFullYear();
         obj.Month = new Date().getMonth() + 2;
         obj.SubjectID = item.SubjectID;
-        obj.EstimatedAmount = cal.remSep(document.querySelector('#mainFormPanel .' + item.className + '>td:nth-child(3)>input').value);
+        console.log(document.querySelector('.mainFormPanel .' + item.className + '>td:nth-child(3)>input'));
+        obj.EstimatedAmount = cal.remSep(document.querySelector('.mainFormPanel .' + item.className + '>td:nth-child(3)>input').value);
         this.Amoeba_MonthlyPlandetails.push(obj);
       });
       this.$store.commit('setMainFormData', this.Amoeba_MonthlyPlandetails);
     },
     isReadOnly(item, n) {
+      if (this.$store.state.comData.commonData.JobAttribute !== '04') {
+        return item.ReadOnly === 1
+          || n !== 2
+          || item.className === 'F2'
+          || item.className === 'A2'
+          || item.className === 'B1'
+          || item.className === 'B2'
+          || item.className === 'B4'
+          || item.className === 'B8'
+          || item.className === 'B10';
+      }
       return item.ReadOnly === 1
-        || n !== 2
-        || item.className === 'F2'
-        || item.className === 'B1'
-        || item.className === 'B2'
-        || item.className === 'B4'
-        || item.className === 'B8'
-        || item.className === 'B10';
+        || n !== 2;
     },
   },
   computed: {
@@ -300,6 +329,12 @@ export default {
     sumWorkingMeal() {
       return this.scheduleForm.sumWorkingMeal;
     },
+    hideSubject() {
+      if (this.isZero) {
+        return '显示所有细项';
+      }
+      return '隐藏所有细项';
+    },
   },
   watch: {
     sumOwnershipFee(newVal) {
@@ -310,26 +345,38 @@ export default {
     },
     sumCarSticker(newVal) {
       document.querySelector('.mainForm>tbody>tr.B10>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
+      cal.whereUse('monthIndex');
+      this.currentMonthAutomaticCalculation(3);
       this.calculatePredeterminedRatio();
     },
     sumFixedSalary(newVal) {
       document.querySelector('.mainForm>tbody>tr.B1>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
+      cal.whereUse('monthIndex');
+      this.currentMonthAutomaticCalculation(3);
       this.calculatePredeterminedRatio();
     },
     sumLinkageIncome(newVal) {
       document.querySelector('.mainForm>tbody>tr.A2>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
+      cal.whereUse('monthIndex');
+      this.currentMonthAutomaticCalculation(3);
       this.calculatePredeterminedRatio();
     },
     sumVariableWage(newVal) {
       document.querySelector('.mainForm>tbody>tr.B2>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
+      cal.whereUse('monthIndex');
+      this.currentMonthAutomaticCalculation(3);
       this.calculatePredeterminedRatio();
     },
     sumWelfareFee(newVal) {
       document.querySelector('.mainForm>tbody>tr.B4>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
+      cal.whereUse('monthIndex');
+      this.currentMonthAutomaticCalculation(3);
       this.calculatePredeterminedRatio();
     },
     sumWorkingMeal(newVal) {
       document.querySelector('.mainForm>tbody>tr.B8>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
+      cal.whereUse('monthIndex');
+      this.currentMonthAutomaticCalculation(3);
       this.calculatePredeterminedRatio();
     },
   },
@@ -371,5 +418,43 @@ export default {
   }
   .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
     opacity: 0;
+  }
+</style>
+<style lang="less">
+  table.KMTable1.commonTable{
+    thead{
+      tr{
+        height: 40px;
+        th:first-child{
+          cursor: pointer;
+          i{
+            padding:5px;
+          }
+          i:before{
+            content: '';
+          }
+          .el-icon-arrow-down:after{
+            content: '\E603' !important;
+            border:1px solid #ccc;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+          }
+          i:hover{
+            color:#409eff;
+          }
+        }
+      }
+    }
+  }
+  .toggle-subject{
+    display: none;
+  }
+  .el-icon-arrow-up:after{
+    content: '\E605' !important;
+    border:1px solid #ccc;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
   }
 </style>

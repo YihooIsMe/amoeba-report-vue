@@ -1,4 +1,5 @@
 /* 公共的计算方法都在这里 */
+import Vue from 'vue';
 import { Message } from 'element-ui';
 
 export default {
@@ -35,6 +36,8 @@ export default {
       BusinessTax: document.querySelector('tr.A4>td:nth-child(' + index + ') input'),
       /* 营业收入净额 */
       OperatingNetProfit: document.querySelector('tr.A5>td:nth-child(' + index + ') input'),
+      /* 联动收入 */
+      LinkageIncome: document.querySelector('tr.A2>td:nth-child(' + index + ') input'),
       /* 收入合计 */
       TotalIncome: document.querySelector('tr.A6>td:nth-child(' + index + ') input'),
     };
@@ -58,7 +61,7 @@ export default {
     }
     /* 收入合计 */
     if (this.tableOne(index).TotalIncome) {
-      this.tableOne(index).TotalIncome.value = (this.remSep(this.tableOne(index).OperatingNetProfit.value)).toLocaleString();
+      this.tableOne(index).TotalIncome.value = (this.remSep(this.tableOne(index).OperatingNetProfit.value) + this.remSep(this.tableOne(index).LinkageIncome ? this.tableOne(index).LinkageIncome.value : 0)).toLocaleString();
     }
   },
 
@@ -249,6 +252,8 @@ export default {
     return {
       /* 管理服务费 */
       ManagementServiceFee: document.querySelector('tr.F1>td:nth-child(' + index + ') input'),
+      /* 归属费用 */
+      OwnershipFee: document.querySelector('tr.F2>td:nth-child(' + index + ') input'),
       /* 營業支出 */
       OperatingExpenses: document.querySelector('tr.F0>td:nth-child(' + index + ') input'),
       /* 签约金损益 */
@@ -276,14 +281,13 @@ export default {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         });
-
       }
     }
 
     /* 签约金损益 */
     // this.tableSix(index).SigningFeeProfitAndLoss.value = ((Number(this.remSep(this.tableOne(index).OperatingNetProfit.value)) - Number(this.remSep(this.tableSix(index).OperatingExpenses.value)) - Number(this.remSep(this.tableSix(index).ManagementServiceFee.value))).toFixed(2)).toLocaleString();
     if (this.tableSix(index).SigningFeeProfitAndLoss) {
-      this.tableSix(index).SigningFeeProfitAndLoss.value = (this.remSep(this.tableOne(index).OperatingNetProfit.value) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableSix(index).ManagementServiceFee.value)).toLocaleString(undefined, {
+      this.tableSix(index).SigningFeeProfitAndLoss.value = (this.remSep(this.tableOne(index).OperatingNetProfit.value) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableSix(index).ManagementServiceFee.value) - this.remSep(this.tableSix(index).OwnershipFee ? this.tableSix(index).OwnershipFee.value : 0)).toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       });
@@ -396,5 +400,39 @@ export default {
     /* eightTable 开始 */
     this.tableEightCalculation(index);
     /* eightTable end */
+  },
+  toggleSubject(event) {
+    const toggleChildNodes = event.target.parentNode.parentNode.parentNode.nextSibling.childNodes;
+    const toggleChildNodesLen = toggleChildNodes.length;
+    const isF5 = toggleChildNodes[0].getAttribute('class').indexOf('F') !== -1;
+    if (toggleChildNodesLen > 1) {
+      if (event.target.getAttribute('class') === 'el-icon-arrow-down') {
+        Vue.nextTick(() => {
+          if (!isF5) {
+            for (let i = 0; i < toggleChildNodesLen - 1; i += 1) {
+              toggleChildNodes[i].classList.add('toggle-subject');
+            }
+          } else {
+            for (let i = 0; i < toggleChildNodesLen - 2; i += 1) {
+              toggleChildNodes[i].classList.add('toggle-subject');
+            }
+          }
+        });
+        event.target.setAttribute('class', 'el-icon-arrow-up');
+      } else {
+        Vue.nextTick(() => {
+          if (!isF5) {
+            for (let i = 0; i < toggleChildNodesLen - 1; i += 1) {
+              toggleChildNodes[i].classList.remove('toggle-subject');
+            }
+          } else {
+            for (let i = 0; i < toggleChildNodesLen - 2; i += 1) {
+              toggleChildNodes[i].classList.remove('toggle-subject');
+            }
+          }
+        });
+        event.target.setAttribute('class', 'el-icon-arrow-down');
+      }
+    }
   },
 };

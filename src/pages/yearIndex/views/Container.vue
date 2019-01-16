@@ -233,56 +233,48 @@ export default {
     },
 
     toggleSubject(event) {
-      const toggleChildNodes = event.target.parentNode.parentNode.parentNode.nextSibling.childNodes;
-      const toggleChildNodesLen = toggleChildNodes.length;
-      const isF5 = toggleChildNodes[0].getAttribute('class').indexOf('F') !== -1;
-      if (toggleChildNodesLen > 1) {
-        if (event.target.getAttribute('class') === 'el-icon-arrow-down') {
-          this.$nextTick(() => {
-            if (!isF5) {
-              for (let i = 0; i < toggleChildNodesLen - 1; i += 1) {
-                toggleChildNodes[i].classList.add('toggle-subject');
-              }
-            } else {
-              for (let i = 0; i < toggleChildNodesLen - 2; i += 1) {
-                toggleChildNodes[i].classList.add('toggle-subject');
-              }
-            }
-          });
-          event.target.setAttribute('class', 'el-icon-arrow-up');
-        } else {
-          this.$nextTick(() => {
-            if (!isF5) {
-              for (let i = 0; i < toggleChildNodesLen - 1; i += 1) {
-                toggleChildNodes[i].classList.remove('toggle-subject');
-              }
-            } else {
-              for (let i = 0; i < toggleChildNodesLen - 2; i += 1) {
-                toggleChildNodes[i].classList.remove('toggle-subject');
-              }
-            }
-          });
-          event.target.setAttribute('class', 'el-icon-arrow-down');
-        }
-      }
+      cal.toggleSubject(event);
     },
-
-    oneToTwelveSum(className) {
-      const currentLine = document.querySelectorAll('table.KMTable1.commonTable tr.' + className + ' input');
-      let baseNum = 0;
-      for (let i = 1; i < 13; i += 1) {
-        baseNum = cal.remSep(currentLine[i].value) + baseNum;
+    elSelector(name) {
+      return document.querySelectorAll('table.KMTable1.commonTable tr.' + name + ' input');
+    },
+    calProfitLoss(firstClassName, secondClassName) {
+      if (cal.remSep(this.elSelector(secondClassName)[13].value) !== 0) {
+        return cal.remSep(this.elSelector(firstClassName)[13].value) / cal.remSep(this.elSelector(secondClassName)[13].value);
       }
-      currentLine[13].value = baseNum.toLocaleString();
+      return '';
+    },
+    oneToTwelveSum() {
+      // const currentLine = document.querySelectorAll('table.KMTable1.commonTable tr.' + className + ' input');
+      // let baseNum = 0;
+      // for (let i = 1; i < 13; i += 1) {
+      //   baseNum = cal.remSep(currentLine[i].value) + baseNum;
+      // }
+      // currentLine[13].value = baseNum.toLocaleString();
       // 全部行自动计算;
-      // this.tableSource.forEach((el) => {
-      //   const currentLine = document.querySelectorAll('table.KMTable1.commonTable tr.' + el.className + ' input');
-      //   let baseNum = 0;
-      //   for (let i = 1; i < 13; i += 1) {
-      //     baseNum = cal.remSep(currentLine[i].value) + baseNum;
-      //   }
-      //   currentLine[13].value = baseNum.toLocaleString();
-      // });
+      this.tableSource.forEach((el) => {
+        const currentLine = document.querySelectorAll('table.KMTable1.commonTable tr.' + el.className + ' input');
+        let baseNum = 0;
+        if (el.className === 'F4' || el.className === 'G2' || el.className === 'H1') {
+          switch (true) {
+            case el.className === 'F4':
+              this.elSelector('F4')[13].value = this.calProfitLoss('F3', 'A6');
+              break;
+            case el.className === 'G2':
+              this.elSelector('G2')[13].value = this.calProfitLoss('G1', 'G0');
+              break;
+            case el.className === 'H1':
+              this.elSelector('H1')[13].value = this.calProfitLoss('F3', 'H0');
+              break;
+            default:
+          }
+        } else {
+          for (let i = 1; i < 13; i += 1) {
+            baseNum = cal.remSep(currentLine[i].value) + baseNum;
+          }
+          currentLine[13].value = baseNum.toLocaleString();
+        }
+      });
     },
 
     getSigningRatio(val) {
@@ -317,7 +309,7 @@ export default {
           sumData = Number(allInputEl[i].value) + sumData;
         }
 
-        if ((sumData === 0 || sumData === 0.0 || sumData === 0.00) && (allInputEl[0].value === '0' || allInputEl[0].value === '0.0' || allInputEl[0].value === '0.00')) {
+        if ((sumData === 0 || sumData === 0.0 || sumData === 0.00) && (allInputEl[0].value === '0' || allInputEl[0].value === '0.0' || allInputEl[0].value === '0.00' || allInputEl[0].value === '')) {
           this.currentLineZero = true;
           document.querySelector('table.KMTable1.commonTable tr.' + item.className).style.display = 'none';
         } else {
@@ -540,6 +532,7 @@ export default {
         }
         this.AllMonthsAutomaticCalculation();
         this.isInputValEmpty = true;
+        this.oneToTwelveSum();
       }
     },
     /* 当前行没有数据的时候，任一月份输入数据，12个月均会填充此数据 */
@@ -582,7 +575,7 @@ export default {
       } else {
         this.currentMonthAutomaticCalculation(i);
       }
-      this.oneToTwelveSum(className);
+      this.oneToTwelveSum();
       if (event !== '') {
         currentEl.blur();
       }
@@ -716,32 +709,6 @@ export default {
       margin-top: 20px;
     }
   }
-  table.KMTable1.commonTable{
-    thead{
-      tr{
-        height: 40px;
-        th:first-child{
-          cursor: pointer;
-          i{
-            padding:5px;
-          }
-          i:before{
-            content: '';
-          }
-          .el-icon-arrow-down:after{
-            content: '\E603' !important;
-            border:1px solid #ccc;
-            -webkit-border-radius: 3px;
-            -moz-border-radius: 3px;
-            border-radius: 3px;
-          }
-          i:hover{
-            color:#409eff;
-          }
-        }
-      }
-    }
-  }
   .fade-enter-active, .fade-leave-active {
     transition: opacity .8s;
   }
@@ -798,6 +765,32 @@ export default {
     .el-upload__tip,.el-upload-list{
       width: 360px;
       margin:10px auto 0;
+    }
+  }
+  table.KMTable1.commonTable{
+    thead{
+      tr{
+        height: 40px;
+        th:first-child{
+          cursor: pointer;
+          i{
+            padding:5px;
+          }
+          i:before{
+            content: '';
+          }
+          .el-icon-arrow-down:after{
+            content: '\E603' !important;
+            border:1px solid #ccc;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+          }
+          i:hover{
+            color:#409eff;
+          }
+        }
+      }
     }
   }
 </style>

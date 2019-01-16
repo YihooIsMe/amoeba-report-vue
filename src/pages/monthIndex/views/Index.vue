@@ -31,22 +31,33 @@
             v-if="showReviewAndReject"
             @click="reviewAndReject(3)"
           >驳回</el-button>
-          <el-button type="warning">Excel导出</el-button>
+          <el-button type="warning" v-if="$store.state.comData.commonData.draft === 1">Excel导出</el-button>
+          <el-button type="warning" plain @click="clearData">清空数据</el-button>
         </div>
       </div>
       <el-tabs type="border-card" class="tab-container" value="schedule">
-        <el-tab-pane label="主表单" name="schedule">
-          <MainForm @giveStore="getStore" ref="mainForm" id="mainFormPanel" @getScheduleTableData="getSonComData"></MainForm>
-        </el-tab-pane>
-        <el-tab-pane label="附表">
-          <ScheduleTable ref="scheduleTable" id="schedulePanel"></ScheduleTable>
-        </el-tab-pane>
-        <el-tab-pane label="营业收入">
-          <OperatingIncome ref="operateIncome" id="operateIncomePanel"></OperatingIncome>
-        </el-tab-pane>
-        <el-tab-pane label="任务单">
-          <MissionList id="missionListPanel"></MissionList>
-        </el-tab-pane>
+        <template v-if="!isBehind">
+          <el-tab-pane label="主表单" name="schedule">
+            <MainForm @giveStore="getStore" ref="mainForm" class="mainFormPanel" @getScheduleTableData="getSonComData"></MainForm>
+          </el-tab-pane>
+          <el-tab-pane label="附表">
+            <ScheduleTable ref="scheduleTable" class="schedulePanel"></ScheduleTable>
+          </el-tab-pane>
+          <el-tab-pane label="营业收入">
+            <OperatingIncome ref="operateIncome" class="operateIncomePanel"></OperatingIncome>
+          </el-tab-pane>
+          <el-tab-pane label="任务单">
+            <MissionList class="missionListPanel"></MissionList>
+          </el-tab-pane>
+        </template>
+        <template v-else>
+          <el-tab-pane label="主表单" name="schedule">
+            <MainForm @giveStore="getStore" class="mainFormPanel" ref="mainForm" @getScheduleTableData="getSonComData"></MainForm>
+          </el-tab-pane>
+          <el-tab-pane label="任务单" class="missionListPanel">
+            <MissionList></MissionList>
+          </el-tab-pane>
+        </template>
       </el-tabs>
     </div>
   </div>
@@ -85,9 +96,19 @@ export default {
       showReviewAndReject: false,
       showDraftAndSubmit: false,
       inputDisabled: false,
+      isBehind: true, // 判断是否为幕僚,幕僚没有附表和营业收入
     };
   },
   methods: {
+    clearData() {
+      this.$api.yearClearAllData({ i: 1 })
+        .then(() => {
+          window.location.reload();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     getStore(val) {
       this.index = val;
     },
@@ -97,7 +118,6 @@ export default {
     },
     getSonComData(val) {
       this.mainFormSonData = val;
-      this.$refs.scheduleTable.firstLoadingRequest();
     },
     dataSubmission(index) {
       this.loadingCover = this.$loading({
@@ -108,11 +128,14 @@ export default {
       });
       this.review = index;
       this.$refs.mainForm.getAllSubmissionData();
-      this.$refs.scheduleTable.getScheduleSubmissionData();
-      this.$refs.operateIncome.getAllOperateSubmissionData();
+      if (!this.isBehind) {
+        this.$refs.scheduleTable.getScheduleSubmissionData();
+        this.$refs.operateIncome.getAllOperateSubmissionData();
+      }
       this.setMainAndScheduleAllSubmissionData();
     },
     setMainAndScheduleAllSubmissionData() {
+      this.mainAndScheduleAllSubmissionData = {};
       const storeCommonData = this.$store.state.comData.commonData;
       this.mainAndScheduleAllSubmissionData.Years = new Date().getFullYear();
       this.mainAndScheduleAllSubmissionData.Month = new Date().getMonth() + 2;
@@ -130,9 +153,15 @@ export default {
       this.mainAndScheduleAllSubmissionData.OrganizeName = storeCommonData.UnitName;
       this.mainAndScheduleAllSubmissionData.Pr0111 = storeCommonData.Pr0111;
       this.mainAndScheduleAllSubmissionData.Amoeba_MonthlyPlandetails = this.$store.state.mainForm.mainFormData;
-      this.mainAndScheduleAllSubmissionData.Amoeba_MonthlySSDetail = this.$store.state.scheduleForm.scheduleFormData;
-      this.mainAndScheduleAllSubmissionData.MonthSigningGoldYD = this.$store.state.operatingForm.operatingFormData;
-      this.mainAndScheduleAllSubmissionData.MonthPerformanceYD = this.$store.state.operatingForm.performanceFormData;
+      if (this.isBehind) {
+        this.mainAndScheduleAllSubmissionData.MonthSigningGoldYD = [];
+        this.mainAndScheduleAllSubmissionData.MonthPerformanceYD = [];
+        this.mainAndScheduleAllSubmissionData.Amoeba_MonthlySSDetail = [];
+      } else {
+        this.mainAndScheduleAllSubmissionData.MonthSigningGoldYD = this.$store.state.operatingForm.operatingFormData;
+        this.mainAndScheduleAllSubmissionData.MonthPerformanceYD = this.$store.state.operatingForm.performanceFormData;
+        this.mainAndScheduleAllSubmissionData.Amoeba_MonthlySSDetail = this.$store.state.scheduleForm.scheduleFormData;
+      }
       console.log(this.mainAndScheduleAllSubmissionData);
       this.$api.monthMainAndScheduleSub(this.mainAndScheduleAllSubmissionData)
         .then((res) => {
@@ -212,7 +241,19 @@ export default {
         });
       }).catch((errMsg) => {
         console.log(errMsg);
-      })
+      });
+    },
+  },
+  watch: {
+    mainFormSonData() {
+      this.isBehind = this.$store.state.comData.commonData.JobAttribute === '04';
+      // console.log(this.$refs.scheduleTable);
+      // this.$refs.scheduleTable.firstLoadingRequest();
+      this.$nextTick(() => {
+        if (!this.isBehind) {
+          this.$refs.scheduleTable.firstLoadingRequest();
+        }
+      });
     },
   },
   mounted() {
