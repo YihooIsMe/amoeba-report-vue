@@ -285,7 +285,6 @@ export default {
         obj.Years = new Date().getFullYear();
         obj.Month = new Date().getMonth() + 2;
         obj.SubjectID = item.SubjectID;
-        console.log(document.querySelector('.mainFormPanel .' + item.className + '>td:nth-child(3)>input'));
         obj.EstimatedAmount = cal.remSep(document.querySelector('.mainFormPanel .' + item.className + '>td:nth-child(3)>input').value);
         this.Amoeba_MonthlyPlandetails.push(obj);
       });
@@ -301,6 +300,8 @@ export default {
           || item.className === 'B2'
           || item.className === 'B4'
           || item.className === 'B8'
+          || item.className === 'A0'
+          || item.className === 'G0'
           || item.className === 'B10';
       }
       return item.ReadOnly === 1
@@ -335,8 +336,30 @@ export default {
       }
       return '隐藏所有细项';
     },
+    estimatedContractMoneySum() {
+      return this.$store.state.operatingForm.operatingSum;
+    },
+    recoveryPerformance() {
+      return this.$store.state.operatingForm.performanceSum;
+    },
   },
   watch: {
+    estimatedContractMoneySum(newVal) {
+      this.$nextTick(() => {
+        document.querySelector('.mainForm>tbody>tr.A0>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
+        cal.whereUse('monthIndex');
+        this.currentMonthAutomaticCalculation(3);
+        this.calculatePredeterminedRatio();
+      });
+    },
+    recoveryPerformance(newVal) {
+      this.$nextTick(() => {
+        document.querySelector('.mainForm>tbody>tr.G0>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
+        cal.whereUse('monthIndex');
+        this.currentMonthAutomaticCalculation(3);
+        this.calculatePredeterminedRatio();
+      });
+    },
     sumOwnershipFee(newVal) {
       document.querySelector('.mainForm>tbody>tr.F2>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
       cal.whereUse('monthIndex');// TODO:每次进行计算需要进行是否为年度或者月度计算；因为服务管理费ABCDE等级不一样；
@@ -420,7 +443,7 @@ export default {
     opacity: 0;
   }
 </style>
-<style lang="less">
+<style lang="less" scoped>
   table.KMTable1.commonTable{
     thead{
       tr{

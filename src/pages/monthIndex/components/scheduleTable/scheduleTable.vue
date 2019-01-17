@@ -57,6 +57,7 @@
 
 <script>
 import Vue from 'vue';
+import VueCookie from 'vue-cookie';
 import SelectedOwnershipFee from './ownershipFee.vue';
 import SelectedLinkageIncome from './linkageIncome.vue';
 import SelectedFixedSalary from './fixedSalary.vue';
@@ -68,6 +69,7 @@ import '@/assets/css/scheduleTable.less';
 import api from '@/http/index';
 
 Vue.use(api);
+Vue.use(VueCookie);
 
 export default {
   name: 'scheduleTable',
@@ -110,8 +112,17 @@ export default {
       liElements[index].classList.add('active');
     },
     firstLoadingRequest() {
-      const MonthlyPlanID = this.$store.state.comData.commonData.MPID;
-      this.$api.monthScheduleTable({ MonthlyPlanID }).then((res) => {
+      const OrganizationID = this.$store.state.comData.commonData.OrganizeId;
+      const MonthlyPlanID = this.$store.state.comData.commonData.MPID; // TODO:如果是201812月那么就要变成201901月；后续完善；
+      const years = VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn' ? VueCookie.get('monthViewEditorYear') : new Date().getFullYear();
+      let month = VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn' ? VueCookie.get('monthViewEditorMonth') : new Date().getMonth() + 2;
+      if (month < 10) {
+        month = '0' + month;
+      }
+      const yearsAndMonth = years + month;
+      console.log('hello');
+      console.log({ MonthlyPlanID, years: yearsAndMonth, OrganizationID });
+      this.$api.monthScheduleTable({ MonthlyPlanID, years: yearsAndMonth, OrganizationID }).then((res) => {
         console.log(JSON.parse(res.data));
         this.scheduleSubmitData = JSON.parse(res.data);
         JSON.parse(res.data).ScheduleSubject.forEach((item) => {

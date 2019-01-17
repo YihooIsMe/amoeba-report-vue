@@ -4,7 +4,7 @@
       <h2>阿米巴核算系统--月预定</h2>
       <div class="submitBtn" v-if="submitBtnShow">
         <div class="top-left" v-if="!!index">
-          {{index + " " + new Date().getFullYear() + '年' + (new Date().getMonth() + 2) + '月'}}
+          {{storeYearMonth}}
         </div>
         <div class="top-right">
           <el-button
@@ -37,13 +37,13 @@
       </div>
       <el-tabs type="border-card" class="tab-container" value="schedule">
         <template v-if="!isBehind">
-          <el-tab-pane label="主表单" name="schedule">
+          <el-tab-pane label="主表单">
             <MainForm @giveStore="getStore" ref="mainForm" class="mainFormPanel" @getScheduleTableData="getSonComData"></MainForm>
           </el-tab-pane>
           <el-tab-pane label="附表">
             <ScheduleTable ref="scheduleTable" class="schedulePanel"></ScheduleTable>
           </el-tab-pane>
-          <el-tab-pane label="营业收入">
+          <el-tab-pane label="营业收入" name="schedule">
             <OperatingIncome ref="operateIncome" class="operateIncomePanel"></OperatingIncome>
           </el-tab-pane>
           <el-tab-pane label="任务单">
@@ -85,7 +85,7 @@ export default {
   data() {
     return {
       submitBtnShow: true,
-      index: '111',
+      index: '',
       review: 0,
       mainAndScheduleAllSubmissionData: {},
       mainFormSonData: false,
@@ -137,8 +137,11 @@ export default {
     setMainAndScheduleAllSubmissionData() {
       this.mainAndScheduleAllSubmissionData = {};
       const storeCommonData = this.$store.state.comData.commonData;
-      this.mainAndScheduleAllSubmissionData.Years = new Date().getFullYear();
-      this.mainAndScheduleAllSubmissionData.Month = new Date().getMonth() + 2;
+      // this.mainAndScheduleAllSubmissionData.Years = new Date().getFullYear();
+      this.mainAndScheduleAllSubmissionData.Years = VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn' ? VueCookie.get('monthViewEditorYear') : new Date().getFullYear();
+      // this.mainAndScheduleAllSubmissionData.Month = new Date().getMonth() + 2;
+      // this.mainAndScheduleAllSubmissionData.Month = 5;
+      this.mainAndScheduleAllSubmissionData.Month = VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn' ? VueCookie.get('monthViewEditorMonth') : new Date().getMonth() + 2;
       this.mainAndScheduleAllSubmissionData.MonthlyPlanID = storeCommonData.MPID;
       this.mainAndScheduleAllSubmissionData.CostCode = storeCommonData.Pr0139;
       this.mainAndScheduleAllSubmissionData.OrganizeId = storeCommonData.OrganizeId;
@@ -177,6 +180,11 @@ export default {
             message: res.data.errorMessage,
             type,
           });
+          if (type === 'success') {
+            VueCookie.set('monthFillStatus', '待审核');
+            // window.location.reload();
+            /* TODO:正式环境的时候reload需要，但是现在不需要 */
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -254,6 +262,14 @@ export default {
           this.$refs.scheduleTable.firstLoadingRequest();
         }
       });
+    },
+  },
+  computed: {
+    storeYearMonth() {
+      if (VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn') {
+        return this.index + ' ' + VueCookie.get('monthViewEditorYear') + '年' + VueCookie.get('monthViewEditorMonth') + '月';
+      }
+      return this.index + ' ' + new Date().getFullYear() + '年' + (new Date().getMonth() + 2) + '月';
     },
   },
   mounted() {

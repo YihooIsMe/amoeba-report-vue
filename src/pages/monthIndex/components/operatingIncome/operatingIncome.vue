@@ -4,21 +4,24 @@
     <div class="child-operating-income">
       <el-button type="primary" plain size="small" @click="dialogTableVisible = true">新增</el-button>
       <el-button type="success" plain size="small" @click="deleteSelected('operate')">删除</el-button>
-      <el-button type="warning" plain size="small" @click="achieveAdjustmentVisible = true">达成匹配调整</el-button>
+      <el-button type="warning" plain size="small" @click="matchAdjustment('operatingIncome')">达成匹配调整</el-button>
       <el-table
         ref="multipleTable"
         :data="addFormArr"
         tooltip-effect="dark"
         style="width: 100%"
         stripe
+        show-summary
+        :summary-method="getSummaries"
         @selection-change="handleSelectionChange">
         <!--TODO:selectable可以控制复选框是否禁用-->
         <el-table-column
           type="selection"
-          width="55">
+          width="60">
         </el-table-column>
         <el-table-column
           label="预定别"
+          width="70"
           prop="bookType">
         </el-table-column>
         <el-table-column
@@ -90,10 +93,12 @@
         </el-table-column>
         <el-table-column
           label="预估签约金"
+          width="90"
           prop="estimatedContractMoney">
         </el-table-column>
         <el-table-column
           label="实际签约金"
+          width="90"
           prop="relContractMoney">
         </el-table-column>
         <el-table-column
@@ -107,20 +112,23 @@
     <div class="child-performance-income">
       <el-button type="primary" plain size="small" @click="dialogPerformance = true">新增</el-button>
       <el-button type="success" plain size="small" @click="deleteSelected('performance')">删除</el-button>
-      <el-button type="warning" plain size="small" @click="perAchieveAdjustmentVisible = true">达成匹配调整</el-button>
+      <el-button type="warning" plain size="small" @click="matchAdjustment('performance')">达成匹配调整</el-button>
       <el-table
         ref="multipleTable"
         :data="addPerformanceArr"
         tooltip-effect="dark"
         style="width: 100%"
         stripe
+        show-summary
+        :summary-method="getSummaries"
         @selection-change="handleSelectionChangePer">
         <el-table-column
-          type="selection">
+          type="selection"
+          width="60">
         </el-table-column>
         <el-table-column
           label="预定别"
-          width="80"
+          width="70"
           prop="bookType">
         </el-table-column>
         <el-table-column
@@ -198,6 +206,7 @@
 
 <script>
 import Vue from 'vue';
+import { Message } from 'element-ui';
 import OperatingAdd from './operatingAdd.vue';
 import AchieveAdjustment from './achieveAdjustment.vue';
 import AchievePeradjustment from './achievePeradjustment.vue';
@@ -226,6 +235,7 @@ export default {
       getStoreBrokerData: [],
       MonthSigningGoldYD: [],
       MonthPerformanceYD: [],
+      operatingSumIndex: 0,
     };
   },
   methods: {
@@ -234,6 +244,75 @@ export default {
     },
     getROwIndexPer(row) {
       return this.addPerformanceArr.lastIndexOf(row);
+    },
+    // 如果想要合计的数据,另外写方法,如果写在当前方法中,会引起数据变化,变化之后会重复执行,最后会报错;
+    getSummaries(param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计';
+          return;
+        }
+        const values = data.map(item => Number(item[column.property]));
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return prev + curr;
+            }
+            return prev;
+          }, 0);
+        } else {
+          sums[index] = '';
+        }
+      });
+      return sums;
+    },
+    matchAdjustment(from) {
+      let info;
+      if (from === 'operatingIncome') {
+        if (this.multipleSelection.length === 0) {
+          info = '请选择一条进行匹配';
+          Message({
+            message: info,
+            type: 'error',
+            duration: 2000,
+          });
+          return '';
+        }
+        if (this.multipleSelection.length > 1) {
+          info = '您只能选择一条进行匹配';
+          Message({
+            message: info,
+            type: 'error',
+            duration: 2000,
+          });
+          return '';
+        }
+        this.achieveAdjustmentVisible = true;
+      } else if (from === 'performance') {
+        if (this.multipleSelectionPer.length === 0) {
+          info = '请选择一条进行匹配';
+          Message({
+            message: info,
+            type: 'error',
+            duration: 2000,
+          });
+          return '';
+        }
+        if (this.multipleSelectionPer.length > 1) {
+          info = '您只能选择一条进行匹配';
+          Message({
+            message: info,
+            type: 'error',
+            duration: 2000,
+          });
+          return '';
+        }
+        this.perAchieveAdjustmentVisible = true;
+      }
+      return '';
     },
     handleSelectionChange(val) {
       this.selectIndexArray = [];
@@ -381,6 +460,7 @@ export default {
       formArrObj.discountType = newVal.discountType;
       formArrObj.discountAmount = newVal.discountAmount;
       formArrObj.discountRelAmount = '100000'; // TODO:暂时先写死;
+      formArrObj.estimatedContractMoney = newVal.fullCommissionSign - newVal.discountAmount;
       console.log(formArrObj);
       // Vue.set(formArrObj, 'fullCommissionSignActual', 12345);
       // Vue.set(formArrObj, 'discountAmountActual', 12345);
@@ -574,6 +654,20 @@ export default {
         this.addPerformanceArr.push(addPerFormObj);
       });
     },
+    getIncomeSum(newArr, i) {
+      let sum = 0;
+      if (i === 'operatingIncome') {
+        newArr.forEach((el) => {
+          sum = Number(el.estimatedContractMoney) + sum;
+        });
+        this.$store.commit('setOperatingSum', sum);
+      } else if (i === 'performance') {
+        newArr.forEach((el) => {
+          sum = Number(el.recoveryPerformance) + sum;
+        });
+        this.$store.commit('setPerformanceSum', sum);
+      }
+    },
   },
   computed: {
     isCompleted() {
@@ -583,6 +677,12 @@ export default {
   watch: {
     isCompleted() {
       this.operateFirstRequest();
+    },
+    addFormArr(newVal) {
+      this.getIncomeSum(newVal, 'operatingIncome');
+    },
+    addPerformanceArr(newVal) {
+      this.getIncomeSum(newVal, 'performance');
     },
   },
   mounted() {

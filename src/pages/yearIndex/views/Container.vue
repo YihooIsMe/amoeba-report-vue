@@ -555,7 +555,6 @@ export default {
       cal.allTableCalculation(index);
     },
 
-
     AutomaticCalculation(i, className, event) {
       let currentEl;
       if (event !== '') {

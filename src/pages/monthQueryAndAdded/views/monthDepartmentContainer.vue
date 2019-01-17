@@ -384,8 +384,8 @@ export default {
       VueCookie.set('monthFillStatus', item.Status);
       VueCookie.set('monthCreateByUser', item.CreateByUser);
       VueCookie.set('monthFromWhichBtn', 'viewEditorBtn');
-      VueCookie.set('monthViewEditorYear', this.yearSelected);
-      VueCookie.set('monthViewEditorMonth', this.monthSelected);
+      VueCookie.set('monthViewEditorYear', this.copyYearSelected);
+      VueCookie.set('monthViewEditorMonth', this.copyMonthSelected);
       window.location = 'monthIndex.html';
     },
   },
