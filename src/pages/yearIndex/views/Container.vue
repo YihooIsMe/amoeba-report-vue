@@ -32,7 +32,11 @@
                      plain
                      @click="showAllSubject"
           >显示所有科目</el-button>
-          <el-button type="warning" plain @click="dialogExcelImport = true">Excel导入</el-button>
+          <el-button type="warning"
+                     plain
+                     v-if="showDraftAndSubmit"
+                     @click="dialogExcelImport = true"
+          >Excel导入</el-button>
           <el-button type="success"
                      plain
                      @click="exportAllData"
@@ -141,6 +145,7 @@ export default {
       // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 权限小
       IsYM: 0,
       OrganizeId: '',
+      exportUrl: 'http://10.100.250.153:99/api/DownLoad',
       years: new Date().getFullYear() + 1,
       viewEditorYear: '',
       submitBtnShow: false,
@@ -418,9 +423,9 @@ export default {
         .then((res) => {
           console.log(res);
           Message({
-            message: '文件：' + fileObj.name + '上传成功',
+            message: res.data.isSuccess ? ('文件：' + fileObj.name + '上传成功') : (res.data.errorMessage),
             duration: 3000,
-            type: 'success',
+            type: res.data.isSuccess ? 'success' : 'error',
           });
           this.dialogExcelImport = false;
         })

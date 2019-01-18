@@ -134,14 +134,38 @@ export default {
       }
       this.setMainAndScheduleAllSubmissionData();
     },
+    getQueryAddYear() {
+      if (VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn') {
+        return VueCookie.get('monthViewEditorYear');
+      }
+      if (VueCookie.get('monthFromWhichBtn') === 'newAdded') {
+        if (new Date().getMonth() + 2 === 13) {
+          return new Date().getFullYear() + 1;
+        }
+        return new Date().getFullYear();
+      }
+      return '';
+    },
+    getQueryAddMonth() {
+      if (VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn') {
+        return VueCookie.get('monthViewEditorMonth');
+      }
+      if (VueCookie.get('monthFromWhichBtn') === 'newAdded') {
+        if (new Date().getMonth() + 2 === 13) {
+          return 1;
+        }
+        return new Date().getMonth() + 2;
+      }
+      return '';
+    },
     setMainAndScheduleAllSubmissionData() {
       this.mainAndScheduleAllSubmissionData = {};
       const storeCommonData = this.$store.state.comData.commonData;
       // this.mainAndScheduleAllSubmissionData.Years = new Date().getFullYear();
-      this.mainAndScheduleAllSubmissionData.Years = VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn' ? VueCookie.get('monthViewEditorYear') : new Date().getFullYear();
+      this.mainAndScheduleAllSubmissionData.Years = this.getQueryAddYear();
       // this.mainAndScheduleAllSubmissionData.Month = new Date().getMonth() + 2;
       // this.mainAndScheduleAllSubmissionData.Month = 5;
-      this.mainAndScheduleAllSubmissionData.Month = VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn' ? VueCookie.get('monthViewEditorMonth') : new Date().getMonth() + 2;
+      this.mainAndScheduleAllSubmissionData.Month = this.getQueryAddMonth();
       this.mainAndScheduleAllSubmissionData.MonthlyPlanID = storeCommonData.MPID;
       this.mainAndScheduleAllSubmissionData.CostCode = storeCommonData.Pr0139;
       this.mainAndScheduleAllSubmissionData.OrganizeId = storeCommonData.OrganizeId;
@@ -279,6 +303,9 @@ export default {
   },
   created() {
     this.getCookie();
+  },
+  beforeDestroy() {
+
   },
 };
 </script>

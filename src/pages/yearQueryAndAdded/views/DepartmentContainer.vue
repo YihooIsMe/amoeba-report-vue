@@ -49,6 +49,7 @@
         <table class="show-query-table" border="1">
           <thead>
           <tr>
+            <th>序号</th>
             <th>年度</th>
             <th>部门</th>
             <th>主管</th>
@@ -59,6 +60,7 @@
           </thead>
           <tbody>
           <tr v-for="(item, index) in queryTableAllData" :key="index">
+            <td>{{index + 1}}</td>
             <td>{{copyYearSelected}}</td>
             <td>{{item.F_FullName}}</td>
             <td>{{item.F_RealName}}</td>
@@ -68,16 +70,27 @@
           </tr>
           </tbody>
         </table>
+        <!-- TODO:pagination分页器 -->
+        <!--<el-pagination
+          class="year-pagination"
+          background
+          :page-size="5"
+          layout="prev, pager, next"
+          @current-change="doCurrentChange"
+          :total="20">
+        </el-pagination>-->
       </div>
+
     </div>
 </template>
 
 <script>
 import Vue from 'vue';
-import { MessageBox } from 'element-ui';
+import { MessageBox, Pagination } from 'element-ui';
 import VueCookie from 'vue-cookie';
 import api from '@/http/index';
 
+Vue.use(Pagination);
 Vue.component(MessageBox.name, MessageBox);
 Vue.use(VueCookie);
 Vue.use(api);
@@ -110,7 +123,7 @@ export default {
       selectDisabled: ['', '', '', ''],
       querySelectorArr: [],
       page: 1,
-      rows: 50,
+      rows: 100,
       queryTableAllData: '',
       otherParentId: '',
       secondSelected: '',
@@ -119,6 +132,9 @@ export default {
     };
   },
   methods: {
+    doCurrentChange(index) {
+      console.log(index);
+    },
     getUserRequest(permission) {
       this.$api.queryAndAddedUserInfo({ userID: this.userID })
         .then((res) => {
@@ -380,11 +396,6 @@ export default {
       window.location = 'yearIndex.html';
     },
   },
-  watch: {
-    secondSelected(newVal) {
-      console.log(newVal);
-    },
-  },
   created() {
     this.userID = sessionStorage.getItem('userID');
     this.getUserRequest(0);
@@ -460,6 +471,10 @@ export default {
   }
   .show-query-table td{
     padding:5px 0;
+  }
+  .year-pagination{
+    text-align: center;
+    margin-top: 20px;
   }
 }
 </style>
