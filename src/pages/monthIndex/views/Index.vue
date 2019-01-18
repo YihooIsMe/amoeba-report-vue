@@ -37,13 +37,13 @@
       </div>
       <el-tabs type="border-card" class="tab-container" value="schedule">
         <template v-if="!isBehind">
-          <el-tab-pane label="主表单">
+          <el-tab-pane label="主表单" name="schedule">
             <MainForm @giveStore="getStore" ref="mainForm" class="mainFormPanel" @getScheduleTableData="getSonComData"></MainForm>
           </el-tab-pane>
           <el-tab-pane label="附表">
             <ScheduleTable ref="scheduleTable" class="schedulePanel"></ScheduleTable>
           </el-tab-pane>
-          <el-tab-pane label="营业收入" name="schedule">
+          <el-tab-pane label="营业收入">
             <OperatingIncome ref="operateIncome" class="operateIncomePanel"></OperatingIncome>
           </el-tab-pane>
           <el-tab-pane label="任务单">

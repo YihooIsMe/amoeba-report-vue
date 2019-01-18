@@ -3,32 +3,60 @@
       <table border="1">
         <thead>
         <tr>
-          <th width="30%" v-html="tableTh.one"></th>
-          <th width="35%" v-html="tableTh.three"></th>
-          <th width="35%" v-html="tableTh.five"></th>
+          <th width="50%" v-html="tableTh.one"></th>
+          <th width="50%" v-html="tableTh.three"></th>
+          <!--<th width="30%" v-html="tableTh.one"></th>-->
+          <!--<th width="35%" v-html="tableTh.three"></th>-->
+          <!--<th width="35%" v-html="tableTh.five"></th>-->
         </tr>
         </thead>
         <tbody>
         <tr>
-          <td><textarea v-model="submissionData.first"></textarea></td>
+          <!--<td><textarea v-model="submissionData.first"></textarea></td>-->
+          <td><Editor></Editor></td>
           <td><textarea v-model="submissionData.third"></textarea></td>
-          <td><textarea v-model="submissionData.fifth"></textarea></td>
+          <!--<td><textarea v-model="submissionData.third"></textarea></td>-->
+          <!--<td><textarea v-model="submissionData.fifth"></textarea></td>-->
         </tr>
         </tbody>
       </table>
       <table border="1" style="margin-top: -1px;">
         <thead>
         <tr>
-          <th width="30%" v-html="tableTh.two"></th>
-          <th width="35%" v-html="tableTh.four"></th>
-          <th width="35%" v-html="tableTh.six"></th>
+          <th width="50%" v-html="tableTh.one"></th>
+          <th width="50%" v-html="tableTh.three"></th>
+          <!--<th width="30%" v-html="tableTh.two"></th>-->
+          <!--<th width="35%" v-html="tableTh.four"></th>-->
+          <!--<th width="35%" v-html="tableTh.six"></th>-->
         </tr>
         </thead>
         <tbody>
         <tr>
-          <td><textarea v-model="submissionData.second"></textarea></td>
-          <td><textarea v-model="submissionData.fourth"></textarea></td>
-          <td><textarea v-model="submissionData.sixth"></textarea></td>
+          <td><textarea v-model="submissionData.third"></textarea></td>
+          <td><textarea v-model="submissionData.third"></textarea></td>
+          <!--<td><textarea v-model="submissionData.second"></textarea></td>-->
+          <!--<td><textarea v-model="submissionData.fourth"></textarea></td>-->
+          <!--<td><textarea v-model="submissionData.sixth"></textarea></td>-->
+        </tr>
+        </tbody>
+      </table>
+      <table border="1" style="margin-top: -1px;">
+        <thead>
+        <tr>
+          <th width="50%" v-html="tableTh.one"></th>
+          <th width="50%" v-html="tableTh.three"></th>
+          <!--<th width="30%" v-html="tableTh.two"></th>-->
+          <!--<th width="35%" v-html="tableTh.four"></th>-->
+          <!--<th width="35%" v-html="tableTh.six"></th>-->
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td><textarea v-model="submissionData.third"></textarea></td>
+          <td><textarea v-model="submissionData.third"></textarea></td>
+          <!--<td><textarea v-model="submissionData.second"></textarea></td>-->
+          <!--<td><textarea v-model="submissionData.fourth"></textarea></td>-->
+          <!--<td><textarea v-model="submissionData.sixth"></textarea></td>-->
         </tr>
         </tbody>
       </table>
@@ -37,10 +65,12 @@
 
 <script>
 import Vue from 'vue';
+import Editor from './editor.vue';
 
 export default {
   name: 'missionTextarea',
   props: ['weekData'],
+  components: { Editor },
   data() {
     return {
       tableTh: '',

@@ -71,14 +71,14 @@
           </tbody>
         </table>
         <!-- TODO:pagination分页器 -->
-        <!--<el-pagination
+        <el-pagination
           class="year-pagination"
           background
           :page-size="5"
           layout="prev, pager, next"
           @current-change="doCurrentChange"
           :total="20">
-        </el-pagination>-->
+        </el-pagination>
       </div>
 
     </div>
@@ -86,11 +86,12 @@
 
 <script>
 import Vue from 'vue';
-import { MessageBox, Pagination } from 'element-ui';
+import { MessageBox, Pagination, Loading } from 'element-ui';
 import VueCookie from 'vue-cookie';
 import api from '@/http/index';
 
 Vue.use(Pagination);
+Vue.use(Loading);
 Vue.component(MessageBox.name, MessageBox);
 Vue.use(VueCookie);
 Vue.use(api);
@@ -129,6 +130,7 @@ export default {
       secondSelected: '',
       thirdSelected: '',
       fourthSelectStoreSelected: '',
+      loading: '',
     };
   },
   methods: {
@@ -332,6 +334,7 @@ export default {
           this.copyYearSelected = this.yearSelected;
           console.log(res.data);
           this.queryTableAllData = res.data;
+          this.loading.close();
         })
         .catch((err) => {
           console.log(err);
@@ -395,8 +398,16 @@ export default {
       VueCookie.set('viewEditorYear', this.yearSelected);
       window.location = 'yearIndex.html';
     },
+    setLoading() {
+      this.loading = this.$loading({
+        lock: true,
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)',
+      });
+    },
   },
   created() {
+    this.setLoading();
     this.userID = sessionStorage.getItem('userID');
     this.getUserRequest(0);
   },
