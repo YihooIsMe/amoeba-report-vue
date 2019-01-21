@@ -27,8 +27,9 @@ export default {
     return {
       showMission: [true, false, false, false],
       firstWeekData: {
+        index: 1,
         identity: 'store', // 1代表门店;2代表区域.如:上海业务一区 2; 瑞虹一店 1;
-        first: '我是来自第一周的数据',
+        first: '<p>我是来自第一周的数据</p>',
         second: '',
         third: '',
         fourth: '',
@@ -36,8 +37,9 @@ export default {
         sixth: '',
       },
       secondWeekData: {
+        index: 2,
         identity: 'district',
-        first: '我是来自第二周的数据',
+        first: '<p>我是来自第二周的数据</p>',
         second: '',
         third: '',
         fourth: '',
@@ -45,8 +47,9 @@ export default {
         sixth: '',
       },
       thirdWeekData: {
+        index: 3,
         identity: 'store',
-        first: '我是来自第三周的数据',
+        first: '<p>我是来自第三周的数据</p>',
         second: '',
         third: '',
         fourth: '',
@@ -54,8 +57,9 @@ export default {
         sixth: '',
       },
       fourthWeekData: {
+        index: 4,
         identity: 'district',
-        first: '我是来自第四周的数据',
+        first: '<p>我是来自第四周的数据</p>',
         second: '',
         third: '',
         fourth: '',

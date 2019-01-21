@@ -4,7 +4,7 @@
         <thead>
         <tr>
           <th width="50%" v-html="tableTh.one"></th>
-          <th width="50%" v-html="tableTh.three"></th>
+          <th width="50%" v-html="tableTh.two"></th>
           <!--<th width="30%" v-html="tableTh.one"></th>-->
           <!--<th width="35%" v-html="tableTh.three"></th>-->
           <!--<th width="35%" v-html="tableTh.five"></th>-->
@@ -13,8 +13,8 @@
         <tbody>
         <tr>
           <!--<td><textarea v-model="submissionData.first"></textarea></td>-->
-          <td><Editor></Editor></td>
-          <td><textarea v-model="submissionData.third"></textarea></td>
+          <td><Editor :editorContent="submissionData.first" @setEditorData="getEditorData"></Editor></td>
+          <td><Editor :editorContent="submissionData.second" @setEditorData="getEditorData"></Editor></td>
           <!--<td><textarea v-model="submissionData.third"></textarea></td>-->
           <!--<td><textarea v-model="submissionData.fifth"></textarea></td>-->
         </tr>
@@ -23,8 +23,8 @@
       <table border="1" style="margin-top: -1px;">
         <thead>
         <tr>
-          <th width="50%" v-html="tableTh.one"></th>
           <th width="50%" v-html="tableTh.three"></th>
+          <th width="50%" v-html="tableTh.four"></th>
           <!--<th width="30%" v-html="tableTh.two"></th>-->
           <!--<th width="35%" v-html="tableTh.four"></th>-->
           <!--<th width="35%" v-html="tableTh.six"></th>-->
@@ -32,8 +32,8 @@
         </thead>
         <tbody>
         <tr>
-          <td><textarea v-model="submissionData.third"></textarea></td>
-          <td><textarea v-model="submissionData.third"></textarea></td>
+          <td><Editor :editorContent="submissionData.third" @setEditorData="getEditorData"></Editor></td>
+          <td><Editor :editorContent="submissionData.fourth" @setEditorData="getEditorData"></Editor></td>
           <!--<td><textarea v-model="submissionData.second"></textarea></td>-->
           <!--<td><textarea v-model="submissionData.fourth"></textarea></td>-->
           <!--<td><textarea v-model="submissionData.sixth"></textarea></td>-->
@@ -43,8 +43,8 @@
       <table border="1" style="margin-top: -1px;">
         <thead>
         <tr>
-          <th width="50%" v-html="tableTh.one"></th>
-          <th width="50%" v-html="tableTh.three"></th>
+          <th width="50%" v-html="tableTh.five"></th>
+          <th width="50%" v-html="tableTh.six"></th>
           <!--<th width="30%" v-html="tableTh.two"></th>-->
           <!--<th width="35%" v-html="tableTh.four"></th>-->
           <!--<th width="35%" v-html="tableTh.six"></th>-->
@@ -52,25 +52,27 @@
         </thead>
         <tbody>
         <tr>
-          <td><textarea v-model="submissionData.third"></textarea></td>
-          <td><textarea v-model="submissionData.third"></textarea></td>
+          <td><Editor :editorContent="submissionData.fifth" @setEditorData="getEditorData"></Editor></td>
+          <td><Editor :editorContent="submissionData.sixth" @setEditorData="getEditorData"></Editor></td>
           <!--<td><textarea v-model="submissionData.second"></textarea></td>-->
           <!--<td><textarea v-model="submissionData.fourth"></textarea></td>-->
           <!--<td><textarea v-model="submissionData.sixth"></textarea></td>-->
         </tr>
         </tbody>
       </table>
+      <MaskLayer></MaskLayer>
     </div>
 </template>
 
 <script>
 import Vue from 'vue';
 import Editor from './editor.vue';
+import MaskLayer from './maskLayer.vue';
 
 export default {
   name: 'missionTextarea',
   props: ['weekData'],
-  components: { Editor },
+  components: { Editor, MaskLayer },
   data() {
     return {
       tableTh: '',
@@ -91,12 +93,31 @@ export default {
         six: '<div>6、重点课题、措施、其他重要事项</div><div> (本周预定)</div>',
       },
       submissionData: {
-        first: '',
-        second: '',
-        third: '',
-        fourth: '',
-        fifth: '',
-        sixth: '',
+        index: '',
+        first: {
+          index: 'first',
+          content: '',
+        },
+        second: {
+          index: 'second',
+          content: '',
+        },
+        third: {
+          index: 'third',
+          content: '',
+        },
+        fourth: {
+          index: 'fourth',
+          content: '',
+        },
+        fifth: {
+          index: 'fifth',
+          content: '',
+        },
+        sixth: {
+          index: 'sixth',
+          content: '',
+        },
       },
     };
   },
@@ -107,12 +128,17 @@ export default {
       } else if (this.weekData.identity === 'district') {
         this.tableTh = this.districtTableTh;
       }
-      Vue.set(this.submissionData, 'first', this.weekData.first);
-      Vue.set(this.submissionData, 'second', this.weekData.second);
-      Vue.set(this.submissionData, 'third', this.weekData.third);
-      Vue.set(this.submissionData, 'fourth', this.weekData.fourth);
-      Vue.set(this.submissionData, 'fifth', this.weekData.fifth);
-      Vue.set(this.submissionData, 'sixth', this.weekData.sixth);
+      Vue.set(this.submissionData.first, 'content', this.weekData.first);
+      Vue.set(this.submissionData.second, 'content', this.weekData.second);
+      Vue.set(this.submissionData.third, 'content', this.weekData.third);
+      Vue.set(this.submissionData.fourth, 'content', this.weekData.fourth);
+      Vue.set(this.submissionData.fifth, 'content', this.weekData.fifth);
+      Vue.set(this.submissionData.sixth, 'content', this.weekData.sixth);
+      Vue.set(this.submissionData, 'index', this.weekData.index);
+    },
+    getEditorData(obj) {
+      this.submissionData[obj.index].content = obj.content;
+      this.$store.commit('setMissionListData', this.submissionData);
     },
   },
   mounted() {
