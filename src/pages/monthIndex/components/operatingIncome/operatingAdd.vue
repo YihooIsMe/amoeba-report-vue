@@ -34,7 +34,7 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <div v-if="AddForm.customerType === '1'">
+        <div v-if="AddForm.customerType === 1">
           <el-form-item label="案件名称">
             <el-row :gutter="20">
               <el-col :span="11">
@@ -195,8 +195,8 @@ export default {
       AddForm: {
         id: '',
         broker: '',
-        saleAndLease: '1',
-        customerType: '1',
+        saleAndLease: 1,
+        customerType: 1,
         objectNum: 'SAJ00261787',
         caseName: '',
         customer: '',

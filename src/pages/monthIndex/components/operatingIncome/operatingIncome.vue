@@ -17,6 +17,7 @@
         <!--TODO:selectable可以控制复选框是否禁用-->
         <el-table-column
           type="selection"
+          :selectable="checkSelectable"
           width="60">
         </el-table-column>
         <el-table-column
@@ -241,6 +242,9 @@ export default {
     };
   },
   methods: {
+    checkSelectable(row) {
+      return row.PreordainID !== '';
+    },
     getROwIndex(row) {
       return this.addFormArr.lastIndexOf(row);
     },
@@ -251,12 +255,19 @@ export default {
     getSummaries(param) {
       const { columns, data } = param;
       const sums = [];
+      console.log(columns);
+      console.log(data);
+      // TODO:data数据需要处理；
+      const filterData = data.filter(item => item.PreordainID !== '');
+      console.log(filterData);
+      // TODO:后续继续修改；
       columns.forEach((column, index) => {
         if (index === 0) {
           sums[index] = '合计';
           return;
         }
-        const values = data.map(item => Number(item[column.property]));
+        const values = filterData.map(item => Number(item[column.property]));
+        console.log(values);
         if (!values.every(value => isNaN(value))) {
           sums[index] = values.reduce((prev, curr) => {
             const value = Number(curr);
@@ -606,6 +617,7 @@ export default {
         addFormObj.ContractMoneyDiff = el.SigningGoldDifference;
         addFormObj.discountAmountDiff = el.DiscountGoldDifference;
         addFormObj.ID = el.ID;
+        addFormObj.PreordainID = el.PreordainID;
         Vue.set(addFormObj, 'fullCommissionSignActual', el.FullCommissionSJ);
         Vue.set(addFormObj, 'discountAmountActual', el.DiscountGoldSJ);
         Vue.set(addFormObj, 'relContractMoney', el.SigningGoldSJ);

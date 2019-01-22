@@ -62,8 +62,10 @@ export default {
     },
     getTransactionCase() {
       // TODO:这里的月份不是死的,后续修改
-      this.$api.monthScheduleTable({ OrganizationID: this.$store.state.comData.commonData.OrganizeId, years: new Date().getFullYear() + '01' })
+      const customerType = this.multipleSelection[0].customerType;
+      this.$api.monthScheduleTable({ OrganizationID: this.$store.state.comData.commonData.OrganizeId, years: new Date().getFullYear() + '01', customerType })
         .then((res) => {
+          this.transactionCaseArr = [];
           console.log(JSON.parse(res.data));
           JSON.parse(res.data).forEach((el) => {
             const obj = {};
