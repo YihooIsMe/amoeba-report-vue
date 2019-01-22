@@ -152,7 +152,10 @@ export default {
         sObj.OrganizeId = this.$store.state.comData.commonData.OrganizeId;
         sObj.CostCode = this.$store.state.comData.commonData.Pr0139;
         sObj.Years = new Date().getFullYear();
+        // TODO:后续改回来
         sObj.Month = new Date().getMonth() + 2;
+        // TODO:上一行代码改回来;
+        sObj.Month = 1;
         sObj.ScheduleSubjectID = item.ScheduleSubjectID;
         if (item.className.indexOf('A') !== -1) {
           sObj.Amount = Number(document.querySelector('.schedulePanel .' + item.className + '>td:nth-child(4)>input').value);

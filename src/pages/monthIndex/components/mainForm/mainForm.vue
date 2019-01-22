@@ -283,7 +283,10 @@ export default {
         obj.OrganizeId = this.responseData.OrganizeId;
         obj.CostCode = this.responseData.Pr0139;
         obj.Years = new Date().getFullYear();
-        obj.Month = new Date().getMonth() + 2;
+        // TODO:这里后续改回来;
+        // obj.Month = new Date().getMonth() + 2;
+        // TODO:上一行代码;
+        obj.Month = 1;
         obj.SubjectID = item.SubjectID;
         obj.EstimatedAmount = cal.remSep(document.querySelector('.mainFormPanel .' + item.className + '>td:nth-child(3)>input').value);
         this.Amoeba_MonthlyPlandetails.push(obj);

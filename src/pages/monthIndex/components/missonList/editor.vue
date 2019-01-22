@@ -5,15 +5,16 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import E from 'wangeditor';
 import editorImgZoom from '@/assets/js/editorImgZoom.js';
 
 export default {
   name: 'editor',
-  props: ['editorContent'],
+  props: ['editorContent', 'weekIndex', 'editorIndex'],
   data() {
     return {
-      editorData: '',
+      editorData: {},
     };
   },
   methods: {
@@ -38,22 +39,54 @@ export default {
         'undo', // 撤销
         'redo', // 重复
       ];
+      this.editor.customConfig.onchangeTimeout = 2000;
       this.editor.customConfig.onchange = (html) => {
-        this.editorData = html;
-        this.$emit('setEditorData', { index: this.editorContent.index, content: html });
+        Vue.set(this.editorData, 'weekIndex', this.weekIndex);
+        Vue.set(this.editorData, 'editorIndex', this.editorIndex);
+        Vue.set(this.editorData, 'content', html);
+        this.setVuex();
+        // this.$emit('setEditorData', { index: this.editorContent.index, content: html });
       };
-      this.editor.customConfig.linkImgCallback = function (url) {
-        console.log(url); // url 即插入图片的地址
+      this.editor.customConfig.linkImgCallback = function link() {
         editorImgZoom.clickEvent();
       };
       this.editor.create();
     },
+    init() {
+      Vue.set(this.editorData, 'weekIndex', this.weekIndex);
+      Vue.set(this.editorData, 'editorIndex', this.editorIndex);
+      Vue.set(this.editorData, 'content', '');
+      this.setVuex();
+    },
+    setVuex() {
+      let useMethod = '';
+      switch (true) {
+        case this.editorData.weekIndex === 1:
+          useMethod = 'setFirstWeekData';
+          break;
+        case this.editorData.weekIndex === 2:
+          useMethod = 'setSecondWeekData';
+          break;
+        case this.editorData.weekIndex === 3:
+          useMethod = 'setThirdWeekData';
+          break;
+        case this.editorData.weekIndex === 4:
+          useMethod = 'setFourthWeekData';
+          break;
+        default:
+      }
+      this.$store.commit(useMethod, this.editorData);
+    },
   },
 
   watch: {
-    'editorContent.content': function(newVal) {
-      console.log(newVal);
+    editorContent(newVal) {
       this.editor.txt.html(newVal);
+      this.editor.change();
+    },
+    weekIndex() {
+      this.init();
+      // editorIndex传递的事一个固定的number类型,weekIndex渲染在其后面,监听weekIndex就可以了;
     },
   },
   mounted() {

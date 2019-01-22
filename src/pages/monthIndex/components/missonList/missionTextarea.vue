@@ -5,18 +5,24 @@
         <tr>
           <th width="50%" v-html="tableTh.one"></th>
           <th width="50%" v-html="tableTh.two"></th>
-          <!--<th width="30%" v-html="tableTh.one"></th>-->
-          <!--<th width="35%" v-html="tableTh.three"></th>-->
-          <!--<th width="35%" v-html="tableTh.five"></th>-->
         </tr>
         </thead>
         <tbody>
         <tr>
-          <!--<td><textarea v-model="submissionData.first"></textarea></td>-->
-          <td><Editor :editorContent="submissionData.first" @setEditorData="getEditorData"></Editor></td>
-          <td><Editor :editorContent="submissionData.second" @setEditorData="getEditorData"></Editor></td>
-          <!--<td><textarea v-model="submissionData.third"></textarea></td>-->
-          <!--<td><textarea v-model="submissionData.fifth"></textarea></td>-->
+          <td>
+            <Editor
+            :editorContent="submissionData.first"
+            :weekIndex="submissionData.index"
+            editorIndex="first"
+            ></Editor>
+          </td>
+          <td>
+            <Editor
+              :editorContent="submissionData.second"
+              :weekIndex="submissionData.index"
+              editorIndex="second"
+            ></Editor>
+          </td>
         </tr>
         </tbody>
       </table>
@@ -25,18 +31,24 @@
         <tr>
           <th width="50%" v-html="tableTh.three"></th>
           <th width="50%" v-html="tableTh.four"></th>
-          <!--<th width="30%" v-html="tableTh.two"></th>-->
-          <!--<th width="35%" v-html="tableTh.four"></th>-->
-          <!--<th width="35%" v-html="tableTh.six"></th>-->
         </tr>
         </thead>
         <tbody>
         <tr>
-          <td><Editor :editorContent="submissionData.third" @setEditorData="getEditorData"></Editor></td>
-          <td><Editor :editorContent="submissionData.fourth" @setEditorData="getEditorData"></Editor></td>
-          <!--<td><textarea v-model="submissionData.second"></textarea></td>-->
-          <!--<td><textarea v-model="submissionData.fourth"></textarea></td>-->
-          <!--<td><textarea v-model="submissionData.sixth"></textarea></td>-->
+          <td>
+            <Editor
+              :editorContent="submissionData.third"
+              :weekIndex="submissionData.index"
+              editorIndex="third"
+            ></Editor>
+          </td>
+          <td>
+            <Editor
+              :editorContent="submissionData.fourth"
+              :weekIndex="submissionData.index"
+              editorIndex="fourth"
+            ></Editor>
+          </td>
         </tr>
         </tbody>
       </table>
@@ -45,18 +57,24 @@
         <tr>
           <th width="50%" v-html="tableTh.five"></th>
           <th width="50%" v-html="tableTh.six"></th>
-          <!--<th width="30%" v-html="tableTh.two"></th>-->
-          <!--<th width="35%" v-html="tableTh.four"></th>-->
-          <!--<th width="35%" v-html="tableTh.six"></th>-->
         </tr>
         </thead>
         <tbody>
         <tr>
-          <td><Editor :editorContent="submissionData.fifth" @setEditorData="getEditorData"></Editor></td>
-          <td><Editor :editorContent="submissionData.sixth" @setEditorData="getEditorData"></Editor></td>
-          <!--<td><textarea v-model="submissionData.second"></textarea></td>-->
-          <!--<td><textarea v-model="submissionData.fourth"></textarea></td>-->
-          <!--<td><textarea v-model="submissionData.sixth"></textarea></td>-->
+          <td>
+            <Editor
+            :editorContent="submissionData.fifth"
+            editorIndex="fifth"
+            :weekIndex="submissionData.index"
+            ></Editor>
+          </td>
+          <td>
+            <Editor
+              :editorContent="submissionData.sixth"
+              :weekIndex="submissionData.index"
+              editorIndex="sixth"
+            ></Editor>
+          </td>
         </tr>
         </tbody>
       </table>
@@ -94,30 +112,12 @@ export default {
       },
       submissionData: {
         index: '',
-        first: {
-          index: 'first',
-          content: '',
-        },
-        second: {
-          index: 'second',
-          content: '',
-        },
-        third: {
-          index: 'third',
-          content: '',
-        },
-        fourth: {
-          index: 'fourth',
-          content: '',
-        },
-        fifth: {
-          index: 'fifth',
-          content: '',
-        },
-        sixth: {
-          index: 'sixth',
-          content: '',
-        },
+        first: '',
+        second: '',
+        third: '',
+        fourth: '',
+        fifth: '',
+        sixth: '',
       },
     };
   },
@@ -128,18 +128,18 @@ export default {
       } else if (this.weekData.identity === 'district') {
         this.tableTh = this.districtTableTh;
       }
-      Vue.set(this.submissionData.first, 'content', this.weekData.first);
-      Vue.set(this.submissionData.second, 'content', this.weekData.second);
-      Vue.set(this.submissionData.third, 'content', this.weekData.third);
-      Vue.set(this.submissionData.fourth, 'content', this.weekData.fourth);
-      Vue.set(this.submissionData.fifth, 'content', this.weekData.fifth);
-      Vue.set(this.submissionData.sixth, 'content', this.weekData.sixth);
+      Vue.set(this.submissionData, 'first', this.weekData.first);
+      Vue.set(this.submissionData, 'second', this.weekData.second);
+      Vue.set(this.submissionData, 'third', this.weekData.third);
+      Vue.set(this.submissionData, 'fourth', this.weekData.fourth);
+      Vue.set(this.submissionData, 'fifth', this.weekData.fifth);
+      Vue.set(this.submissionData, 'sixth', this.weekData.sixth);
       Vue.set(this.submissionData, 'index', this.weekData.index);
     },
-    getEditorData(obj) {
-      this.submissionData[obj.index].content = obj.content;
-      this.$store.commit('setMissionListData', this.submissionData);
-    },
+    // getEditorData(obj) {
+    //   this.submissionData[obj.index].content = obj.content;
+    //   this.$store.commit('setMissionListData', this.submissionData);
+    // },
   },
   mounted() {
     this.setTableTh();

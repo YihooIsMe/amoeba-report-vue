@@ -165,7 +165,10 @@ export default {
       this.mainAndScheduleAllSubmissionData.Years = this.getQueryAddYear();
       // this.mainAndScheduleAllSubmissionData.Month = new Date().getMonth() + 2;
       // this.mainAndScheduleAllSubmissionData.Month = 5;
-      this.mainAndScheduleAllSubmissionData.Month = this.getQueryAddMonth();
+      // TODO:这里代码需要改回来;
+      // this.mainAndScheduleAllSubmissionData.Month = this.getQueryAddMonth();
+      // 上一行的代码改回来;
+      this.mainAndScheduleAllSubmissionData.Month = 1;
       this.mainAndScheduleAllSubmissionData.MonthlyPlanID = storeCommonData.MPID;
       this.mainAndScheduleAllSubmissionData.CostCode = storeCommonData.Pr0139;
       this.mainAndScheduleAllSubmissionData.OrganizeId = storeCommonData.OrganizeId;

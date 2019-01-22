@@ -22,14 +22,14 @@
           <el-row :gutter="20">
             <el-col :span="11">
               <el-select v-model="AddForm.saleAndLease" placeholder="请选择类型" size="small">
-                <el-option label="买卖" value="1"></el-option>
-                <el-option label="租赁" value="2"></el-option>
+                <el-option label="买卖" :value="1"></el-option>
+                <el-option label="租赁" :value="2"></el-option>
               </el-select>
             </el-col>
             <el-col :span="11">
               <el-select v-model="AddForm.customerType" placeholder="请选择客户类型" size="small">
-                <el-option label="业主方" value="1"></el-option>
-                <el-option label="买方" value="2"></el-option>
+                <el-option label="业主方" :value="1"></el-option>
+                <el-option label="买方" :value="2"></el-option>
               </el-select>
             </el-col>
           </el-row>

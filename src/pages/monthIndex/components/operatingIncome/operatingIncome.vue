@@ -192,6 +192,8 @@
       @giveFormDate="getAddFormData"></OperatingAdd>
     <AchieveAdjustment
       :achieveAdjustmentVisible="achieveAdjustmentVisible"
+      ref="achieveAdjustmentEl"
+      :multipleSelection="multipleSelection"
       @closeAchieveDialog="getAchieveDialog"></AchieveAdjustment>
     <PerformanceAdd
       :dialogPerformance="dialogPerformance"
@@ -291,6 +293,7 @@ export default {
           return '';
         }
         this.achieveAdjustmentVisible = true;
+        this.$refs.achieveAdjustmentEl.getTransactionCase();
       } else if (from === 'performance') {
         if (this.multipleSelectionPer.length === 0) {
           info = '请选择一条进行匹配';
@@ -393,7 +396,7 @@ export default {
     },
     getPerformData(newVal) {
       const formArrObj = {};
-      if (newVal.customerType === '1') {
+      if (newVal.customerType === 1) {
         formArrObj.customerNameSpl = newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1];
         formArrObj.customerName = newVal.customer.split(' ')[0];
         formArrObj.customerPhone = newVal.customer.split(' ')[1];
@@ -418,7 +421,7 @@ export default {
       formArrObj.saleAndLease = newVal.saleAndLease;
       formArrObj.customerType = newVal.customerType;
       formArrObj.customerID = newVal.customerID;
-      formArrObj.customerTypeSpl = (newVal.saleAndLease === '1' ? '买卖' : '租赁') + '(' + (newVal.customerType === '1' ? '业主方' : '买方') + ')';
+      formArrObj.customerTypeSpl = (newVal.saleAndLease === 1 ? '买卖' : '租赁') + '(' + (newVal.customerType === 1 ? '业主方' : '买方') + ')';
       formArrObj.currentSituation = newVal.currentSituation;
       formArrObj.completedPercent = newVal.completedPercent + '%'; // TODO:暂时先写死;
       formArrObj.recoveryPerformance = newVal.recoveryPerformance;
@@ -427,7 +430,7 @@ export default {
     },
     getAddFormData(newVal) {
       const formArrObj = {};
-      if (newVal.customerType === '1') {
+      if (newVal.customerType === 1) {
         formArrObj.customerNameSpl = newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1];
         formArrObj.customerName = newVal.customer.split(' ')[0];
         formArrObj.customerPhone = newVal.customer.split(' ')[1];
@@ -452,7 +455,7 @@ export default {
       formArrObj.saleAndLease = newVal.saleAndLease;
       formArrObj.customerType = newVal.customerType;
       formArrObj.customerID = newVal.customerID;
-      formArrObj.customerTypeSpl = (newVal.saleAndLease === '1' ? '买卖' : '租赁') + '(' + (newVal.customerType === '1' ? '业主方' : '买方') + ')';
+      formArrObj.customerTypeSpl = (newVal.saleAndLease === 1 ? '买卖' : '租赁') + '(' + (newVal.customerType === 1 ? '业主方' : '买方') + ')';
 
       formArrObj.currentSituation = newVal.currentSituation;
       formArrObj.completedPercent = newVal.completedPercent + '%'; // TODO:暂时先写死;
@@ -559,7 +562,7 @@ export default {
     firstInjectAddFormArr() {
       this.$store.state.operatingForm.operatingFormData.forEach((el) => {
         const addFormObj = {};
-        if (el.CustomerType === '1') {
+        if (el.CustomerType === 1) {
           addFormObj.objectNum = el.CaseName;
           addFormObj.caseName = el.ObjectName;
           addFormObj.customerName = el.CustomerName;
@@ -591,7 +594,7 @@ export default {
         addFormObj.saleAndLease = el.CaseType;
         addFormObj.customerType = el.CustomerType;
         addFormObj.customerID = el.CustomerID;
-        addFormObj.customerTypeSpl = (el.CaseType === '1' ? '买卖' : '租赁') + '(' + (el.CustomerType === '1' ? '业主方' : '买方') + ')';
+        addFormObj.customerTypeSpl = (el.CaseType === 1 ? '买卖' : '租赁') + '(' + (el.CustomerType === 1 ? '业主方' : '买方') + ')';
         addFormObj.currentSituation = el.CurrentSituation;
         addFormObj.completedPercent = el.AchievePossibility; // TODO:暂时先写死;
         addFormObj.fullCommissionSign = el.FullCommissionYD;
@@ -602,6 +605,7 @@ export default {
         addFormObj.fullCommissionSignDiff = el.FullCommissionDifference;
         addFormObj.ContractMoneyDiff = el.SigningGoldDifference;
         addFormObj.discountAmountDiff = el.DiscountGoldDifference;
+        addFormObj.ID = el.ID;
         Vue.set(addFormObj, 'fullCommissionSignActual', el.FullCommissionSJ);
         Vue.set(addFormObj, 'discountAmountActual', el.DiscountGoldSJ);
         Vue.set(addFormObj, 'relContractMoney', el.SigningGoldSJ);
@@ -611,7 +615,7 @@ export default {
     firstInjectAddPerformanceArr() {
       this.$store.state.operatingForm.performanceFormData.forEach((el) => {
         const addPerFormObj = {};
-        if (el.CustomerType === '1') {
+        if (el.CustomerType === 1) {
           addPerFormObj.objectNum = el.CaseName;
           addPerFormObj.caseName = el.ObjectName;
           addPerFormObj.customerName = el.CustomerName;
@@ -639,7 +643,7 @@ export default {
         addPerFormObj.saleAndLease = el.CaseType;
         addPerFormObj.customerType = el.CustomerType;
         addPerFormObj.customerID = el.CustomerID;
-        addPerFormObj.customerTypeSpl = (el.CaseType === '1' ? '买卖' : '租赁') + '(' + (el.CustomerType === '1' ? '业主方' : '买方') + ')';
+        addPerFormObj.customerTypeSpl = (el.CaseType === 1 ? '买卖' : '租赁') + '(' + (el.CustomerType === 1 ? '业主方' : '买方') + ')';
         addPerFormObj.customerNameSpl = el.CustomerName + '<br>' + el.CustomerPhone;
         // addPerFormObj.customerName = el.CustomerName;
         // addPerFormObj.customerPhone = el.CustomerPhone;

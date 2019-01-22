@@ -62,6 +62,12 @@ export const monthQueryAndAdd = params => axios({
   params,
 });
 
+export const monthTransactionCase = params => axios({
+  url: '/Matching',
+  method: 'POST',
+  data: params,
+});
+
 export default {
   monthScheduleTable,
   queryAndAddedUserInfo,
@@ -73,4 +79,5 @@ export default {
   monthMainAndScheduleSub,
   monthOperatingAdd,
   monthQueryAndAdd,
+  monthTransactionCase,
 };
