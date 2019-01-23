@@ -27,7 +27,7 @@
               </el-select>
             </el-col>
             <el-col :span="11">
-              <el-select v-model="AddForm.customerType" placeholder="请选择客户类型" size="small">
+              <el-select v-model="AddForm.customerType" placeholder="请选择客户类型" size="small" @change="selectCustomerType">
                 <el-option label="业主方" :value="1"></el-option>
                 <el-option label="买方" :value="2"></el-option>
               </el-select>
@@ -38,14 +38,14 @@
           <el-form-item label="案件名称">
             <el-row :gutter="20">
               <el-col :span="11">
-                <el-form-item prop="objectNum" class="objectNum">
-                  <el-input v-model="AddForm.objectNum" placeholder="请输入物件编号" size="small" :clearable="true"></el-input>
+                <el-form-item prop="objectNum" class="objectNum" ref="objectNumForm">
+                  <el-input ref="objectNum" v-model="AddForm.objectNum" placeholder="请输入物件编号" size="small" :clearable="true"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="2">
                 <i class="el-icon-search" @click="getQueryInfo"></i>
               </el-col>
-              <el-col :span="7">
+              <el-col :span="9">
                 {{AddForm.caseName}}
               </el-col>
             </el-row>
@@ -53,7 +53,7 @@
           <el-form-item label="客户">
             <el-row :gutter="20">
               <el-col :span="11">
-                <el-form-item prop="customer" class="customerName">
+                <el-form-item prop="customer" class="customerName" ref="customerForm">
                   <el-input v-model="AddForm.customer" :disabled="true" size="small" :clearable="true"></el-input>
                 </el-form-item>
               </el-col>
@@ -64,8 +64,8 @@
           <el-form-item label="客户">
             <el-row :gutter="20">
               <el-col :span="11">
-                <el-form-item prop="searchCustomer" class="searchCustomer">
-                  <el-input v-model.number="AddForm.searchCustomer" placeholder="请输入客户手机号" size="small" :clearable="true"></el-input>
+                <el-form-item prop="searchCustomer" class="searchCustomer" ref="searchCustomerForm">
+                  <el-input v-model.number="AddForm.searchCustomer" ref="searchCustomer" placeholder="请输入客户手机号" size="small" :clearable="true"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="2">
@@ -81,7 +81,7 @@
           <el-form-item label="需求内容">
             <el-row :gutter="20">
               <el-col :span="22">
-                <el-form-item prop="demandContent" class="demandContent">
+                <el-form-item prop="demandContent" class="demandContent" ref="demandContentForm">
                   <el-input type="textarea" :rows="2" placeholder="20字以内" v-model="AddForm.demandContent" resize="none" maxlength="30"></el-input>
                 </el-form-item>
               </el-col>
@@ -197,11 +197,12 @@ export default {
         broker: '',
         saleAndLease: 1,
         customerType: 1,
-        objectNum: 'SAJ00261787',
+        // objectNum: 'SAJ00261787',
+        objectNum: '',
         caseName: '',
         customer: '',
         customerID: '',
-        searchCustomer: 8602165120564,
+        searchCustomer: '',
         searchCustomerName: '',
         demandContent: '',
         currentSituation: '',
@@ -270,6 +271,15 @@ export default {
         }
       });
     },
+    selectCustomerType() {
+      if (this.AddForm.customerType === 1) {
+        this.$refs.searchCustomerForm.clearValidate();
+        this.$refs.demandContentForm.clearValidate();
+      } else {
+        this.$refs.objectNumForm.clearValidate();
+        this.$refs.customerForm.clearValidate();
+      }
+    },
     selectBrokerLabel(val) {
       this.getStoreBrokerData.forEach((item, i) => {
         const brokerObj = {};
@@ -282,31 +292,56 @@ export default {
     doClose() {
       this.$emit('changeDialogShow', false);
     },
+    messageInfo(msg) {
+      Message({
+        message: msg,
+        duration: 1000,
+        type: 'warning',
+      });
+    },
     getQueryInfo() {
       if (this.AddForm.broker === '') {
-        Message({
-          message: '请选择经纪人',
-          duration: 1000,
-          type: 'warning',
-        });
+        this.messageInfo('请选择经纪人');
         this.$refs.broker.focus();
+        return false;
+      }
+      if (this.AddForm.customerType === 1 && this.AddForm.objectNum === '') {
+        this.messageInfo('请输入物件编号');
+        this.$refs.objectNum.focus();
+        return false;
+      }
+      if (this.AddForm.customerType === 2 && this.AddForm.searchCustomer === '') {
+        this.messageInfo('请输入客户手机号');
+        this.$refs.searchCustomer.focus();
         return false;
       }
       const queryParams = {};
       queryParams.OwnerID = this.AddForm.broker;
       queryParams.CustomerType = this.AddForm.customerType;
-      if (this.AddForm.customerType === '1') {
+      if (this.AddForm.customerType === 1) {
         queryParams.ObjectNo = this.AddForm.objectNum;
       } else {
         queryParams.Phone = this.AddForm.searchCustomer;
       }
       this.$api.monthOperatingAdd(queryParams)
         .then((res) => {
-          if (this.AddForm.customerType === '1') {
+          console.log(JSON.parse(res.data));
+          console.log(JSON.parse(res.data).length);
+          if (this.AddForm.customerType === 1) {
+            if (JSON.parse(res.data).length === 0) {
+              this.messageInfo('查询无结果,请确认物件编号正确');
+              this.$refs.objectNum.focus();
+              return false;
+            }
             this.AddForm.customer = JSON.parse(res.data)[0].Name + ' ' + JSON.parse(res.data)[0].PhoneNumber;
             this.AddForm.caseName = JSON.parse(res.data)[0].CaseName;
             console.log(JSON.parse(res.data));
           } else {
+            if (JSON.parse(res.data).length === 0) {
+              this.messageInfo('查询无结果,请确认手机号码正确');
+              this.$refs.searchCustomer.focus();
+              return false;
+            }
             this.AddForm.searchCustomerName = JSON.parse(res.data)[0].Name;
             console.log(JSON.parse(res.data));
           }
@@ -333,6 +368,7 @@ export default {
   font-weight: bold;
   cursor: pointer;
 }
+
 </style>
 <style lang="less">
 #operating-add{

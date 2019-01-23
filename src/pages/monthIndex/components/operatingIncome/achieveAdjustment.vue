@@ -2,7 +2,7 @@
   <el-dialog
     title="达成匹配调整"
     :visible.sync="copyAchieveAdjustmentVisible"
-    width="30%"
+    width="550px"
     center
     @close="handleClose"
     custom-class="achieve-dialog"
@@ -11,12 +11,12 @@
       <div>请选择本月分店的成交案件</div>
       <div class="radio">
         <template v-if="transactionCaseArr.length>0">
-          <el-radio
-            v-for="(item, index) in transactionCaseArr"
-            :key="index"
-            :label="item.ID"
-            v-model="radio"
-          >{{item.value}}</el-radio>
+          <el-col :span="12" v-for="(item, index) in transactionCaseArr" :key="index">
+            <el-radio
+              :label="item.ID"
+              v-model="radio"
+            >{{item.value}}</el-radio>
+          </el-col>
         </template>
         <template v-else>
           <div class="red">暂无数据</div>
@@ -47,7 +47,7 @@ export default {
   data() {
     return {
       copyAchieveAdjustmentVisible: this.achieveAdjustmentVisible,
-      radio: '1',
+      radio: '',
       transactionCaseArr: [],
     };
   },
@@ -63,7 +63,18 @@ export default {
     getTransactionCase() {
       // TODO:这里的月份不是死的,后续修改
       const customerType = this.multipleSelection[0].customerType;
-      this.$api.monthScheduleTable({ OrganizationID: this.$store.state.comData.commonData.OrganizeId, years: new Date().getFullYear() + '01', customerType })
+      console.log({
+        OrganizationID: this.$store.state.comData.commonData.OrganizeId,
+        years: new Date().getFullYear() + '01',
+        customerType,
+        RequestType: 0,
+      });
+      this.$api.monthScheduleTable({
+        OrganizationID: this.$store.state.comData.commonData.OrganizeId,
+        years: new Date().getFullYear() + '01',
+        customerType,
+        RequestType: 0,
+      })
         .then((res) => {
           this.transactionCaseArr = [];
           console.log(JSON.parse(res.data));
@@ -102,10 +113,13 @@ export default {
       if (this.multipleSelection.length === 1) {
         params.ID = this.multipleSelection[0].ID;
       }
+      params.RequestType = 0;
       console.log(params);
       this.$api.monthTransactionCase(params)
         .then((res) => {
           console.log(res);
+          // TODO:
+          // window.location.reload();
         })
         .catch((errMsg) => {
           console.log(errMsg);
@@ -153,18 +167,25 @@ export default {
       font-size: 16px;
     }
     .radio{
-      padding-left: 30px;
-      margin-top: 20px;
       .el-radio:last-child{
         margin-top: 10px;
       }
-    }
-    .note{
-      margin-top: 20px;
     }
   }
   .el-dialog__body{
     padding-top: 10px;
   }
 }
+</style>
+<style>
+  .achieve-dialog .el-dialog__body{
+    /*max-height: 250px;*/
+    /*overflow: scroll;*/
+  }
+  .achieve-dialog-content div.el-col.el-col-12:last-child{
+    margin-bottom: 20px;
+  }
+  .achieve-dialog-content div.radio>div.red{
+    margin-top: 10px;
+  }
 </style>

@@ -19,6 +19,8 @@
     <el-tabs type="border-card">
       <el-tab-pane label="月度身份选择">
         <el-button type="primary" class="index" @click="joinQuery('index', 'month')">瑞虹一店</el-button>
+        <el-button type="primary" class="index" @click="joinQuery('index2', 'month')">徐汇店</el-button>
+        <el-button type="primary" class="index" @click="joinQuery('index3', 'month')">浦东一店</el-button>
         <el-button type="primary"  @click="joinQuery('zxb', 'month')">资讯部</el-button>
         <el-button type="primary"  @click="joinQuery('sh', 'month')">上海中介</el-button>
         <el-button type="primary"  @click="joinQuery('fwc', 'month')">上海服务处</el-button>
@@ -43,6 +45,12 @@ export default {
       switch (true) {
         case index === 'index':
           sessionStorage.setItem('userID', '{85811A95-BB15-4914-8926-82E88F5E6E78}');
+          break;
+        case index === 'index2':
+          sessionStorage.setItem('userID', '{C01391A2-352A-46A0-B2F2-34BDE19773BC}');
+          break;
+        case index === 'index3':
+          sessionStorage.setItem('userID', '{EE66B8D3-612D-442E-97CC-158843CEF04D}');
           break;
         case index === 'region':
           sessionStorage.setItem('userID', '{E1DD5988-4E98-403A-8BAA-23F0C1A3AE2C}');

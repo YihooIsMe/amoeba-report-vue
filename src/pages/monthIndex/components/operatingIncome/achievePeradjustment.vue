@@ -2,7 +2,7 @@
   <el-dialog
     title="达成匹配调整"
     :visible.sync="copyPerAchieveAdjustmentVisible"
-    width="30%"
+    width="550px"
     center
     @close="handleClose"
     custom-class="achieve-dialog"
@@ -10,9 +10,17 @@
     <div class="achieve-dialog-content">
       <div>请选择本月分店的成交案件</div>
       <div class="radio">
-        <el-radio v-model="radio" label="1">SAM111111</el-radio>
-        <br>
-        <el-radio v-model="radio" label="2">SAM2222222</el-radio>
+        <template v-if="perTransactionCaseArr.length>0">
+          <el-col :span="12" v-for="(item, index) in perTransactionCaseArr" :key="index">
+            <el-radio
+              :label="item.ID"
+              v-model="radio"
+            >{{item.value}}</el-radio>
+          </el-col>
+        </template>
+        <template v-else>
+          <div class="red">暂无数据</div>
+        </template>
       </div>
       <div class="note">
         <span class="red">*</span>只能调月预定案件，预定和实际的客户类别必须一致，同一案子同一客户类别只能匹配一条月预定记录
@@ -20,7 +28,7 @@
     </div>
     <span slot="footer" class="dialog-footer">
     <el-button @click="copyPerAchieveAdjustmentVisible = false">取 消</el-button>
-    <el-button type="primary" @click="copyPerAchieveAdjustmentVisible = false">确 定</el-button>
+    <el-button type="primary" @click="perTransactionCaseSubmit">确 定</el-button>
   </span>
   </el-dialog>
 </template>
@@ -28,16 +36,19 @@
 <script>
 import Vue from 'vue';
 import { Radio } from 'element-ui';
+import api from '@/http/index';
 
 Vue.use(Radio);
+Vue.use(api);
 
 export default {
   name: 'achievePeradjustment',
-  props: ['perAchieveAdjustmentVisible'],
+  props: ['perAchieveAdjustmentVisible', 'multipleSelectionPer'],
   data() {
     return {
       copyPerAchieveAdjustmentVisible: this.perAchieveAdjustmentVisible,
-      radio: '1',
+      radio: '',
+      perTransactionCaseArr: [],
     };
   },
   watch: {
@@ -48,6 +59,72 @@ export default {
   methods: {
     handleClose() {
       this.$emit('closePerAchieveDialog', false);
+    },
+    getPerTransactionCase() {
+      // TODO:正式环境更改,一下围测试环境下
+      const customerType = this.multipleSelectionPer[0].customerType;
+      console.log({
+        OrganizationID: this.$store.state.comData.commonData.OrganizeId,
+        years: new Date().getFullYear() + '01',
+        customerType,
+        RequestType: 1,
+      });
+      this.$api.monthScheduleTable({
+        OrganizationID: this.$store.state.comData.commonData.OrganizeId,
+        years: new Date().getFullYear() + '01',
+        customerType,
+        RequestType: 1,
+      })
+        .then((res) => {
+          this.perTransactionCaseArr = [];
+          console.log(JSON.parse(res.data));
+          JSON.parse(res.data).forEach((el) => {
+            const obj = {};
+            obj.CaseName = el.CaseName;
+            obj.value = el.value;
+            obj.CustomerID = el.CustomerID;
+            obj.CustomerType = el.CustomerType;
+            obj.CustomerName = el.CustomerName;
+            obj.ID = el.ID;
+            this.perTransactionCaseArr.push(obj);
+          });
+          if (this.perTransactionCaseArr.length > 0) {
+            this.radio = this.perTransactionCaseArr[0].ID;
+          }
+        })
+        .catch((errMsg) => {
+          console.log(errMsg);
+        });
+    },
+    perTransactionCaseSubmit() {
+      let i;
+      this.copyPerAchieveAdjustmentVisible = false;
+      this.perTransactionCaseArr.forEach((el, index) => {
+        if (el.ID === this.radio) {
+          i = index;
+          return '';
+        }
+        return '';
+      });
+      const params = {};
+      params.CaseName = this.perTransactionCaseArr[i].CaseName;
+      params.CustomerID = this.perTransactionCaseArr[i].CustomerID;
+      params.CustomerName = this.perTransactionCaseArr[i].CustomerName;
+      if (this.multipleSelectionPer.length === 1) {
+        params.ID = this.multipleSelectionPer[0].ID;
+      }
+      params.RequestType = 1;
+      console.log(params);
+      this.$api.monthTransactionCase(params)
+        .then((res) => {
+          console.log(res);
+          // TODO:
+          // window.location.reload();
+        })
+        .catch((errMsg) => {
+          console.log(errMsg);
+        });
+
     },
   },
 };
@@ -87,8 +164,6 @@ export default {
         font-size: 16px;
       }
       .radio{
-        padding-left: 30px;
-        margin-top: 20px;
         .el-radio:last-child{
           margin-top: 10px;
         }

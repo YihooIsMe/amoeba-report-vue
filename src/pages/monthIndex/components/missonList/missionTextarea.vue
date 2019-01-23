@@ -78,19 +78,17 @@
         </tr>
         </tbody>
       </table>
-      <MaskLayer></MaskLayer>
     </div>
 </template>
 
 <script>
 import Vue from 'vue';
 import Editor from './editor.vue';
-import MaskLayer from './maskLayer.vue';
 
 export default {
   name: 'missionTextarea',
   props: ['weekData'],
-  components: { Editor, MaskLayer },
+  components: { Editor },
   data() {
     return {
       tableTh: '',

@@ -106,6 +106,7 @@ export default {
       },
       scheduleForm: this.$store.state.scheduleForm.sumScheduleForm,
       isZero: false,
+      loading: '',
     };
   },
   methods: {
@@ -169,6 +170,12 @@ export default {
       }
     },
     firstLoadingRequest() {
+      this.loading = this.$loading({
+        lock: true,
+        text: 'Loading...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)',
+      });
       this.userID = VueCookie.get('monthUserID');
       this.CreateByUser = VueCookie.get('monthCreateByUser');
       this.viewEditorYear = VueCookie.get('monthViewEditorYear');
@@ -255,6 +262,7 @@ export default {
           cal.allInputEl(el)[3].value = (cal.remSep(cal.allInputEl(el)[2].value) / cal.remSep(cal.allInputEl(el)[1].value)).toLocaleString();
         }
       });
+      this.loading.close();
     },
     AutomaticCalculation(i, className, event) {
       let currentEl;

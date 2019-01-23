@@ -71,6 +71,7 @@
           </tbody>
         </table>
         <!-- TODO:pagination分页器 -->
+<!--
         <el-pagination
           class="year-pagination"
           background
@@ -79,6 +80,7 @@
           @current-change="doCurrentChange"
           :total="20">
         </el-pagination>
+-->
       </div>
 
     </div>

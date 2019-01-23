@@ -125,6 +125,7 @@
         @selection-change="handleSelectionChangePer">
         <el-table-column
           type="selection"
+          :selectable="checkSelectable"
           width="60">
         </el-table-column>
         <el-table-column
@@ -203,6 +204,8 @@
       @givePerFormDate="getPerformData"></PerformanceAdd>
     <AchievePeradjustment
       :perAchieveAdjustmentVisible="perAchieveAdjustmentVisible"
+      ref="achievePerAdjustmentEl"
+      :multipleSelectionPer="multipleSelectionPer"
       @closePerAchieveDialog="getPerAchieveDialog"></AchievePeradjustment>
   </div>
 </template>
@@ -255,11 +258,8 @@ export default {
     getSummaries(param) {
       const { columns, data } = param;
       const sums = [];
-      console.log(columns);
-      console.log(data);
       // TODO:data数据需要处理；
       const filterData = data.filter(item => item.PreordainID !== '');
-      console.log(filterData);
       // TODO:后续继续修改；
       columns.forEach((column, index) => {
         if (index === 0) {
@@ -267,7 +267,6 @@ export default {
           return;
         }
         const values = filterData.map(item => Number(item[column.property]));
-        console.log(values);
         if (!values.every(value => isNaN(value))) {
           sums[index] = values.reduce((prev, curr) => {
             const value = Number(curr);
@@ -325,6 +324,7 @@ export default {
           return '';
         }
         this.perAchieveAdjustmentVisible = true;
+        this.$refs.achievePerAdjustmentEl.getPerTransactionCase();
       }
       return '';
     },
@@ -482,7 +482,8 @@ export default {
       this.addFormArr.push(formArrObj);
     },
     getStoreBroker() {
-      this.$api.queryAndAddedUserInfo({ OrganizeID: '{0072F63D-741C-4DED-865A-F75BA73954A8}' })
+      console.log({ OrganizeID: this.$store.state.comData.commonData.OrganizeId });
+      this.$api.queryAndAddedUserInfo({ OrganizeID: this.$store.state.comData.commonData.OrganizeId })
         .then((res) => {
           this.getStoreBrokerData = JSON.parse(res.data);
           console.log(JSON.parse(res.data));
@@ -666,6 +667,7 @@ export default {
         addPerFormObj.completedPercent = el.AchievePossibility; // TODO:暂时先写死;
         addPerFormObj.recoveryPerformance = el.PerformanceYD;
         addPerFormObj.discountAmount = el.PerformanceDifference;
+        addPerFormObj.PreordainID = el.PreordainID;
         Vue.set(addPerFormObj, 'discountType', el.PerformanceSJ);
         this.addPerformanceArr.push(addPerFormObj);
       });
@@ -702,6 +704,7 @@ export default {
     },
   },
   mounted() {
+    // TODO:查询经纪人为什么不能放在computed,并watch呢???
     this.getStoreBroker();
   },
 };
@@ -725,4 +728,10 @@ export default {
   -moz-border-radius: 3px;
   border-radius: 3px;
 }
+</style>
+<style>
+  div.operating-income.operateIncomePanel .achieve-dialog .achieve-dialog-content .radio .el-radio{
+    margin-top: 10px;
+    margin-left: 10px;
+  }
 </style>

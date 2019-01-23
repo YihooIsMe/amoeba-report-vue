@@ -13,16 +13,18 @@
     <MissionTextarea :weekData="secondWeekData" v-show="showMission[1]"></MissionTextarea>
     <MissionTextarea :weekData="thirdWeekData" v-show="showMission[2]"></MissionTextarea>
     <MissionTextarea :weekData="fourthWeekData" v-show="showMission[3]"></MissionTextarea>
+    <MaskLayer></MaskLayer>
   </div>
 </template>
 
 <script>
 import Vue from 'vue';
 import MissionTextarea from './missionTextarea.vue';
+import MaskLayer from './maskLayer.vue';
 
 export default {
   name: 'missionList',
-  components: { MissionTextarea },
+  components: { MissionTextarea, MaskLayer },
   data() {
     return {
       showMission: [true, false, false, false],

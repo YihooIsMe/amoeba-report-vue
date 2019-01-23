@@ -115,12 +115,14 @@ export default {
       const OrganizationID = this.$store.state.comData.commonData.OrganizeId;
       const MonthlyPlanID = this.$store.state.comData.commonData.MPID; // TODO:如果是201812月那么就要变成201901月；后续完善；
       const years = VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn' ? VueCookie.get('monthViewEditorYear') : new Date().getFullYear();
-      let month = VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn' ? VueCookie.get('monthViewEditorMonth') : new Date().getMonth() + 2;
+      // TODO:测试阶段,以1月为测试数据;
+      // let month = VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn' ? VueCookie.get('monthViewEditorMonth') : new Date().getMonth() + 2;
+      // TODO:后续改回来
+      let month = VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn' ? VueCookie.get('monthViewEditorMonth') : 1;
       if (month < 10) {
         month = '0' + month;
       }
       const yearsAndMonth = years + month;
-      console.log('hello');
       console.log({ MonthlyPlanID, years: yearsAndMonth, OrganizationID });
       this.$api.monthScheduleTable({ MonthlyPlanID, years: yearsAndMonth, OrganizationID }).then((res) => {
         console.log(JSON.parse(res.data));
@@ -153,7 +155,7 @@ export default {
         sObj.CostCode = this.$store.state.comData.commonData.Pr0139;
         sObj.Years = new Date().getFullYear();
         // TODO:后续改回来
-        sObj.Month = new Date().getMonth() + 2;
+        // sObj.Month = new Date().getMonth() + 2;
         // TODO:上一行代码改回来;
         sObj.Month = 1;
         sObj.ScheduleSubjectID = item.ScheduleSubjectID;

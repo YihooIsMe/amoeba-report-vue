@@ -32,30 +32,30 @@
             @click="reviewAndReject(3)"
           >驳回</el-button>
           <el-button type="warning" v-if="$store.state.comData.commonData.draft === 1">Excel导出</el-button>
-          <el-button type="warning" plain @click="clearData">清空数据</el-button>
+          <el-button type="warning" plain @click="clearData" v-if="false">清空数据</el-button>
         </div>
       </div>
-      <el-tabs type="border-card" class="tab-container" value="schedule">
+      <el-tabs type="border-card" class="tab-container" :value="selectTabPane" @tab-click="tabClick">
         <template v-if="!isBehind">
-          <el-tab-pane label="主表单" name="schedule">
+          <el-tab-pane label="主表单" name="mainForm">
             <MainForm @giveStore="getStore" ref="mainForm" class="mainFormPanel" @getScheduleTableData="getSonComData"></MainForm>
           </el-tab-pane>
-          <el-tab-pane label="附表">
+          <el-tab-pane label="附表" name="schedule">
             <ScheduleTable ref="scheduleTable" class="schedulePanel"></ScheduleTable>
           </el-tab-pane>
-          <el-tab-pane label="营业收入">
+          <el-tab-pane label="营业收入" name="operateIncome">
             <OperatingIncome ref="operateIncome" class="operateIncomePanel"></OperatingIncome>
           </el-tab-pane>
-          <el-tab-pane label="任务单">
+          <el-tab-pane label="任务单" name="missionList">
             <MissionList class="missionListPanel"></MissionList>
           </el-tab-pane>
         </template>
         <template v-else>
-          <el-tab-pane label="主表单" name="schedule">
+          <el-tab-pane label="主表单" name="mainForm">
             <MainForm @giveStore="getStore" class="mainFormPanel" ref="mainForm" @getScheduleTableData="getSonComData"></MainForm>
           </el-tab-pane>
-          <el-tab-pane label="任务单" class="missionListPanel">
-            <MissionList></MissionList>
+          <el-tab-pane label="任务单" name="missionList">
+            <MissionList  class="missionListPanel"></MissionList>
           </el-tab-pane>
         </template>
       </el-tabs>
@@ -97,6 +97,7 @@ export default {
       showDraftAndSubmit: false,
       inputDisabled: false,
       isBehind: true, // 判断是否为幕僚,幕僚没有附表和营业收入
+      selectTabPane: this.$store.state.comData.selectTabPane || 'mainForm',
     };
   },
   methods: {
@@ -108,6 +109,9 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+    },
+    tabClick(el) {
+      this.$store.commit('setSelectTabPane', el.name);
     },
     getStore(val) {
       this.index = val;
@@ -167,7 +171,7 @@ export default {
       // this.mainAndScheduleAllSubmissionData.Month = 5;
       // TODO:这里代码需要改回来;
       // this.mainAndScheduleAllSubmissionData.Month = this.getQueryAddMonth();
-      // 上一行的代码改回来;
+      // TODO:上一行的代码改回来;
       this.mainAndScheduleAllSubmissionData.Month = 1;
       this.mainAndScheduleAllSubmissionData.MonthlyPlanID = storeCommonData.MPID;
       this.mainAndScheduleAllSubmissionData.CostCode = storeCommonData.Pr0139;
@@ -296,7 +300,9 @@ export default {
       if (VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn') {
         return this.index + ' ' + VueCookie.get('monthViewEditorYear') + '年' + VueCookie.get('monthViewEditorMonth') + '月';
       }
-      return this.index + ' ' + new Date().getFullYear() + '年' + (new Date().getMonth() + 2) + '月';
+      // TODO:正是环境改回来;
+      // return this.index + ' ' + new Date().getFullYear() + '年' + (new Date().getMonth() + 2) + '月';
+      return this.index + ' ' + new Date().getFullYear() + '年01月';
     },
   },
   mounted() {

@@ -42,7 +42,7 @@
                      @click="exportAllData"
                      v-if="draft===1"
           >导出</el-button>
-          <el-button type="danger" @click="clearData">清空数据</el-button>
+          <el-button type="danger" @click="clearData" v-if="false">清空数据</el-button>
         </div>
       </div>
       <div v-for="(tableData, index) in tableDataInject"
