@@ -2,8 +2,8 @@
   <div class="operating-income">
     营业收入（白色为预定，灰色为实际）
     <div class="child-operating-income">
-      <el-button type="primary" plain size="small" @click="dialogTableVisible = true">新增</el-button>
-      <el-button type="success" plain size="small" @click="deleteSelected('operate')">删除</el-button>
+      <el-button type="primary" plain size="small" @click="dialogTableVisible = true" v-if="showDraftAndSubmit">新增</el-button>
+      <el-button type="success" plain size="small" @click="deleteSelected('operate')" v-if="showDraftAndSubmit">删除</el-button>
       <el-button type="warning" plain size="small" @click="matchAdjustment('operatingIncome')">达成匹配调整</el-button>
       <el-table
         ref="multipleTable"
@@ -118,8 +118,8 @@
     </div>
     <div class="performance-title">业绩收入（白色为预定，灰色为实际）</div>
     <div class="child-performance-income">
-      <el-button type="primary" plain size="small" @click="dialogPerformance = true">新增</el-button>
-      <el-button type="success" plain size="small" @click="deleteSelected('performance')">删除</el-button>
+      <el-button type="primary" plain size="small" @click="dialogPerformance = true" v-if="showDraftAndSubmit">新增</el-button>
+      <el-button type="success" plain size="small" @click="deleteSelected('performance')" v-if="showDraftAndSubmit">删除</el-button>
       <el-button type="warning" plain size="small" @click="matchAdjustment('performance')">达成匹配调整</el-button>
       <el-table
         ref="multipleTable"
@@ -708,6 +708,9 @@ export default {
   computed: {
     isCompleted() {
       return this.$store.state.scheduleForm.isCompleted;
+    },
+    showDraftAndSubmit() {
+      return this.$store.state.comData.showDraftAndSubmit;
     },
   },
   watch: {

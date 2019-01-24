@@ -7,7 +7,7 @@
 <script>
 import Vue from 'vue';
 import E from 'wangeditor';
-import editorImgZoom from '@/assets/js/editorImgZoom.js';
+import editorImgZoom from '@/assets/js/editorImgZoom';
 
 export default {
   name: 'editor',
@@ -39,6 +39,21 @@ export default {
         'undo', // 撤销
         'redo', // 重复
       ];
+      this.editor.customConfig.colors = [
+        '#000000',
+        '#eeece0',
+        '#1c487f',
+        '#4d80bf',
+        '#c24f4a',
+        '#8baa4a',
+        '#7b5ba1',
+        '#46acc8',
+        '#f9963b',
+        '#ffffff',
+        '#FF0000',
+        '#00B51D',
+      ];
+      this.editor.customConfig.zIndex = 100;
       this.editor.customConfig.onchangeTimeout = 2000;
       this.editor.customConfig.onchange = (html) => {
         Vue.set(this.editorData, 'weekIndex', this.weekIndex);
@@ -96,5 +111,7 @@ export default {
 </script>
 
 <style scoped>
-
+.red{
+  color:red;
+}
 </style>

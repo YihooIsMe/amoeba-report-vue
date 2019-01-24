@@ -588,41 +588,19 @@ export default {
     judgeInputDisabled() {
       if (VueCookie.get('fromWhichBtn') === 'newAdded') {
         this.showReviewAndReject = false;
-        if (this.fillStatus === '未填写' || this.fillStatus === '填写中' || this.fillStatus === '驳回') {
-          this.showDraftAndSubmit = true;
-        } else {
-          this.showDraftAndSubmit = false;
-        }
-        if (this.fillStatus === '待审核' || this.fillStatus === '审核通过') {
-          this.deleteBtnDisabled = true;
-          this.inputDisabled = true;
-        } else {
-          this.deleteBtnDisabled = false;
-          this.inputDisabled = false;
-        }
+        this.showDraftAndSubmit = this.fillStatus === '未填写' || this.fillStatus === '填写中' || this.fillStatus === '驳回';
+        this.deleteBtnDisabled = this.fillStatus === '待审核' || this.fillStatus === '审核通过';
+        this.inputDisabled = this.fillStatus === '待审核' || this.fillStatus === '审核通过';
       } else if (this.userID !== this.CreateByUser) {
         this.deleteBtnDisabled = true;
         this.showDraftAndSubmit = false;
         this.inputDisabled = true;
-        if (this.fillStatus === '待审核') {
-          this.showReviewAndReject = true;
-        } else {
-          this.showReviewAndReject = false;
-        }
+        this.showReviewAndReject = this.fillStatus === '待审核';
       } else {
         this.showReviewAndReject = false;
-        if (this.fillStatus === '未填写' || this.fillStatus === '填写中' || this.fillStatus === '驳回') {
-          this.showDraftAndSubmit = true;
-        } else {
-          this.showDraftAndSubmit = false;
-        }
-        if (this.fillStatus !== '待审核' && this.fillStatus !== '审核通过') {
-          this.deleteBtnDisabled = false;
-          this.inputDisabled = false;
-        } else {
-          this.deleteBtnDisabled = true;
-          this.inputDisabled = true;
-        }
+        this.showDraftAndSubmit = this.fillStatus === '未填写' || this.fillStatus === '填写中' || this.fillStatus === '驳回';
+        this.deleteBtnDisabled = !(this.fillStatus !== '待审核' && this.fillStatus !== '审核通过');
+        this.inputDisabled = !(this.fillStatus !== '待审核' && this.fillStatus !== '审核通过');
       }
     },
 

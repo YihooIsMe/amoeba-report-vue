@@ -18,6 +18,7 @@
                      @keyup="handleInputNum"
                      @change="scheduleCalculation(welfareFeeTableData.length, '.welfareFeeTable', 1, 2, 3)"
                      :value="$store.state.comData.commonData.draft === 1 ? item.Amount : ''"
+                   :disabled="inputDisabled"
             /></td>
           <td></td>
         </tr>
@@ -45,6 +46,9 @@ export default {
     isLoadCompleted() {
       return this.$store.state.scheduleForm.welfareFeeLoadCompleted;
     },
+    inputDisabled() {
+      return this.$store.state.comData.inputDisabled;
+    },
   },
   watch: {
     isLoadCompleted() {
@@ -59,6 +63,11 @@ export default {
 };
 </script>
 
-<style scoped>
-
+<style scoped lang="less">
+  .welfareFeeTable td:nth-child(3){
+    padding-left: 0;
+    input{
+      text-indent: 10px;
+    }
+  }
 </style>

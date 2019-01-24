@@ -57,7 +57,12 @@
         </template>
         <template v-else>
           <el-tab-pane label="主表单" name="mainForm">
-            <MainForm @giveStore="getStore" class="mainFormPanel" ref="mainForm" @getScheduleTableData="getSonComData"></MainForm>
+            <MainForm
+              :mainFormInputDisabled="inputDisabled"
+              @giveStore="getStore"
+              class="mainFormPanel"
+              ref="mainForm"
+              @getScheduleTableData="getSonComData"></MainForm>
           </el-tab-pane>
           <el-tab-pane label="任务单" name="missionList">
             <MissionList  class="missionListPanel"></MissionList>
@@ -218,7 +223,7 @@ export default {
           });
           if (type === 'success') {
             VueCookie.set('monthFillStatus', '待审核');
-            // window.location.reload();
+            window.location.reload();
             /* TODO:正式环境的时候reload需要，但是现在不需要 */
           }
         })
@@ -232,37 +237,19 @@ export default {
     monthJudgeInputDisabled() {
       if (VueCookie.get('monthFromWhichBtn') === 'newAdded') {
         this.showReviewAndReject = false;
-        if (this.monthFillStatus === '未填写' || this.monthFillStatus === '填写中' || this.monthFillStatus === '驳回') {
-          this.showDraftAndSubmit = true;
-        } else {
-          this.showDraftAndSubmit = false;
-        }
-        if (this.monthFillStatus === '待审核' || this.monthFillStatus === '审核通过') {
-          this.inputDisabled = true;
-        } else {
-          this.inputDisabled = false;
-        }
+        this.showDraftAndSubmit = this.monthFillStatus === '未填写' || this.monthFillStatus === '填写中' || this.monthFillStatus === '驳回';
+        this.inputDisabled = this.monthFillStatus === '待审核' || this.monthFillStatus === '审核通过';
       } else if (this.monthUserID !== this.monthCreateByUser) {
         this.showDraftAndSubmit = false;
         this.inputDisabled = true;
-        if (this.monthFillStatus === '待审核') {
-          this.showReviewAndReject = true;
-        } else {
-          this.showReviewAndReject = false;
-        }
+        this.showReviewAndReject = this.monthFillStatus === '待审核';
       } else {
         this.showReviewAndReject = false;
-        if (this.monthFillStatus === '未填写' || this.monthFillStatus === '填写中' || this.monthFillStatus === '驳回') {
-          this.showDraftAndSubmit = true;
-        } else {
-          this.showDraftAndSubmit = false;
-        }
-        if (this.monthFillStatus !== '待审核' && this.monthFillStatus !== '审核通过') {
-          this.inputDisabled = false;
-        } else {
-          this.inputDisabled = true;
-        }
+        this.showDraftAndSubmit = this.monthFillStatus === '未填写' || this.monthFillStatus === '填写中' || this.monthFillStatus === '驳回';
+        this.inputDisabled = !(this.monthFillStatus !== '待审核' && this.monthFillStatus !== '审核通过');
       }
+      this.$store.commit('setInputDisabled', this.inputDisabled);
+      this.$store.commit('setShowDraftAndSubmit', this.showDraftAndSubmit);
     },
     reviewAndReject(index) {
       this.$api.queryAndAddedQuery({

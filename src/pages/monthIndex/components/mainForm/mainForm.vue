@@ -38,6 +38,7 @@
                      v-on="n === 2 && item.ReadOnly === 0 && !isReadOnly(item, n) ? { focus : ($event) => inputFocus(item.className, $event), blur : ($event) => addSep($event)} : {}"
                      @keyup="handleInputNum"
                      @change="AutomaticCalculation(3, item.className, $event)"
+                     :disabled="mainFormInputDisabled"
               >
             </td>
           </tr>
@@ -69,6 +70,7 @@ Vue.use(VueCookie);
 
 export default {
   name: 'mainForm',
+  props: ['mainFormInputDisabled'],
   components: { ManagementAlert },
   data() {
     return {
@@ -153,6 +155,12 @@ export default {
           elInput[1].value = el.MonthData;
         }
       });
+      // 处于非门店的时候,数据加载完成后需要计算一遍,门店能自动计算是因为监听到数据改动
+      if (this.$store.state.comData.commonData.JobAttribute === '04') {
+        cal.whereUse('monthIndex');
+        this.currentMonthAutomaticCalculation(3);
+        this.calculatePredeterminedRatio();
+      }
     },
     hideSubjectWithZero() {
       if (!this.isZero) {

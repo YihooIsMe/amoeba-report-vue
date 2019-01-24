@@ -20,6 +20,7 @@
                      @keyup="handleInputNum"
                      @change="scheduleCalculation(ownershipFeeData.length, '.ownershipFeeTable', 1, 3, 4)"
                      :value="$store.state.comData.commonData.draft === 1 ? item.Amount : ''"
+                   :disabled="inputDisabled"
             /></td>
           <td></td>
         </tr>
@@ -47,6 +48,9 @@ export default {
     isOwnershipFeeLoadCompleted() {
       return this.$store.state.scheduleForm.ownershipFeeLoadCompleted;
     },
+    inputDisabled() {
+      return this.$store.state.comData.inputDisabled;
+    },
   },
   watch: {
     isOwnershipFeeLoadCompleted(newVal) {
@@ -62,5 +66,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
-
+  .ownershipFeeTable td:nth-child(4){
+    padding-left: 0;
+    input{
+      text-indent: 10px;
+    }
+  }
 </style>
