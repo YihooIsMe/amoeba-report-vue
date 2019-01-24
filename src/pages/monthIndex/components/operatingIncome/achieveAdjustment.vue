@@ -19,7 +19,7 @@
           </el-col>
         </template>
         <template v-else>
-          <div class="red">暂无数据</div>
+          <div class="red noData">暂无数据</div>
         </template>
       </div>
       <div class="note">
@@ -63,31 +63,36 @@ export default {
     getTransactionCase() {
       // TODO:这里的月份不是死的,后续修改
       const customerType = this.multipleSelection[0].customerType;
+      const PersonnelID = this.multipleSelection[0].broker;
       console.log({
         OrganizationID: this.$store.state.comData.commonData.OrganizeId,
         years: new Date().getFullYear() + '01',
         customerType,
         RequestType: 0,
+        PersonnelID,
       });
       this.$api.monthScheduleTable({
         OrganizationID: this.$store.state.comData.commonData.OrganizeId,
         years: new Date().getFullYear() + '01',
         customerType,
         RequestType: 0,
+        PersonnelID,
       })
         .then((res) => {
           this.transactionCaseArr = [];
           console.log(JSON.parse(res.data));
-          JSON.parse(res.data).forEach((el) => {
-            const obj = {};
-            obj.CaseName = el.CaseName;
-            obj.value = el.value;
-            obj.CustomerID = el.CustomerID;
-            obj.CustomerType = el.CustomerType;
-            obj.CustomerName = el.CustomerName;
-            obj.ID = el.ID;
-            this.transactionCaseArr.push(obj);
-          });
+          if (JSON.parse(res.data).length > 0) {
+            JSON.parse(res.data).forEach((el) => {
+              const obj = {};
+              obj.CaseName = el.CaseName;
+              obj.value = el.value;
+              obj.CustomerID = el.CustomerID;
+              obj.CustomerType = el.CustomerType;
+              obj.CustomerName = el.CustomerName;
+              obj.ID = el.ID;
+              this.transactionCaseArr.push(obj);
+            });
+          }
           if (this.transactionCaseArr.length > 0) {
             this.radio = this.transactionCaseArr[0].ID;
           }
@@ -99,31 +104,32 @@ export default {
     transactionCaseSubmit() {
       let i;
       this.copyAchieveAdjustmentVisible = false;
-      this.transactionCaseArr.forEach((el, index) => {
-        if (el.ID === this.radio) {
-          i = index;
+      if (this.transactionCaseArr.length > 0) {
+        this.transactionCaseArr.forEach((el, index) => {
+          if (el.ID === this.radio) {
+            i = index;
+            return '';
+          }
           return '';
-        }
-        return '';
-      });
-      const params = {};
-      params.CaseName = this.transactionCaseArr[i].CaseName;
-      params.CustomerID = this.transactionCaseArr[i].CustomerID;
-      params.CustomerName = this.transactionCaseArr[i].CustomerName;
-      if (this.multipleSelection.length === 1) {
-        params.ID = this.multipleSelection[0].ID;
-      }
-      params.RequestType = 0;
-      console.log(params);
-      this.$api.monthTransactionCase(params)
-        .then((res) => {
-          console.log(res);
-          // TODO:
-          // window.location.reload();
-        })
-        .catch((errMsg) => {
-          console.log(errMsg);
         });
+        const params = {};
+        params.CaseName = this.transactionCaseArr[i].CaseName;
+        params.CustomerID = this.transactionCaseArr[i].CustomerID;
+        params.CustomerName = this.transactionCaseArr[i].CustomerName;
+        if (this.multipleSelection.length === 1) {
+          params.ID = this.multipleSelection[0].ID;
+        }
+        params.RequestType = 0;
+        console.log(params);
+        this.$api.monthTransactionCase(params)
+          .then((res) => {
+            console.log(res);
+            window.location.reload();
+          })
+          .catch((errMsg) => {
+            console.log(errMsg);
+          });
+      }
     },
   },
 };
@@ -133,10 +139,6 @@ export default {
 
 </style>
 <style lang="less" scoped>
-  .red{
-    color: red;
-    vertical-align: middle;
-  }
 .achieve-dialog{
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
@@ -171,6 +173,11 @@ export default {
         margin-top: 10px;
       }
     }
+    .radio:after{
+      content: '';
+      display: table;
+      clear: both;
+    }
   }
   .el-dialog__body{
     padding-top: 10px;
@@ -183,9 +190,16 @@ export default {
     /*overflow: scroll;*/
   }
   .achieve-dialog-content div.el-col.el-col-12:last-child{
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
   .achieve-dialog-content div.radio>div.red{
     margin-top: 10px;
+  }
+  .noData{
+    margin-bottom: 10px;
+  }
+  .red{
+    color: red;
+    vertical-align: middle;
   }
 </style>

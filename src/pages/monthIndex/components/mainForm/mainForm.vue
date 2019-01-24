@@ -186,7 +186,10 @@ export default {
           userID: this.userID,
           IsYM: 1,
           Year: new Date().getFullYear(),
-          Month: new Date().getMonth() + 2,
+          // TODO:production change
+          // Month: new Date().getMonth() + 2,
+          // TODO: end
+          Month: 1,
         };
       }
       if (VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn') {

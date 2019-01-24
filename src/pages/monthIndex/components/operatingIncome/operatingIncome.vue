@@ -21,6 +21,13 @@
           width="60">
         </el-table-column>
         <el-table-column
+          label="序号"
+          width="60">
+          <template slot-scope="scope">
+            {{scope.$index + 1}}
+          </template>
+        </el-table-column>
+        <el-table-column
           label="预定别"
           width="70"
           prop="bookType">
@@ -127,6 +134,13 @@
           type="selection"
           :selectable="checkSelectable"
           width="60">
+        </el-table-column>
+        <el-table-column
+          label="序号"
+          width="60">
+          <template slot-scope="scope">
+            {{scope.$index + 1}}
+          </template>
         </el-table-column>
         <el-table-column
           label="预定别"
@@ -264,6 +278,10 @@ export default {
       columns.forEach((column, index) => {
         if (index === 0) {
           sums[index] = '合计';
+          return;
+        }
+        if (index === 1) {
+          sums[index] = '';
           return;
         }
         const values = filterData.map(item => Number(item[column.property]));
@@ -581,10 +599,10 @@ export default {
           addFormObj.customerPhone = el.CustomerPhone;
 
           addFormObj.searchCustomerName = '';
-          addFormObj.searchCustomer = 8602165120564;
+          addFormObj.searchCustomer = '';
           addFormObj.demandContent = '';
         } else {
-          addFormObj.objectNum = 'SAJ00261787';// TODO:这里到时候应当改为el.ObjectName;
+          addFormObj.objectNum = '';// TODO:这里到时候应当改为el.ObjectName;
           addFormObj.caseName = '';
           addFormObj.customerName = '';
           addFormObj.customerPhone = '';
@@ -635,14 +653,14 @@ export default {
           addPerFormObj.customerPhone = el.customerPhone;
 
           addPerFormObj.searchCustomerName = '';
-          addPerFormObj.searchCustomer = 8602165120564;
+          addPerFormObj.searchCustomer = '';
           addPerFormObj.demandContent = '';
         } else {
           addPerFormObj.searchCustomerName = el.CustomerName;
           addPerFormObj.searchCustomer = el.CustomerPhone;
           addPerFormObj.demandContent = el.CaseName;
 
-          addPerFormObj.objectNum = 'SAJ00261787';
+          addPerFormObj.objectNum = '';
           addPerFormObj.caseName = '';
           addPerFormObj.customerName = '';
           addPerFormObj.customerPhone = '';

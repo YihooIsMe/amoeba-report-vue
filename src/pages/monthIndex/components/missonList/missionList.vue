@@ -30,7 +30,7 @@ export default {
       showMission: [true, false, false, false],
       firstWeekData: {
         index: 1,
-        identity: 'store', // 1代表门店;2代表区域.如:上海业务一区 2; 瑞虹一店 1;
+        identity: 'store', // 'store'代表门店;其他的代表非门店;
         first: '<p>我是来自第一周的数据</p>',
         second: '',
         third: '',

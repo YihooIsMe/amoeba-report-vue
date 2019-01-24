@@ -32,13 +32,18 @@
             @click="reviewAndReject(3)"
           >驳回</el-button>
           <el-button type="warning" v-if="$store.state.comData.commonData.draft === 1">Excel导出</el-button>
-          <el-button type="warning" plain @click="clearData" v-if="false">清空数据</el-button>
+          <el-button type="warning" plain @click="clearData" v-if="true">清空数据</el-button>
         </div>
       </div>
       <el-tabs type="border-card" class="tab-container" :value="selectTabPane" @tab-click="tabClick">
         <template v-if="!isBehind">
           <el-tab-pane label="主表单" name="mainForm">
-            <MainForm @giveStore="getStore" ref="mainForm" class="mainFormPanel" @getScheduleTableData="getSonComData"></MainForm>
+            <MainForm
+              @giveStore="getStore"
+              ref="mainForm"
+              class="mainFormPanel"
+              :mainFormInputDisabled="inputDisabled"
+              @getScheduleTableData="getSonComData"></MainForm>
           </el-tab-pane>
           <el-tab-pane label="附表" name="schedule">
             <ScheduleTable ref="scheduleTable" class="schedulePanel"></ScheduleTable>

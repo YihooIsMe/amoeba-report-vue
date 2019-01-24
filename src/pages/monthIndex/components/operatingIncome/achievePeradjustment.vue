@@ -19,7 +19,7 @@
           </el-col>
         </template>
         <template v-else>
-          <div class="red">暂无数据</div>
+          <div class="red noData">暂无数据</div>
         </template>
       </div>
       <div class="note">
@@ -63,31 +63,36 @@ export default {
     getPerTransactionCase() {
       // TODO:正式环境更改,一下围测试环境下
       const customerType = this.multipleSelectionPer[0].customerType;
+      const PersonnelID = this.multipleSelectionPer[0].broker;
       console.log({
         OrganizationID: this.$store.state.comData.commonData.OrganizeId,
         years: new Date().getFullYear() + '01',
         customerType,
         RequestType: 1,
+        PersonnelID,
       });
       this.$api.monthScheduleTable({
         OrganizationID: this.$store.state.comData.commonData.OrganizeId,
         years: new Date().getFullYear() + '01',
         customerType,
         RequestType: 1,
+        PersonnelID,
       })
         .then((res) => {
           this.perTransactionCaseArr = [];
           console.log(JSON.parse(res.data));
-          JSON.parse(res.data).forEach((el) => {
-            const obj = {};
-            obj.CaseName = el.CaseName;
-            obj.value = el.value;
-            obj.CustomerID = el.CustomerID;
-            obj.CustomerType = el.CustomerType;
-            obj.CustomerName = el.CustomerName;
-            obj.ID = el.ID;
-            this.perTransactionCaseArr.push(obj);
-          });
+          if (JSON.parse(res.data).length > 0) {
+            JSON.parse(res.data).forEach((el) => {
+              const obj = {};
+              obj.CaseName = el.CaseName;
+              obj.value = el.value;
+              obj.CustomerID = el.CustomerID;
+              obj.CustomerType = el.CustomerType;
+              obj.CustomerName = el.CustomerName;
+              obj.ID = el.ID;
+              this.perTransactionCaseArr.push(obj);
+            });
+          }
           if (this.perTransactionCaseArr.length > 0) {
             this.radio = this.perTransactionCaseArr[0].ID;
           }
@@ -99,32 +104,32 @@ export default {
     perTransactionCaseSubmit() {
       let i;
       this.copyPerAchieveAdjustmentVisible = false;
-      this.perTransactionCaseArr.forEach((el, index) => {
-        if (el.ID === this.radio) {
-          i = index;
+      if (this.perTransactionCaseArr.length > 0) {
+        this.perTransactionCaseArr.forEach((el, index) => {
+          if (el.ID === this.radio) {
+            i = index;
+            return '';
+          }
           return '';
-        }
-        return '';
-      });
-      const params = {};
-      params.CaseName = this.perTransactionCaseArr[i].CaseName;
-      params.CustomerID = this.perTransactionCaseArr[i].CustomerID;
-      params.CustomerName = this.perTransactionCaseArr[i].CustomerName;
-      if (this.multipleSelectionPer.length === 1) {
-        params.ID = this.multipleSelectionPer[0].ID;
-      }
-      params.RequestType = 1;
-      console.log(params);
-      this.$api.monthTransactionCase(params)
-        .then((res) => {
-          console.log(res);
-          // TODO:
-          // window.location.reload();
-        })
-        .catch((errMsg) => {
-          console.log(errMsg);
         });
-
+        const params = {};
+        params.CaseName = this.perTransactionCaseArr[i].CaseName;
+        params.CustomerID = this.perTransactionCaseArr[i].CustomerID;
+        params.CustomerName = this.perTransactionCaseArr[i].CustomerName;
+        if (this.multipleSelectionPer.length === 1) {
+          params.ID = this.multipleSelectionPer[0].ID;
+        }
+        params.RequestType = 1;
+        console.log(params);
+        this.$api.monthTransactionCase(params)
+          .then((res) => {
+            console.log(res);
+            window.location.reload();
+          })
+          .catch((errMsg) => {
+            console.log(errMsg);
+          });
+      }
     },
   },
 };
@@ -169,7 +174,6 @@ export default {
         }
       }
       .note{
-        margin-top: 20px;
         .red{
           color: red;
           vertical-align: middle;
