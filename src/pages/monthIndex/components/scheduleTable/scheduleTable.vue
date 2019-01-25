@@ -66,9 +66,8 @@ import SelectedWelfareFee from './welfareFee.vue';
 import SelectedWorkingMeal from './workingMeal.vue';
 import SelectedCarSticker from './carSticker.vue';
 import '@/assets/css/scheduleTable.less';
-import api from '@/http/index';
+import news from '@/assets/js/notification';
 
-Vue.use(api);
 Vue.use(VueCookie);
 
 export default {
@@ -135,6 +134,7 @@ export default {
         this.$store.commit('setCompleted', true);
       }).catch((err) => {
         console.log(err);
+        news.ElErrorMessage(err);
       });
     },
     getComponentSum(newVal) {

@@ -128,6 +128,7 @@ import { MessageBox, Message } from 'element-ui';
 import cal from '@/assets/js/comCalculation';
 import ManagementAlert from '@/components/managementAlert.vue';
 import api from '@/http/index';
+import news from '@/assets/js/notification';
 
 
 Vue.component(MessageBox.name, MessageBox);
@@ -386,6 +387,7 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+          news.ElErrorMessage(error);
         });
     },
 
@@ -471,6 +473,7 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+          news.ElErrorMessage(error);
         });
     },
 
@@ -497,6 +500,7 @@ export default {
         });
       }).catch((msg) => {
         console.log(msg);
+        news.ElErrorMessage(msg);
       });
     },
 
@@ -595,7 +599,8 @@ export default {
         this.deleteBtnDisabled = true;
         this.showDraftAndSubmit = false;
         this.inputDisabled = true;
-        this.showReviewAndReject = this.fillStatus === '待审核';
+        // TODO:跨级不能进行审核或者驳回,
+        this.showReviewAndReject = this.fillStatus === '待审核' && this.viewEditorYear === (new Date().getMonth() + 1);
       } else {
         this.showReviewAndReject = false;
         this.showDraftAndSubmit = this.fillStatus === '未填写' || this.fillStatus === '填写中' || this.fillStatus === '驳回';
@@ -626,6 +631,7 @@ export default {
         });
       }).catch((errMsg) => {
         console.log(errMsg);
+        news.ElErrorMessage(errMsg);
       });
     },
 

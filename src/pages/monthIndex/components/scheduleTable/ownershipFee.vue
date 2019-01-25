@@ -53,7 +53,7 @@ export default {
     },
   },
   watch: {
-    isOwnershipFeeLoadCompleted(newVal) {
+    isOwnershipFeeLoadCompleted() {
       this.scheduleCalculation(this.ownershipFeeData.length, '.ownershipFeeTable', 1, 3, 4);
     },
   },

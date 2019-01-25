@@ -275,13 +275,11 @@ export default {
           maximumFractionDigits: 2,
         });
       }
-    } else {
-      if (this.tableSix(index).ManagementServiceFee) {
-        this.tableSix(index).ManagementServiceFee.value = (this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio) + 12000).toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
-      }
+    } else if (this.tableSix(index).ManagementServiceFee) {
+      this.tableSix(index).ManagementServiceFee.value = (this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio) + 12000).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     }
 
     /* 签约金损益 */

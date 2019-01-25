@@ -91,6 +91,7 @@ import Vue from 'vue';
 import { MessageBox, Pagination, Loading } from 'element-ui';
 import VueCookie from 'vue-cookie';
 import api from '@/http/index';
+import news from '@/assets/js/notification';
 
 Vue.use(Pagination);
 Vue.use(Loading);
@@ -153,6 +154,8 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          this.loading.close();
+          news.ElErrorMessage(err);
         });
     },
 
@@ -211,6 +214,8 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          this.loading.close();
+          news.ElErrorMessage(err);
         });
     },
 
@@ -258,6 +263,8 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          this.loading.close();
+          news.ElErrorMessage(err);
         });
     },
 
@@ -296,6 +303,8 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          this.loading.close();
+          news.ElErrorMessage(err);
         });
     },
 
@@ -340,6 +349,8 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          this.loading.close();
+          news.ElErrorMessage(err);
         });
     },
 
@@ -348,44 +359,11 @@ export default {
         if (this.Permission === 'D') {
           this.selectDisabled[i] = true;
         } else if (this.Permission === 'C') {
-          switch (i === 3) {
-            case true:
-              this.selectDisabled[i] = false;
-              break;
-            default:
-              this.selectDisabled[i] = true;
-          }
-          // if (i === 3) {
-          //   this.selectDisabled[i] = false;
-          // } else {
-          //   this.selectDisabled[i] = true;
-          // }
+          this.selectDisabled[i] = (i !== 3);
         } else if (this.Permission === 'B') {
-          switch (i >= 2) {
-            case true:
-              this.selectDisabled[i] = false;
-              break;
-            default:
-              this.selectDisabled[i] = true;
-          }
-          // if (i >= 2) {
-          //   this.selectDisabled[i] = false;
-          // } else {
-          //   this.selectDisabled[i] = true;
-          // }
+          this.selectDisabled[i] = i < 2;
         } else if (this.Permission === 'A') {
-          switch (i >= 1) {
-            case true:
-              this.selectDisabled[i] = false;
-              break;
-            default:
-              this.selectDisabled[i] = true;
-          }
-          // if (i >= 1) {
-          //   this.selectDisabled[i] = false;
-          // } else {
-          //   this.selectDisabled[i] = true;
-          // }
+          this.selectDisabled[i] = i < 1;
         } else if (this.Permission === 'S') {
           this.selectDisabled[i] = false;
         }

@@ -81,6 +81,7 @@ import Vue from 'vue';
 import { MessageBox } from 'element-ui';
 import VueCookie from 'vue-cookie';
 import api from '@/http/index';
+import news from '@/assets/js/notification';
 
 Vue.component(MessageBox.name, MessageBox);
 Vue.use(VueCookie);
@@ -122,10 +123,17 @@ export default {
       secondSelected: '',
       thirdSelected: '',
       fourthSelectStoreSelected: '',
+      loadingCover: '',
     };
   },
   methods: {
     getUserRequest(permission) {
+      this.loadingCover = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)',
+      });
       this.$api.queryAndAddedUserInfo({ userID: this.userID })
         .then((res) => {
           console.log(JSON.parse(res.data));
@@ -139,6 +147,8 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          this.loadingCover.close();
+          news.ElErrorMessage(err);
         });
     },
 
@@ -197,6 +207,8 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          this.loadingCover.close();
+          news.ElErrorMessage(err);
         });
     },
 
@@ -244,6 +256,8 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          this.loadingCover.close();
+          news.ElErrorMessage(err);
         });
     },
 
@@ -282,6 +296,8 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          this.loadingCover.close();
+          news.ElErrorMessage(err);
         });
     },
 
@@ -295,6 +311,7 @@ export default {
         page: this.page,
         rows: this.rows,
         years: this.yearSelected,
+        // years: 'jdsk',
         Month: this.monthSelected,
       };
       for (let i = 3; i >= 0; i -= 1) {
@@ -324,9 +341,12 @@ export default {
           this.copyMonthSelected = this.monthSelected;
           console.log(res.data);
           this.queryTableAllData = res.data;
+          this.loadingCover.close();
         })
         .catch((err) => {
           console.log(err);
+          this.loadingCover.close();
+          news.ElErrorMessage(err);
         });
     },
 
@@ -335,44 +355,11 @@ export default {
         if (this.Permission === 'D') {
           this.selectDisabled[i] = true;
         } else if (this.Permission === 'C') {
-          switch (i === 3) {
-            case true:
-              this.selectDisabled[i] = false;
-              break;
-            default:
-              this.selectDisabled[i] = true;
-          }
-          // if (i === 3) {
-          //   this.selectDisabled[i] = false;
-          // } else {
-          //   this.selectDisabled[i] = true;
-          // }
+          this.selectDisabled[i] = i !== 3;
         } else if (this.Permission === 'B') {
-          switch (i >= 2) {
-            case true:
-              this.selectDisabled[i] = false;
-              break;
-            default:
-              this.selectDisabled[i] = true;
-          }
-          // if (i >= 2) {
-          //   this.selectDisabled[i] = false;
-          // } else {
-          //   this.selectDisabled[i] = true;
-          // }
+          this.selectDisabled[i] = i < 2;
         } else if (this.Permission === 'A') {
-          switch (i >= 1) {
-            case true:
-              this.selectDisabled[i] = false;
-              break;
-            default:
-              this.selectDisabled[i] = true;
-          }
-          // if (i >= 1) {
-          //   this.selectDisabled[i] = false;
-          // } else {
-          //   this.selectDisabled[i] = true;
-          // }
+          this.selectDisabled[i] = i < 1;
         } else if (this.Permission === 'S') {
           this.selectDisabled[i] = false;
         }

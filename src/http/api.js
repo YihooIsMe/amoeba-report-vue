@@ -28,65 +28,11 @@ export default function $axios(options) {
     );
 
     instance.interceptors.response.use(
-      (response) => {
-        /*
-        if (response.data && !response.data.success) {
-          Message({
-            showClose: true,
-            message: response.data.error.message.message
-              ? response.data.error.message.message
-              : response.data.error.message,
-            type: 'error',
-          });
-          return Promise.reject(response.data.error.message);
-        }
-        */
-        return response;
-      },
-      (err) => {
-        // let errInfo;
-        // if (err && err.response) {
-        //   switch (err.response.status) {
-        //     case 400:
-        //       errInfo.message = '请求错误';
-        //       break;
-        //     case 401:
-        //       errInfo.message = '未授权，请登录';
-        //       break;
-        //     case 403:
-        //       errInfo.message = '拒绝访问';
-        //       break;
-        //     case 404:
-        //       errInfo.message = `请求地址出错: ${err.response.config.url}`;
-        //       break;
-        //     case 408:
-        //       errInfo.message = '请求超时';
-        //       break;
-        //     case 500:
-        //       errInfo.message = '服务器内部错误';
-        //       break;
-        //     case 501:
-        //       errInfo.message = '服务未实现';
-        //       break;
-        //     case 502:
-        //       errInfo.message = '网关错误';
-        //       break;
-        //     case 503:
-        //       errInfo.message = '服务不可用';
-        //       break;
-        //     case 504:
-        //       errInfo.message = '网关超时';
-        //       break;
-        //     case 505:
-        //       errInfo.message = 'HTTP版本不受支持';
-        //       break;
-        //     default:
-        //   }
-        // }
-        return Promise.reject(err.message);
-      },
+      response => response,
+      err => Promise.reject(err.message),
     );
 
+    // 具体细节见https://juejin.im/post/5ae432aaf265da0b9c1063c8;
     instance(options)
       .then((res) => {
         resolve(res);

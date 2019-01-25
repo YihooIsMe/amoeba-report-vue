@@ -49,7 +49,11 @@
             <ScheduleTable ref="scheduleTable" class="schedulePanel"></ScheduleTable>
           </el-tab-pane>
           <el-tab-pane label="营业收入" name="operateIncome">
-            <OperatingIncome ref="operateIncome" class="operateIncomePanel"></OperatingIncome>
+            <OperatingIncome
+              ref="operateIncome"
+              class="operateIncomePanel"
+              :reachMatchAdjustment="reachMatchAdjustment"
+            ></OperatingIncome>
           </el-tab-pane>
           <el-tab-pane label="任务单" name="missionList">
             <MissionList class="missionListPanel"></MissionList>
@@ -82,6 +86,7 @@ import ScheduleTable from '../components/scheduleTable/scheduleTable.vue';
 import OperatingIncome from '../components/operatingIncome/operatingIncome.vue';
 import MissionList from '../components/missonList/missionList.vue';
 import api from '@/http/index';
+import news from '@/assets/js/notification';
 
 Vue.component(MessageBox.name, MessageBox);
 Vue.use(api);
@@ -100,11 +105,13 @@ export default {
       mainAndScheduleAllSubmissionData: {},
       mainFormSonData: false,
       loadingCover: '',
+      monthViewEditorMonth: '',
       monthFillStatus: '',
       monthUserID: '',
       monthCreateByUser: '',
       showReviewAndReject: false,
       showDraftAndSubmit: false,
+      reachMatchAdjustment: false,
       inputDisabled: false,
       isBehind: true, // 判断是否为幕僚,幕僚没有附表和营业收入
       selectTabPane: this.$store.state.comData.selectTabPane || 'mainForm',
@@ -229,21 +236,27 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          news.ElErrorMessage(err);
         });
     },
     getMonthFillStatus() {
       this.monthFillStatus = VueCookie.get('monthFillStatus');
+      this.monthViewEditorMonth = VueCookie.get('monthViewEditorMonth');
     },
     monthJudgeInputDisabled() {
       if (VueCookie.get('monthFromWhichBtn') === 'newAdded') {
         this.showReviewAndReject = false;
+        this.reachMatchAdjustment = this.monthFillStatus === '审核通过' && (new Date().getMonth() + 1) === (this.monthViewEditorMonth + 1);
         this.showDraftAndSubmit = this.monthFillStatus === '未填写' || this.monthFillStatus === '填写中' || this.monthFillStatus === '驳回';
         this.inputDisabled = this.monthFillStatus === '待审核' || this.monthFillStatus === '审核通过';
       } else if (this.monthUserID !== this.monthCreateByUser) {
+        this.reachMatchAdjustment = false;
         this.showDraftAndSubmit = false;
         this.inputDisabled = true;
-        this.showReviewAndReject = this.monthFillStatus === '待审核';
+        // TODO:跨级不能审核,跨月份也不能审核
+        this.showReviewAndReject = this.monthFillStatus === '待审核' && this.monthViewEditorMonth === (new Date().getMonth() + 1);
       } else {
+        this.reachMatchAdjustment = this.monthFillStatus === '审核通过' && (new Date().getMonth() + 1) === (this.monthViewEditorMonth + 1);
         this.showReviewAndReject = false;
         this.showDraftAndSubmit = this.monthFillStatus === '未填写' || this.monthFillStatus === '填写中' || this.monthFillStatus === '驳回';
         this.inputDisabled = !(this.monthFillStatus !== '待审核' && this.monthFillStatus !== '审核通过');
@@ -272,6 +285,7 @@ export default {
         });
       }).catch((errMsg) => {
         console.log(errMsg);
+        news.ElErrorMessage(errMsg);
       });
     },
   },

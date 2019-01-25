@@ -3,6 +3,8 @@
 // function resolve(dir) {
 //   return path.join(__dirname, dir);
 // }
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+
 module.exports = {
   // baseUrl: './',
   pages: {
@@ -40,6 +42,20 @@ module.exports = {
   devServer: {
     port: 85,
     index: 'monthIndex.html',
+  },
+  configureWebpack: {
+    optimization: {
+      minimizer: [
+        new UglifyJsPlugin({
+          uglifyOptions: {
+            compress: {
+              drop_console: true,
+              pure_funcs: ['console.log'],
+            },
+          },
+        }),
+      ],
+    },
   },
   // configureWebpack: {
   //   optimization: {

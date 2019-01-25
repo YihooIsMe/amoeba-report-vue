@@ -1,11 +1,12 @@
 import Vue from 'vue';
-import { Button } from 'element-ui';
+import { Button, Loading } from 'element-ui';
 import App from './App.vue';
 import router from './router';
 import store from './store';
 
 Vue.config.productionTip = false;
 Vue.use(Button);
+Vue.use(Loading);
 
 new Vue({
   router,

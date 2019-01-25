@@ -63,9 +63,8 @@ import Vue from 'vue';
 import VueCookie from 'vue-cookie';
 import ManagementAlert from '@/components/managementAlert.vue';
 import cal from '@/assets/js/comCalculation';
-import api from '@/http/index';
+import news from '@/assets/js/notification';
 
-Vue.use(api);
 Vue.use(VueCookie);
 
 export default {
@@ -229,6 +228,7 @@ export default {
         this.commitComData();
       }).catch((errMsg) => {
         console.log(errMsg);
+        news.ElErrorMessage(errMsg);
       });
     },
     commitComData() {

@@ -4,7 +4,7 @@
     <div class="child-operating-income">
       <el-button type="primary" plain size="small" @click="dialogTableVisible = true" v-if="showDraftAndSubmit">新增</el-button>
       <el-button type="success" plain size="small" @click="deleteSelected('operate')" v-if="showDraftAndSubmit">删除</el-button>
-      <el-button type="warning" plain size="small" @click="matchAdjustment('operatingIncome')">达成匹配调整</el-button>
+      <el-button type="warning" plain size="small" @click="matchAdjustment('operatingIncome')" v-if="reachMatchAdjustment">达成匹配调整</el-button>
       <el-table
         ref="multipleTable"
         :data="addFormArr"
@@ -120,7 +120,7 @@
     <div class="child-performance-income">
       <el-button type="primary" plain size="small" @click="dialogPerformance = true" v-if="showDraftAndSubmit">新增</el-button>
       <el-button type="success" plain size="small" @click="deleteSelected('performance')" v-if="showDraftAndSubmit">删除</el-button>
-      <el-button type="warning" plain size="small" @click="matchAdjustment('performance')">达成匹配调整</el-button>
+      <el-button type="warning" plain size="small" @click="matchAdjustment('performance')" v-if="reachMatchAdjustment">达成匹配调整</el-button>
       <el-table
         ref="multipleTable"
         :data="addPerformanceArr"
@@ -231,9 +231,11 @@ import OperatingAdd from './operatingAdd.vue';
 import AchieveAdjustment from './achieveAdjustment.vue';
 import AchievePeradjustment from './achievePeradjustment.vue';
 import PerformanceAdd from './performanceAdd.vue';
+import news from '@/assets/js/notification';
 
 export default {
   name: 'operatingIncome',
+  props: ['reachMatchAdjustment'],
   components: {
     PerformanceAdd,
     AchieveAdjustment,
@@ -285,10 +287,10 @@ export default {
           return;
         }
         const values = filterData.map(item => Number(item[column.property]));
-        if (!values.every(value => isNaN(value))) {
+        if (!values.every(value => Number.isNaN(value))) {
           sums[index] = values.reduce((prev, curr) => {
             const value = Number(curr);
-            if (!isNaN(value)) {
+            if (!Number.isNaN(value)) {
               return prev + curr;
             }
             return prev;
@@ -508,6 +510,7 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          news.ElErrorMessage(err);
         });
     },
     getAllOperateSubmissionData() {

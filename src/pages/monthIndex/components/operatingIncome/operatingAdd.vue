@@ -160,6 +160,7 @@ import {
   Message,
 } from 'element-ui';
 import api from '@/http/index';
+import news from '@/assets/js/notification';
 
 Vue.component(Select.name, Select);
 Vue.use(Dialog);
@@ -346,9 +347,11 @@ export default {
             console.log(JSON.parse(res.data));
           }
           this.AddForm.customerID = JSON.parse(res.data)[0].ID;
+          return '';
         })
         .catch((err) => {
           console.log(err);
+          news.ElErrorMessage(err);
         });
       return '';
     },
