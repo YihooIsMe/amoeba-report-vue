@@ -53,6 +53,7 @@
         <table class="show-query-table" border="1">
           <thead>
           <tr>
+            <th>序号</th>
             <th>年度/月度</th>
             <th>部门</th>
             <th>主管</th>
@@ -63,6 +64,7 @@
           </thead>
           <tbody>
           <tr v-for="(item, index) in queryTableAllData" :key="index">
+            <td>{{index + 1}}</td>
             <td>{{copyYearSelected}}/{{copyMonthSelected}}</td>
             <td>{{item.F_FullName}}</td>
             <td>{{item.F_RealName}}</td>
@@ -137,7 +139,6 @@ export default {
       this.$api.queryAndAddedUserInfo({ userID: this.userID })
         .then((res) => {
           console.log(JSON.parse(res.data));
-          console.log(JSON.parse(res.data).Company);
           this.Pr0132 = JSON.parse(res.data).Company;
           this.District = JSON.parse(res.data).District;
           this.ParentId = JSON.parse(res.data).ParentId;

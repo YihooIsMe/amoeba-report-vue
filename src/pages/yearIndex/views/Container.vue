@@ -79,7 +79,7 @@
                 <el-button type="warning" @click="deleteCurrentLineData(item.className)" :disabled="(item.ReadOnly === 1?true:false) || deleteBtnDisabled">删除</el-button>
               </td>
               <td>
-                <input type="text">
+                <input type="text" readonly>
               </td>
             </tr>
             </tbody>
@@ -600,7 +600,7 @@ export default {
         this.showDraftAndSubmit = false;
         this.inputDisabled = true;
         // TODO:跨级不能进行审核或者驳回,
-        this.showReviewAndReject = this.fillStatus === '待审核' && this.viewEditorYear === (new Date().getMonth() + 1);
+        this.showReviewAndReject = this.fillStatus === '待审核' && Number(this.viewEditorYear) === (new Date().getFullYear() + 1);
       } else {
         this.showReviewAndReject = false;
         this.showDraftAndSubmit = this.fillStatus === '未填写' || this.fillStatus === '填写中' || this.fillStatus === '驳回';

@@ -11,15 +11,15 @@
         <tr>
           <td>
             <Editor
-            :editorContent="submissionData.first"
-            :weekIndex="submissionData.index"
+            :editorContent="weekData.first"
+            :weekIndex="weekData.index"
             editorIndex="first"
             ></Editor>
           </td>
           <td>
             <Editor
-              :editorContent="submissionData.second"
-              :weekIndex="submissionData.index"
+              :editorContent="weekData.second"
+              :weekIndex="weekData.index"
               editorIndex="second"
             ></Editor>
           </td>
@@ -37,15 +37,15 @@
         <tr>
           <td>
             <Editor
-              :editorContent="submissionData.third"
-              :weekIndex="submissionData.index"
+              :editorContent="weekData.third"
+              :weekIndex="weekData.index"
               editorIndex="third"
             ></Editor>
           </td>
           <td>
             <Editor
-              :editorContent="submissionData.fourth"
-              :weekIndex="submissionData.index"
+              :editorContent="weekData.fourth"
+              :weekIndex="weekData.index"
               editorIndex="fourth"
             ></Editor>
           </td>
@@ -63,15 +63,15 @@
         <tr>
           <td>
             <Editor
-            :editorContent="submissionData.fifth"
+            :editorContent="weekData.fifth"
             editorIndex="fifth"
-            :weekIndex="submissionData.index"
+            :weekIndex="weekData.index"
             ></Editor>
           </td>
           <td>
             <Editor
-              :editorContent="submissionData.sixth"
-              :weekIndex="submissionData.index"
+              :editorContent="weekData.sixth"
+              :weekIndex="weekData.index"
               editorIndex="sixth"
             ></Editor>
           </td>
@@ -82,7 +82,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import Editor from './editor.vue';
 
 export default {
@@ -126,18 +125,7 @@ export default {
       } else if (this.weekData.identity === 'district') {
         this.tableTh = this.districtTableTh;
       }
-      Vue.set(this.submissionData, 'first', this.weekData.first);
-      Vue.set(this.submissionData, 'second', this.weekData.second);
-      Vue.set(this.submissionData, 'third', this.weekData.third);
-      Vue.set(this.submissionData, 'fourth', this.weekData.fourth);
-      Vue.set(this.submissionData, 'fifth', this.weekData.fifth);
-      Vue.set(this.submissionData, 'sixth', this.weekData.sixth);
-      Vue.set(this.submissionData, 'index', this.weekData.index);
     },
-    // getEditorData(obj) {
-    //   this.submissionData[obj.index].content = obj.content;
-    //   this.$store.commit('setMissionListData', this.submissionData);
-    // },
   },
   mounted() {
     this.setTableTh();

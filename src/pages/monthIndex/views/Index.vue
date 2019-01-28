@@ -56,7 +56,7 @@
             ></OperatingIncome>
           </el-tab-pane>
           <el-tab-pane label="任务单" name="missionList">
-            <MissionList class="missionListPanel"></MissionList>
+            <MissionList ref="missionList" class="missionListPanel"></MissionList>
           </el-tab-pane>
         </template>
         <template v-else>
@@ -69,7 +69,7 @@
               @getScheduleTableData="getSonComData"></MainForm>
           </el-tab-pane>
           <el-tab-pane label="任务单" name="missionList">
-            <MissionList  class="missionListPanel"></MissionList>
+            <MissionList ref="missionList" class="missionListPanel"></MissionList>
           </el-tab-pane>
         </template>
       </el-tabs>
@@ -153,6 +153,7 @@ export default {
         this.$refs.scheduleTable.getScheduleSubmissionData();
         this.$refs.operateIncome.getAllOperateSubmissionData();
       }
+      this.$refs.missionList.editorSubmission();
       this.setMainAndScheduleAllSubmissionData();
     },
     getQueryAddYear() {
@@ -213,6 +214,7 @@ export default {
         this.mainAndScheduleAllSubmissionData.MonthPerformanceYD = this.$store.state.operatingForm.performanceFormData;
         this.mainAndScheduleAllSubmissionData.Amoeba_MonthlySSDetail = this.$store.state.scheduleForm.scheduleFormData;
       }
+      this.mainAndScheduleAllSubmissionData.Amoeba_TaskForm = this.$store.state.missionList.missionListData;
       console.log(this.mainAndScheduleAllSubmissionData);
       this.$api.monthMainAndScheduleSub(this.mainAndScheduleAllSubmissionData)
         .then((res) => {
@@ -230,12 +232,13 @@ export default {
           });
           if (type === 'success') {
             VueCookie.set('monthFillStatus', '待审核');
-            window.location.reload();
+            // window.location.reload();
             /* TODO:正式环境的时候reload需要，但是现在不需要 */
           }
         })
         .catch((err) => {
           console.log(err);
+          this.loadingCover.close();
           news.ElErrorMessage(err);
         });
     },
@@ -246,7 +249,7 @@ export default {
     monthJudgeInputDisabled() {
       if (VueCookie.get('monthFromWhichBtn') === 'newAdded') {
         this.showReviewAndReject = false;
-        this.reachMatchAdjustment = this.monthFillStatus === '审核通过' && (new Date().getMonth() + 1) === (this.monthViewEditorMonth + 1);
+        this.reachMatchAdjustment = this.monthFillStatus === '审核通过' && (new Date().getMonth() + 1) === (Number(this.monthViewEditorMonth) + 1);
         this.showDraftAndSubmit = this.monthFillStatus === '未填写' || this.monthFillStatus === '填写中' || this.monthFillStatus === '驳回';
         this.inputDisabled = this.monthFillStatus === '待审核' || this.monthFillStatus === '审核通过';
       } else if (this.monthUserID !== this.monthCreateByUser) {
@@ -254,9 +257,9 @@ export default {
         this.showDraftAndSubmit = false;
         this.inputDisabled = true;
         // TODO:跨级不能审核,跨月份也不能审核
-        this.showReviewAndReject = this.monthFillStatus === '待审核' && this.monthViewEditorMonth === (new Date().getMonth() + 1);
+        this.showReviewAndReject = this.monthFillStatus === '待审核' && Number(this.monthViewEditorMonth) === (new Date().getMonth() + 1);
       } else {
-        this.reachMatchAdjustment = this.monthFillStatus === '审核通过' && (new Date().getMonth() + 1) === (this.monthViewEditorMonth + 1);
+        this.reachMatchAdjustment = this.monthFillStatus === '审核通过' && (new Date().getMonth() + 1) === (Number(this.monthViewEditorMonth) + 1);
         this.showReviewAndReject = false;
         this.showDraftAndSubmit = this.monthFillStatus === '未填写' || this.monthFillStatus === '填写中' || this.monthFillStatus === '驳回';
         this.inputDisabled = !(this.monthFillStatus !== '待审核' && this.monthFillStatus !== '审核通过');

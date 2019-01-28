@@ -30,8 +30,8 @@ export default {
       showMission: [true, false, false, false],
       firstWeekData: {
         index: 1,
-        identity: 'store', // 'store'代表门店;其他的代表非门店;
-        first: '<p>我是来自第一周的数据</p>',
+        identity: this.isStore ? 'store' : 'district', // 'store'代表门店;其他的代表非门店;
+        first: '',
         second: '',
         third: '',
         fourth: '',
@@ -40,8 +40,8 @@ export default {
       },
       secondWeekData: {
         index: 2,
-        identity: 'district',
-        first: '<p>我是来自第二周的数据</p>',
+        identity: this.isStore ? 'store' : 'district',
+        first: '',
         second: '',
         third: '',
         fourth: '',
@@ -50,8 +50,8 @@ export default {
       },
       thirdWeekData: {
         index: 3,
-        identity: 'store',
-        first: '<p>我是来自第三周的数据</p>',
+        identity: this.isStore ? 'store' : 'district',
+        first: '',
         second: '',
         third: '',
         fourth: '',
@@ -60,14 +60,18 @@ export default {
       },
       fourthWeekData: {
         index: 4,
-        identity: 'district',
-        first: '<p>我是来自第四周的数据</p>',
+        identity: this.isStore ? 'store' : 'district',
+        first: '',
         second: '',
         third: '',
         fourth: '',
         fifth: '',
         sixth: '',
       },
+      missionListData: this.$store.state.missionList,
+      weekData: ['firstWeekData', 'secondWeekData', 'thirdWeekData', 'fourthWeekData'],
+      Amoeba_TaskForm: [],
+      isStore: this.$store.state.comData.commonData.Pr0111 === 'A1' || this.$store.state.comData.commonData.Pr0111 === 'B0' || this.$store.state.comData.commonData.Pr0111 === 'C',
     };
   },
   methods: {
@@ -76,6 +80,48 @@ export default {
         Vue.set(this.showMission, i, false);
       });
       Vue.set(this.showMission, index - 1, true);
+    },
+    editorSubmission() {
+      this.Amoeba_TaskForm = [];
+      const PreordainID = this.$store.state.comData.commonData.MPID;
+      for (let i = 0; i < 4; i += 1) {
+        const editorObj = {};
+        editorObj.ID = '';
+        editorObj.PreordainID = PreordainID;
+        editorObj.Week_ = i + 1;
+        editorObj.Identity_ = this.isStore ? 'store' : 'district';
+        editorObj.First = this.missionListData[this.weekData[i]].first;
+        editorObj.Second = this.missionListData[this.weekData[i]].second;
+        editorObj.Third = this.missionListData[this.weekData[i]].third;
+        editorObj.Fourth = this.missionListData[this.weekData[i]].fourth;
+        editorObj.Fifth = this.missionListData[this.weekData[i]].fifth;
+        editorObj.Sixth = this.missionListData[this.weekData[i]].sixth;
+        this.Amoeba_TaskForm.push(editorObj);
+      }
+      this.$store.commit('setMissionListData', this.Amoeba_TaskForm);
+    },
+    missionListLoading() {
+      const missionListData = this.$store.state.missionList.missionListData;
+      missionListData.forEach((el, i) => {
+        Vue.set(this[this.weekData[i]], 'index', el.Week_);
+        Vue.set(this[this.weekData[i]], 'identity', el.Identity_);
+        Vue.set(this[this.weekData[i]], 'first', el.First);
+        Vue.set(this[this.weekData[i]], 'second', el.Second);
+        Vue.set(this[this.weekData[i]], 'third', el.Third);
+        Vue.set(this[this.weekData[i]], 'fourth', el.Fourth);
+        Vue.set(this[this.weekData[i]], 'fifth', el.Fifth);
+        Vue.set(this[this.weekData[i]], 'sixth', el.Sixth);
+      });
+    },
+  },
+  computed: {
+    isCompleted() {
+      return this.$store.state.scheduleForm.isCompleted;
+    },
+  },
+  watch: {
+    isCompleted() {
+      this.missionListLoading();
     },
   },
 };

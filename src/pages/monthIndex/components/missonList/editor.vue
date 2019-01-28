@@ -98,14 +98,17 @@ export default {
     editorContent(newVal) {
       this.editor.txt.html(newVal);
       this.editor.change();
+      editorImgZoom.clickEvent();// 重新邦定img点击预览放大的事件;否则图片没有点击事件
     },
-    weekIndex() {
-      this.init();
-      // editorIndex传递的事一个固定的number类型,weekIndex渲染在其后面,监听weekIndex就可以了;
-    },
+    // weekIndex() {
+    //   console.log('abc');
+    //   this.init();
+    //   // editorIndex传递的事一个固定的number类型,weekIndex渲染在其后面,监听weekIndex就可以了;
+    // },
   },
   mounted() {
     this.editorInit();
+    this.init();
   },
 };
 </script>

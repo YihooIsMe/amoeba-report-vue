@@ -131,6 +131,7 @@ export default {
         });
         this.$store.commit('setOperatingForm', JSON.parse(res.data).MonthSigningGoldYD);
         this.$store.commit('setPerformanceForm', JSON.parse(res.data).MonthPerformanceYD);
+        this.$store.commit('setMissionListData', JSON.parse(res.data).Amoeba_TaskForm);
         this.$store.commit('setCompleted', true);
       }).catch((err) => {
         console.log(err);

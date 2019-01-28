@@ -168,13 +168,20 @@ export default {
           const inputEl = document.querySelector('table.mainForm tr.' + item.className + ' td:nth-child(3) input');
           console.log(inputEl.value);
           if (inputEl.value === '' || inputEl.value === '0' || inputEl.value === '0.0' || inputEl.value === '0.00') {
-            document.querySelector('table.mainForm tr.' + item.className).style.display = 'none';
+            // document.querySelector('table.mainForm tr.' + item.className).style.display = 'none';
+            document.querySelector('table.mainForm tr.' + item.className).classList.add('hide-zero');
           }
         });
       } else {
         this.isZero = false;
-        window.location.reload();
+        this.tableSource.forEach((item) => {
+          document.querySelector('table.mainForm tr.' + item.className).classList.remove('hide-zero');
+        });
+        // window.location.reload();
       }
+    },
+    showAllSubject() {
+
     },
     firstLoadingRequest() {
       this.loading = this.$loading({
@@ -356,7 +363,7 @@ export default {
       if (this.isZero) {
         return '显示所有细项';
       }
-      return '隐藏所有细项';
+      return '隐藏月预订为0的数据';
     },
     estimatedContractMoneySum() {
       return this.$store.state.operatingForm.operatingSum;
@@ -492,7 +499,7 @@ export default {
       }
     }
   }
-  .toggle-subject{
+  .toggle-subject,.hide-zero{
     display: none;
   }
   .el-icon-arrow-up:after{

@@ -39,10 +39,6 @@
         <div class="button-container">
           <el-button type="primary" @click="auditTableQueryRequest">查询</el-button>
           <el-button type="success" @click="linkToIndex">新增</el-button>
-<!--
-          <router-link to="/index" class="addBtn">新增</router-link>
-          <router-views/>
--->
         </div>
       </div>
       <div v-if="queryTableAllData.length>0">
@@ -82,7 +78,6 @@
         </el-pagination>
 -->
       </div>
-
     </div>
 </template>
 
@@ -167,7 +162,7 @@ export default {
         const pair = vars[i].split('=');
         if (pair[0] === variable) { return pair[1]; }
       }
-      return (false);
+      return false;
     },
 
     linkToIndex() {
@@ -456,6 +451,9 @@ export default {
     }
   }
   .show-query-table{
+    thead>tr{
+      height:40px;
+    }
     width: 100%;
     text-align: center;
     border-collapse: collapse;

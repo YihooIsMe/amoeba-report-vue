@@ -9,6 +9,9 @@ const missionList = {
     fourthWeekData: {},
   },
   mutations: {
+    setMissionListData: (state, data) => {
+      state.missionListData = data;
+    },
     setFirstWeekData: (state, data) => {
       Vue.set(state.firstWeekData, data.editorIndex, data.content);
     },
