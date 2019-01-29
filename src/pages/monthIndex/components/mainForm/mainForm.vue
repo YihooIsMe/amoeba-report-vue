@@ -63,24 +63,18 @@ import Vue from 'vue';
 import VueCookie from 'vue-cookie';
 import ManagementAlert from '@/components/managementAlert.vue';
 import cal from '@/assets/js/comCalculation';
-import news from '@/assets/js/notification';
 
 Vue.use(VueCookie);
 
 export default {
   name: 'mainForm',
-  props: ['mainFormInputDisabled'],
+  props: ['mainFormInputDisabled', 'mainFormTableSource'],
   components: { ManagementAlert },
   data() {
     return {
-      userID: '',
-      CreateByUser: '',
-      viewEditorYear: '',
-      viewEditorMonth: '',
       // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 瑞虹一店;
       // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 咨询部;
       responseData: {},
-      tableSource: [],
       tableDataSource0: [], // Type类型为0的数据;
       tableDataSource1: [], // Type类型为1的数据;
       tableDataSource2: [], // Type类型为2的数据;
@@ -107,7 +101,6 @@ export default {
       },
       scheduleForm: this.$store.state.scheduleForm.sumScheduleForm,
       isZero: false,
-      loading: '',
     };
   },
   methods: {
@@ -164,7 +157,7 @@ export default {
     hideSubjectWithZero() {
       if (!this.isZero) {
         this.isZero = true;
-        this.tableSource.forEach((item) => {
+        this.mainFormTableSource.forEach((item) => {
           const inputEl = document.querySelector('table.mainForm tr.' + item.className + ' td:nth-child(3) input');
           console.log(inputEl.value);
           if (inputEl.value === '' || inputEl.value === '0' || inputEl.value === '0.0' || inputEl.value === '0.00') {
@@ -174,92 +167,24 @@ export default {
         });
       } else {
         this.isZero = false;
-        this.tableSource.forEach((item) => {
+        this.mainFormTableSource.forEach((item) => {
           document.querySelector('table.mainForm tr.' + item.className).classList.remove('hide-zero');
         });
         // window.location.reload();
       }
     },
-    showAllSubject() {
-
-    },
-    firstLoadingRequest() {
-      this.loading = this.$loading({
-        lock: true,
-        text: 'Loading...',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)',
-      });
-      this.userID = VueCookie.get('monthUserID');
-      this.CreateByUser = VueCookie.get('monthCreateByUser');
-      this.viewEditorYear = VueCookie.get('monthViewEditorYear');
-      this.viewEditorMonth = VueCookie.get('monthViewEditorMonth');
-      let paramsArgs;
-      if (VueCookie.get('monthFromWhichBtn') === 'newAdded') {
-        paramsArgs = {
-          userID: this.userID,
-          IsYM: 1,
-          Year: new Date().getFullYear(),
-          // TODO:production change
-          // Month: new Date().getMonth() + 2,
-          // TODO: end
-          Month: 1,
-        };
+    mainFormFirstLoading() {
+      this.injectTableSourceData();
+      for (let i = 0; i < 8; i += 1) {
+        this.tableDataInject.push(this['tableDataSource' + i]);
       }
-      if (VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn') {
-        paramsArgs = {
-          userID: this.CreateByUser,
-          IsYM: 1,
-          Year: this.viewEditorYear,
-          Month: this.viewEditorMonth,
-        };
-      }
-      // const params = {
-      //   userID: this.userID,
-      //   IsYM: 1,
-      //   Year: new Date().getFullYear(),
-      //   Month: new Date().getMonth() + 1,
-      // };
-      this.$api.yearLoadingData(paramsArgs).then((res) => {
-        console.log(JSON.parse(res.data));
-        this.responseData = JSON.parse(res.data);
-        this.$emit('giveStore', this.responseData.UnitName);
-        this.tableSource = JSON.parse(res.data).list;
-        this.injectTableSourceData();
-        for (let i = 0; i < 8; i += 1) {
-          this.tableDataInject.push(this['tableDataSource' + i]);
-        }
-        this.$nextTick(() => {
-          this.dataInjection(this.tableSource, this.responseData.draft);
-        });
-        this.commitComData();
-      }).catch((errMsg) => {
-        console.log(errMsg);
-        news.ElErrorMessage(errMsg);
+      this.$nextTick(() => {
+        this.dataInjection(this.mainFormTableSource, this.$store.state.comData.commonData.draft);
       });
-    },
-    commitComData() {
-      const comDataObj = {};
-      comDataObj.userID = this.userID;
-      comDataObj.City = this.responseData.City;
-      comDataObj.Company = this.responseData.Company;
-      comDataObj.DepartmentAttribute = this.responseData.DepartmentAttribute;
-      comDataObj.District = this.responseData.District;
-      comDataObj.F_RealName = this.responseData.F_RealName;
-      comDataObj.JobAttribute = this.responseData.JobAttribute;
-      comDataObj.MPID = this.responseData.MPID;
-      comDataObj.OrganizeId = this.responseData.OrganizeId;
-      comDataObj.ParentId = this.responseData.ParentId;
-      comDataObj.Pr0111 = this.responseData.Pr0111;
-      comDataObj.Pr0139 = this.responseData.Pr0139;
-      comDataObj.SupervisorNumber = this.responseData.SupervisorNumber;
-      comDataObj.UnitName = this.responseData.UnitName;
-      comDataObj.draft = this.responseData.draft;
-      this.$store.commit('setCommonData', comDataObj);
-      this.$emit('getScheduleTableData', true);
     },
     injectTableSourceData() {
-      this.tableSource.forEach((item) => {
+      console.log(this.mainFormTableSource);
+      this.mainFormTableSource.forEach((item) => {
         this.getTypeObj(this['tableDataSource' + item.Type], item);
       });
     },
@@ -275,12 +200,12 @@ export default {
       cal.allTableCalculation(index);
     },
     calculatePredeterminedRatio() {
-      this.tableSource.forEach((el) => {
+      this.mainFormTableSource.forEach((el) => {
         if (cal.allInputEl(el)[1].value !== '' && cal.allInputEl(el)[1].value !== '0' && cal.allInputEl(el)[1].value !== '0.0' && cal.allInputEl(el)[1].value !== '0.00') {
           cal.allInputEl(el)[3].value = (cal.remSep(cal.allInputEl(el)[2].value) / cal.remSep(cal.allInputEl(el)[1].value)).toLocaleString();
         }
       });
-      this.loading.close();
+      this.$emit('closeLoading');
     },
     AutomaticCalculation(i, className, event) {
       let currentEl;
@@ -300,7 +225,7 @@ export default {
     },
     getAllSubmissionData() {
       const draft = this.responseData.draft;
-      this.tableSource.forEach((item) => {
+      this.mainFormTableSource.forEach((item) => {
         const obj = {};
         if (draft === 1) {
           obj.ID = item.monthSSID;
@@ -433,9 +358,6 @@ export default {
     },
   },
   mounted() {
-    this.$nextTick(() => {
-      this.firstLoadingRequest();
-    });
   },
 };
 </script>

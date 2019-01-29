@@ -39,11 +39,11 @@
         <template v-if="!isBehind">
           <el-tab-pane label="主表单" name="mainForm">
             <MainForm
-              @giveStore="getStore"
               ref="mainForm"
+              @closeLoading="closeLoading"
+              :mainFormTableSource="mainFormTableSource"
               class="mainFormPanel"
-              :mainFormInputDisabled="inputDisabled"
-              @getScheduleTableData="getSonComData"></MainForm>
+              :mainFormInputDisabled="inputDisabled"></MainForm>
           </el-tab-pane>
           <el-tab-pane label="附表" name="schedule">
             <ScheduleTable ref="scheduleTable" class="schedulePanel"></ScheduleTable>
@@ -62,11 +62,11 @@
         <template v-else>
           <el-tab-pane label="主表单" name="mainForm">
             <MainForm
+              :mainFormTableSource="mainFormTableSource"
               :mainFormInputDisabled="inputDisabled"
-              @giveStore="getStore"
+              @closeLoading="closeLoading"
               class="mainFormPanel"
-              ref="mainForm"
-              @getScheduleTableData="getSonComData"></MainForm>
+              ref="mainForm"></MainForm>
           </el-tab-pane>
           <el-tab-pane label="任务单" name="missionList">
             <MissionList ref="missionList" class="missionListPanel"></MissionList>
@@ -99,22 +99,26 @@ export default {
   },
   data() {
     return {
-      submitBtnShow: true,
-      index: '',
-      review: 0,
-      mainAndScheduleAllSubmissionData: {},
-      mainFormSonData: false,
-      loadingCover: '',
-      monthViewEditorMonth: '',
-      monthFillStatus: '',
       monthUserID: '',
       monthCreateByUser: '',
+      monthViewEditorYear: '',
+      monthViewEditorMonth: '',
+      monthFromWhichBtn: '',
+      responseData: {},
+      submitBtnShow: true,
+      index: '',
+      UnitName: '',
+      review: 0,
+      allSubmissionData: {},
+      loadingCover: '',
+      monthFillStatus: '',
       showReviewAndReject: false,
       showDraftAndSubmit: false,
       reachMatchAdjustment: false,
       inputDisabled: false,
       isBehind: true, // 判断是否为幕僚,幕僚没有附表和营业收入
       selectTabPane: this.$store.state.comData.selectTabPane || 'mainForm',
+      mainFormTableSource: '',
     };
   },
   methods: {
@@ -127,18 +131,19 @@ export default {
           console.log(err);
         });
     },
+    closeLoading() {
+      this.loadingCover.close();
+    },
     tabClick(el) {
       this.$store.commit('setSelectTabPane', el.name);
-    },
-    getStore(val) {
-      this.index = val;
     },
     getCookie() {
       this.monthUserID = VueCookie.get('monthUserID');
       this.monthCreateByUser = VueCookie.get('monthCreateByUser');
-    },
-    getSonComData(val) {
-      this.mainFormSonData = val;
+      this.monthViewEditorYear = VueCookie.get('monthViewEditorYear');
+      this.monthViewEditorMonth = VueCookie.get('monthViewEditorMonth');
+      this.monthFillStatus = VueCookie.get('monthFillStatus');
+      this.monthFromWhichBtn = VueCookie.get('monthFromWhichBtn');
     },
     dataSubmission(index) {
       this.loadingCover = this.$loading({
@@ -154,13 +159,13 @@ export default {
         this.$refs.operateIncome.getAllOperateSubmissionData();
       }
       this.$refs.missionList.editorSubmission();
-      this.setMainAndScheduleAllSubmissionData();
+      this.setAllSubmissionData();
     },
     getQueryAddYear() {
-      if (VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn') {
-        return VueCookie.get('monthViewEditorYear');
+      if (this.monthFromWhichBtn === 'viewEditorBtn') {
+        return this.monthViewEditorYear;
       }
-      if (VueCookie.get('monthFromWhichBtn') === 'newAdded') {
+      if (this.monthFromWhichBtn === 'newAdded') {
         if (new Date().getMonth() + 2 === 13) {
           return new Date().getFullYear() + 1;
         }
@@ -169,10 +174,10 @@ export default {
       return '';
     },
     getQueryAddMonth() {
-      if (VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn') {
-        return VueCookie.get('monthViewEditorMonth');
+      if (this.monthFromWhichBtn === 'viewEditorBtn') {
+        return this.monthViewEditorMonth;
       }
-      if (VueCookie.get('monthFromWhichBtn') === 'newAdded') {
+      if (this.monthFromWhichBtn === 'newAdded') {
         if (new Date().getMonth() + 2 === 13) {
           return 1;
         }
@@ -180,43 +185,43 @@ export default {
       }
       return '';
     },
-    setMainAndScheduleAllSubmissionData() {
-      this.mainAndScheduleAllSubmissionData = {};
+    setAllSubmissionData() {
+      this.allSubmissionData = {};
       const storeCommonData = this.$store.state.comData.commonData;
-      // this.mainAndScheduleAllSubmissionData.Years = new Date().getFullYear();
-      this.mainAndScheduleAllSubmissionData.Years = this.getQueryAddYear();
-      // this.mainAndScheduleAllSubmissionData.Month = new Date().getMonth() + 2;
-      // this.mainAndScheduleAllSubmissionData.Month = 5;
+      // this.allSubmissionData.Years = new Date().getFullYear();
+      this.allSubmissionData.Years = this.getQueryAddYear();
+      // this.allSubmissionData.Month = new Date().getMonth() + 2;
+      // this.allSubmissionData.Month = 5;
       // TODO:这里代码需要改回来;
-      // this.mainAndScheduleAllSubmissionData.Month = this.getQueryAddMonth();
+      // this.allSubmissionData.Month = this.getQueryAddMonth();
       // TODO:上一行的代码改回来;
-      this.mainAndScheduleAllSubmissionData.Month = 1;
-      this.mainAndScheduleAllSubmissionData.MonthlyPlanID = storeCommonData.MPID;
-      this.mainAndScheduleAllSubmissionData.CostCode = storeCommonData.Pr0139;
-      this.mainAndScheduleAllSubmissionData.OrganizeId = storeCommonData.OrganizeId;
-      this.mainAndScheduleAllSubmissionData.ParentId = storeCommonData.ParentId;
-      this.mainAndScheduleAllSubmissionData.Company = storeCommonData.Company;
-      this.mainAndScheduleAllSubmissionData.District = storeCommonData.District;
-      this.mainAndScheduleAllSubmissionData.department = storeCommonData.DepartmentAttribute;
-      this.mainAndScheduleAllSubmissionData.City = storeCommonData.City;
-      this.mainAndScheduleAllSubmissionData.Review = this.review;// 保存草稿为0；数据提交为1；
-      this.mainAndScheduleAllSubmissionData.CreateByUser = storeCommonData.userID;
-      this.mainAndScheduleAllSubmissionData.F_RealName = storeCommonData.F_RealName;
-      this.mainAndScheduleAllSubmissionData.OrganizeName = storeCommonData.UnitName;
-      this.mainAndScheduleAllSubmissionData.Pr0111 = storeCommonData.Pr0111;
-      this.mainAndScheduleAllSubmissionData.Amoeba_MonthlyPlandetails = this.$store.state.mainForm.mainFormData;
+      this.allSubmissionData.Month = 1;
+      this.allSubmissionData.MonthlyPlanID = storeCommonData.MPID;
+      this.allSubmissionData.CostCode = storeCommonData.Pr0139;
+      this.allSubmissionData.OrganizeId = storeCommonData.OrganizeId;
+      this.allSubmissionData.ParentId = storeCommonData.ParentId;
+      this.allSubmissionData.Company = storeCommonData.Company;
+      this.allSubmissionData.District = storeCommonData.District;
+      this.allSubmissionData.department = storeCommonData.DepartmentAttribute;
+      this.allSubmissionData.City = storeCommonData.City;
+      this.allSubmissionData.Review = this.review;// 保存草稿为0；数据提交为1；
+      this.allSubmissionData.CreateByUser = storeCommonData.userID;
+      this.allSubmissionData.F_RealName = storeCommonData.F_RealName;
+      this.allSubmissionData.OrganizeName = storeCommonData.UnitName;
+      this.allSubmissionData.Pr0111 = storeCommonData.Pr0111;
+      this.allSubmissionData.Amoeba_MonthlyPlandetails = this.$store.state.mainForm.mainFormData;
       if (this.isBehind) {
-        this.mainAndScheduleAllSubmissionData.MonthSigningGoldYD = [];
-        this.mainAndScheduleAllSubmissionData.MonthPerformanceYD = [];
-        this.mainAndScheduleAllSubmissionData.Amoeba_MonthlySSDetail = [];
+        this.allSubmissionData.MonthSigningGoldYD = [];
+        this.allSubmissionData.MonthPerformanceYD = [];
+        this.allSubmissionData.Amoeba_MonthlySSDetail = [];
       } else {
-        this.mainAndScheduleAllSubmissionData.MonthSigningGoldYD = this.$store.state.operatingForm.operatingFormData;
-        this.mainAndScheduleAllSubmissionData.MonthPerformanceYD = this.$store.state.operatingForm.performanceFormData;
-        this.mainAndScheduleAllSubmissionData.Amoeba_MonthlySSDetail = this.$store.state.scheduleForm.scheduleFormData;
+        this.allSubmissionData.MonthSigningGoldYD = this.$store.state.operatingForm.operatingFormData;
+        this.allSubmissionData.MonthPerformanceYD = this.$store.state.operatingForm.performanceFormData;
+        this.allSubmissionData.Amoeba_MonthlySSDetail = this.$store.state.scheduleForm.scheduleFormData;
       }
-      this.mainAndScheduleAllSubmissionData.Amoeba_TaskForm = this.$store.state.missionList.missionListData;
-      console.log(this.mainAndScheduleAllSubmissionData);
-      this.$api.monthMainAndScheduleSub(this.mainAndScheduleAllSubmissionData)
+      this.allSubmissionData.Amoeba_TaskForm = this.$store.state.missionList.missionListData;
+      console.log(this.allSubmissionData);
+      this.$api.monthMainAndScheduleSub(this.allSubmissionData)
         .then((res) => {
           console.log(res);
           this.loadingCover.close();
@@ -242,12 +247,8 @@ export default {
           news.ElErrorMessage(err);
         });
     },
-    getMonthFillStatus() {
-      this.monthFillStatus = VueCookie.get('monthFillStatus');
-      this.monthViewEditorMonth = VueCookie.get('monthViewEditorMonth');
-    },
     monthJudgeInputDisabled() {
-      if (VueCookie.get('monthFromWhichBtn') === 'newAdded') {
+      if (this.monthFromWhichBtn === 'newAdded') {
         this.showReviewAndReject = false;
         this.reachMatchAdjustment = this.monthFillStatus === '审核通过' && (new Date().getMonth() + 1) === (Number(this.monthViewEditorMonth) + 1);
         this.showDraftAndSubmit = this.monthFillStatus === '未填写' || this.monthFillStatus === '填写中' || this.monthFillStatus === '驳回';
@@ -271,7 +272,7 @@ export default {
       this.$api.queryAndAddedQuery({
         MPID: this.$store.state.comData.commonData.MPID,
         status: index,
-        User: VueCookie.get('monthUserID'),
+        User: this.monthUserID,
         IsYM: 1,
       }).then(() => {
         let content;
@@ -291,33 +292,93 @@ export default {
         news.ElErrorMessage(errMsg);
       });
     },
-  },
-  watch: {
-    mainFormSonData() {
+    indexFirstLoadingRequest() {
+      this.loadingCover = this.$loading({
+        lock: true,
+        text: 'Loading...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)',
+      });
+      let paramsArgs;
+      if (this.monthFromWhichBtn === 'newAdded') {
+        paramsArgs = {
+          userID: this.monthUserID,
+          IsYM: 1,
+          Year: new Date().getFullYear(),
+          // TODO:production change
+          // Month: new Date().getMonth() + 2,
+          // TODO: end
+          Month: 1,
+        };
+      }
+      if (this.monthFromWhichBtn === 'viewEditorBtn') {
+        paramsArgs = {
+          userID: this.monthCreateByUser,
+          IsYM: 1,
+          Year: this.monthViewEditorYear,
+          Month: this.monthViewEditorMonth,
+        };
+      }
+      // const params = {
+      //   userID: this.userID,
+      //   IsYM: 1,
+      //   Year: new Date().getFullYear(),
+      //   Month: new Date().getMonth() + 1,
+      // };
+      this.$api.yearLoadingData(paramsArgs).then((res) => {
+        console.log(JSON.parse(res.data));
+        this.responseData = JSON.parse(res.data);
+        this.UnitName = this.responseData.UnitName;
+        this.mainFormTableSource = JSON.parse(res.data).list;
+        this.commitComData();
+      }).catch((errMsg) => {
+        console.log(errMsg);
+        this.loadingCover.close();
+        news.ElErrorMessage(errMsg);
+      });
+    },
+    commitComData() {
+      const comDataObj = {};
+      comDataObj.userID = this.userID;
+      comDataObj.City = this.responseData.City;
+      comDataObj.Company = this.responseData.Company;
+      comDataObj.DepartmentAttribute = this.responseData.DepartmentAttribute;
+      comDataObj.District = this.responseData.District;
+      comDataObj.F_RealName = this.responseData.F_RealName;
+      comDataObj.JobAttribute = this.responseData.JobAttribute;
+      comDataObj.MPID = this.responseData.MPID;
+      comDataObj.OrganizeId = this.responseData.OrganizeId;
+      comDataObj.ParentId = this.responseData.ParentId;
+      comDataObj.Pr0111 = this.responseData.Pr0111;
+      comDataObj.Pr0139 = this.responseData.Pr0139;
+      comDataObj.SupervisorNumber = this.responseData.SupervisorNumber;
+      comDataObj.UnitName = this.responseData.UnitName;
+      comDataObj.draft = this.responseData.draft;
+      this.$store.commit('setCommonData', comDataObj);
       this.isBehind = this.$store.state.comData.commonData.JobAttribute === '04';
-      // console.log(this.$refs.scheduleTable);
-      // this.$refs.scheduleTable.firstLoadingRequest();
       this.$nextTick(() => {
+        this.$refs.mainForm.mainFormFirstLoading();
+        this.$refs.missionList.missionListLoading();
         if (!this.isBehind) {
           this.$refs.scheduleTable.firstLoadingRequest();
         }
       });
     },
+
   },
   computed: {
     storeYearMonth() {
-      if (VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn') {
-        return this.index + ' ' + VueCookie.get('monthViewEditorYear') + '年' + VueCookie.get('monthViewEditorMonth') + '月';
+      if (this.monthFromWhichBtn === 'viewEditorBtn') {
+        return this.UnitName + ' ' + this.monthViewEditorYear + '年' + this.monthViewEditorMonth + '月';
       }
       // TODO:正是环境改回来;
       // return this.index + ' ' + new Date().getFullYear() + '年' + (new Date().getMonth() + 2) + '月';
-      return this.index + ' ' + new Date().getFullYear() + '年01月';
+      return this.UnitName + ' ' + new Date().getFullYear() + '年01月';
     },
   },
   mounted() {
-    this.getStore();
-    this.getMonthFillStatus();
     this.monthJudgeInputDisabled();
+    this.indexFirstLoadingRequest();
   },
   created() {
     this.getCookie();

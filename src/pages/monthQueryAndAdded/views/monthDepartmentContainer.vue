@@ -168,7 +168,7 @@ export default {
       VueCookie.set('monthUserID', this.userID);
       VueCookie.set('monthFromWhichBtn', 'newAdded');
       this.getApprovalStatus();
-      window.location = 'monthIndex.html';
+      window.location = 'monthIndex.html?a=1&b=2';
     },
 
     getApprovalStatus() {

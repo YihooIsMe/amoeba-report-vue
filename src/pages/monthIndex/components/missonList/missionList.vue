@@ -19,8 +19,11 @@
 
 <script>
 import Vue from 'vue';
+import VueCookie from 'vue-cookie';
 import MissionTextarea from './missionTextarea.vue';
 import MaskLayer from './maskLayer.vue';
+
+Vue.use(VueCookie);
 
 export default {
   name: 'missionList',
@@ -101,17 +104,27 @@ export default {
       this.$store.commit('setMissionListData', this.Amoeba_TaskForm);
     },
     missionListLoading() {
-      const missionListData = this.$store.state.missionList.missionListData;
-      missionListData.forEach((el, i) => {
-        Vue.set(this[this.weekData[i]], 'index', el.Week_);
-        Vue.set(this[this.weekData[i]], 'identity', el.Identity_);
-        Vue.set(this[this.weekData[i]], 'first', el.First);
-        Vue.set(this[this.weekData[i]], 'second', el.Second);
-        Vue.set(this[this.weekData[i]], 'third', el.Third);
-        Vue.set(this[this.weekData[i]], 'fourth', el.Fourth);
-        Vue.set(this[this.weekData[i]], 'fifth', el.Fifth);
-        Vue.set(this[this.weekData[i]], 'sixth', el.Sixth);
-      });
+      const PreordainID = this.$store.state.comData.commonData.MPID; // TODO:如果是201812月那么就要变成201901月；后续完善；
+      console.log({ PreordainID });
+      this.$api.monthMissionList({ PreordainID })
+        .then((res) => {
+          console.log(JSON.parse(res.data));
+          if (JSON.parse(res.data).length > 0) {
+            JSON.parse(res.data).forEach((el, i) => {
+              Vue.set(this[this.weekData[i]], 'index', el.Week_);
+              Vue.set(this[this.weekData[i]], 'identity', el.Identity_);
+              Vue.set(this[this.weekData[i]], 'first', el.First);
+              Vue.set(this[this.weekData[i]], 'second', el.Second);
+              Vue.set(this[this.weekData[i]], 'third', el.Third);
+              Vue.set(this[this.weekData[i]], 'fourth', el.Fourth);
+              Vue.set(this[this.weekData[i]], 'fifth', el.Fifth);
+              Vue.set(this[this.weekData[i]], 'sixth', el.Sixth);
+            });
+          }
+        })
+        .catch((errMsg) => {
+          console.log(errMsg);
+        });
     },
   },
   computed: {

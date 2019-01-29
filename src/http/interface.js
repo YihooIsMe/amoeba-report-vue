@@ -68,6 +68,12 @@ export const monthTransactionCase = params => axios({
   data: params,
 });
 
+export const monthMissionList = params => axios({
+  url: '/TaskForm',
+  method: 'GET',
+  params,
+});
+
 export default {
   monthScheduleTable,
   queryAndAddedUserInfo,
@@ -80,4 +86,5 @@ export default {
   monthOperatingAdd,
   monthQueryAndAdd,
   monthTransactionCase,
+  monthMissionList,
 };
