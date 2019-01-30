@@ -119,6 +119,8 @@ export default {
       mainFormTableSource: '',
       ReviewStatus: '',
       SupervisorID: '',
+      // monthFromWhichBtn = '0' 代表从新增按钮过来的
+      // monthFromWhichBtn = '1' 代表从查看编辑过来的
     };
   },
   methods: {
@@ -259,6 +261,11 @@ export default {
         });
     },
     monthJudgeInputDisabled() {
+      // ReviewStatus = '' 未填写
+      // ReviewStatus = '0' 填写中
+      // ReviewStatus = '1' 待审核
+      // ReviewStatus = '2' 审核通过
+      // ReviewStatus = '3' 驳回
       if (this.monthFromWhichBtn === '0') {
         this.showReviewAndReject = false;
         this.reachMatchAdjustment = this.ReviewStatus === '2' && (new Date().getMonth() + 1) === (Number(this.monthViewEditorMonth) + 1);
@@ -330,6 +337,7 @@ export default {
       //   Year: new Date().getFullYear(),
       //   Month: new Date().getMonth() + 1,
       // };
+      console.log(paramsArgs);
       this.$api.yearLoadingData(paramsArgs).then((res) => {
         console.log(JSON.parse(res.data));
         this.responseData = JSON.parse(res.data);
@@ -337,6 +345,7 @@ export default {
         this.ReviewStatus = this.responseData.ReviewStatus;
         this.SupervisorID = this.responseData.SupervisorID;
         this.mainFormTableSource = JSON.parse(res.data).list;
+        console.log(this.mainFormTableSource);
         this.commitComData();
         this.monthJudgeInputDisabled();
       }).catch((errMsg) => {
@@ -347,7 +356,7 @@ export default {
     },
     commitComData() {
       const comDataObj = {};
-      comDataObj.userID = this.userID;
+      comDataObj.userID = this.monthUserID;
       comDataObj.City = this.responseData.City;
       comDataObj.Company = this.responseData.Company;
       comDataObj.DepartmentAttribute = this.responseData.DepartmentAttribute;
@@ -364,14 +373,16 @@ export default {
       comDataObj.draft = this.responseData.draft;
       comDataObj.ReviewStatus = this.responseData.ReviewStatus;
       comDataObj.SupervisorID = this.responseData.SupervisorID;
+      // Pr0111为'A1'或者'C1'或者'B0'的时候为非幕僚部门；其余全是幕僚部门；
+      this.isBehind = !(this.$store.state.comData.commonData.Pr0111 === 'A1' || this.$store.state.comData.commonData.Pr0111 === 'C1' || this.$store.state.comData.commonData.Pr0111 === 'B0');
+      comDataObj.isBehind = this.isBehind;
       this.$store.commit('setCommonData', comDataObj);
-      this.isBehind = this.$store.state.comData.commonData.JobAttribute === '04';
       this.$nextTick(() => {
         this.$refs.mainForm.mainFormFirstLoading();
-        this.$refs.missionList.missionListLoading();
         if (!this.isBehind) {
           this.$refs.scheduleTable.firstLoadingRequest();
         }
+        this.$refs.missionList.missionListLoading();
       });
     },
 

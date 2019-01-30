@@ -74,7 +74,6 @@ export default {
     return {
       // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 瑞虹一店;
       // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 咨询部;
-      responseData: {},
       tableDataSource0: [], // Type类型为0的数据;
       tableDataSource1: [], // Type类型为1的数据;
       tableDataSource2: [], // Type类型为2的数据;
@@ -148,7 +147,7 @@ export default {
         }
       });
       // 处于非门店的时候,数据加载完成后需要计算一遍,门店能自动计算是因为监听到数据改动
-      if (this.$store.state.comData.commonData.JobAttribute === '04') {
+      if (this.$store.state.comData.commonData.isBehind) {
         cal.whereUse('monthIndex');
         this.currentMonthAutomaticCalculation(3);
         this.calculatePredeterminedRatio();
@@ -224,15 +223,15 @@ export default {
       }
     },
     getAllSubmissionData() {
-      const draft = this.responseData.draft;
+      const draft = this.$store.state.comData.commonData.draft;
       this.mainFormTableSource.forEach((item) => {
         const obj = {};
         if (draft === 1) {
           obj.ID = item.monthSSID;
         }
-        obj.MonthlyPlanID = this.responseData.MPID;
-        obj.OrganizeId = this.responseData.OrganizeId;
-        obj.CostCode = this.responseData.Pr0139;
+        obj.MonthlyPlanID = this.$store.state.comData.commonData.MPID;
+        obj.OrganizeId = this.$store.state.comData.commonData.OrganizeId;
+        obj.CostCode = this.$store.state.comData.commonData.Pr0139;
         obj.Years = new Date().getFullYear();
         // TODO:这里后续改回来;
         // obj.Month = new Date().getMonth() + 2;
