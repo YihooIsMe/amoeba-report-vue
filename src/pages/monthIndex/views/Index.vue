@@ -3,7 +3,7 @@
     <div class="table-container">
       <h2>阿米巴核算系统--月预定</h2>
       <div class="submitBtn" v-if="submitBtnShow">
-        <div class="top-left" v-if="!!index">
+        <div class="top-left" v-if="!!UnitName">
           {{storeYearMonth}}
         </div>
         <div class="top-right">
@@ -106,12 +106,10 @@ export default {
       monthFromWhichBtn: '',
       responseData: {},
       submitBtnShow: true,
-      index: '',
       UnitName: '',
       review: 0,
       allSubmissionData: {},
       loadingCover: '',
-      monthFillStatus: '',
       showReviewAndReject: false,
       showDraftAndSubmit: false,
       reachMatchAdjustment: false,
@@ -119,6 +117,8 @@ export default {
       isBehind: true, // 判断是否为幕僚,幕僚没有附表和营业收入
       selectTabPane: this.$store.state.comData.selectTabPane || 'mainForm',
       mainFormTableSource: '',
+      ReviewStatus: '',
+      SupervisorID: '',
     };
   },
   methods: {
@@ -137,13 +137,25 @@ export default {
     tabClick(el) {
       this.$store.commit('setSelectTabPane', el.name);
     },
-    getCookie() {
-      this.monthUserID = VueCookie.get('monthUserID');
-      this.monthCreateByUser = VueCookie.get('monthCreateByUser');
-      this.monthViewEditorYear = VueCookie.get('monthViewEditorYear');
-      this.monthViewEditorMonth = VueCookie.get('monthViewEditorMonth');
-      this.monthFillStatus = VueCookie.get('monthFillStatus');
-      this.monthFromWhichBtn = VueCookie.get('monthFromWhichBtn');
+    getQueryVariable(variable) {
+      const query = window.location.search.substring(1);
+      const vars = query.split('&');
+      for (let i = 0; i < vars.length; i += 1) {
+        const pair = vars[i].split('=');
+        if (pair[0] === variable) {
+          return pair[1];
+        }
+      }
+      return false;
+    },
+    getBaseInfo() {
+      this.monthUserID = sessionStorage.getItem('userID');
+      this.monthFromWhichBtn = this.getQueryVariable('monthFromWhichBtn');
+      if (this.monthFromWhichBtn === '1') {
+        this.monthCreateByUser = decodeURI(this.getQueryVariable('monthCreateByUser'));
+        this.monthViewEditorYear = this.getQueryVariable('monthViewEditorYear');
+        this.monthViewEditorMonth = this.getQueryVariable('monthViewEditorMonth');
+      }
     },
     dataSubmission(index) {
       this.loadingCover = this.$loading({
@@ -162,10 +174,10 @@ export default {
       this.setAllSubmissionData();
     },
     getQueryAddYear() {
-      if (this.monthFromWhichBtn === 'viewEditorBtn') {
+      if (this.monthFromWhichBtn === '1') {
         return this.monthViewEditorYear;
       }
-      if (this.monthFromWhichBtn === 'newAdded') {
+      if (this.monthFromWhichBtn === '0') {
         if (new Date().getMonth() + 2 === 13) {
           return new Date().getFullYear() + 1;
         }
@@ -174,10 +186,10 @@ export default {
       return '';
     },
     getQueryAddMonth() {
-      if (this.monthFromWhichBtn === 'viewEditorBtn') {
+      if (this.monthFromWhichBtn === '1') {
         return this.monthViewEditorMonth;
       }
-      if (this.monthFromWhichBtn === 'newAdded') {
+      if (this.monthFromWhichBtn === '0') {
         if (new Date().getMonth() + 2 === 13) {
           return 1;
         }
@@ -236,7 +248,6 @@ export default {
             type,
           });
           if (type === 'success') {
-            VueCookie.set('monthFillStatus', '待审核');
             // window.location.reload();
             /* TODO:正式环境的时候reload需要，但是现在不需要 */
           }
@@ -248,22 +259,22 @@ export default {
         });
     },
     monthJudgeInputDisabled() {
-      if (this.monthFromWhichBtn === 'newAdded') {
+      if (this.monthFromWhichBtn === '0') {
         this.showReviewAndReject = false;
-        this.reachMatchAdjustment = this.monthFillStatus === '审核通过' && (new Date().getMonth() + 1) === (Number(this.monthViewEditorMonth) + 1);
-        this.showDraftAndSubmit = this.monthFillStatus === '未填写' || this.monthFillStatus === '填写中' || this.monthFillStatus === '驳回';
-        this.inputDisabled = this.monthFillStatus === '待审核' || this.monthFillStatus === '审核通过';
+        this.reachMatchAdjustment = this.ReviewStatus === '2' && (new Date().getMonth() + 1) === (Number(this.monthViewEditorMonth) + 1);
+        this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
+        this.inputDisabled = this.ReviewStatus === '1' || this.ReviewStatus === '2';
       } else if (this.monthUserID !== this.monthCreateByUser) {
         this.reachMatchAdjustment = false;
         this.showDraftAndSubmit = false;
         this.inputDisabled = true;
         // TODO:跨级不能审核,跨月份也不能审核
-        this.showReviewAndReject = this.monthFillStatus === '待审核' && Number(this.monthViewEditorMonth) === (new Date().getMonth() + 1);
+        this.showReviewAndReject = this.ReviewStatus === '1' && Number(this.monthViewEditorMonth) === (new Date().getMonth() + 1) && this.monthUserID === this.SupervisorID;
       } else {
-        this.reachMatchAdjustment = this.monthFillStatus === '审核通过' && (new Date().getMonth() + 1) === (Number(this.monthViewEditorMonth) + 1);
+        this.reachMatchAdjustment = this.ReviewStatus === '2' && (new Date().getMonth() + 1) === (Number(this.monthViewEditorMonth) + 1);
         this.showReviewAndReject = false;
-        this.showDraftAndSubmit = this.monthFillStatus === '未填写' || this.monthFillStatus === '填写中' || this.monthFillStatus === '驳回';
-        this.inputDisabled = !(this.monthFillStatus !== '待审核' && this.monthFillStatus !== '审核通过');
+        this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
+        this.inputDisabled = !(this.ReviewStatus !== '1' && this.ReviewStatus !== '2');
       }
       this.$store.commit('setInputDisabled', this.inputDisabled);
       this.$store.commit('setShowDraftAndSubmit', this.showDraftAndSubmit);
@@ -293,14 +304,8 @@ export default {
       });
     },
     indexFirstLoadingRequest() {
-      this.loadingCover = this.$loading({
-        lock: true,
-        text: 'Loading...',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)',
-      });
       let paramsArgs;
-      if (this.monthFromWhichBtn === 'newAdded') {
+      if (this.monthFromWhichBtn === '0') {
         paramsArgs = {
           userID: this.monthUserID,
           IsYM: 1,
@@ -311,7 +316,7 @@ export default {
           Month: 1,
         };
       }
-      if (this.monthFromWhichBtn === 'viewEditorBtn') {
+      if (this.monthFromWhichBtn === '1') {
         paramsArgs = {
           userID: this.monthCreateByUser,
           IsYM: 1,
@@ -329,8 +334,11 @@ export default {
         console.log(JSON.parse(res.data));
         this.responseData = JSON.parse(res.data);
         this.UnitName = this.responseData.UnitName;
+        this.ReviewStatus = this.responseData.ReviewStatus;
+        this.SupervisorID = this.responseData.SupervisorID;
         this.mainFormTableSource = JSON.parse(res.data).list;
         this.commitComData();
+        this.monthJudgeInputDisabled();
       }).catch((errMsg) => {
         console.log(errMsg);
         this.loadingCover.close();
@@ -354,6 +362,8 @@ export default {
       comDataObj.SupervisorNumber = this.responseData.SupervisorNumber;
       comDataObj.UnitName = this.responseData.UnitName;
       comDataObj.draft = this.responseData.draft;
+      comDataObj.ReviewStatus = this.responseData.ReviewStatus;
+      comDataObj.SupervisorID = this.responseData.SupervisorID;
       this.$store.commit('setCommonData', comDataObj);
       this.isBehind = this.$store.state.comData.commonData.JobAttribute === '04';
       this.$nextTick(() => {
@@ -368,23 +378,28 @@ export default {
   },
   computed: {
     storeYearMonth() {
-      if (this.monthFromWhichBtn === 'viewEditorBtn') {
+      if (this.monthFromWhichBtn === '1') {
         return this.UnitName + ' ' + this.monthViewEditorYear + '年' + this.monthViewEditorMonth + '月';
       }
       // TODO:正是环境改回来;
       // return this.index + ' ' + new Date().getFullYear() + '年' + (new Date().getMonth() + 2) + '月';
-      return this.UnitName + ' ' + new Date().getFullYear() + '年01月';
+      if (this.monthFromWhichBtn === '0') {
+        return this.UnitName + ' ' + new Date().getFullYear() + '年01月';
+      }
+      return '';
     },
   },
   mounted() {
-    this.monthJudgeInputDisabled();
+    this.getBaseInfo();
     this.indexFirstLoadingRequest();
   },
   created() {
-    this.getCookie();
-  },
-  beforeDestroy() {
-
+    this.loadingCover = this.$loading({
+      lock: true,
+      text: 'Loading...',
+      spinner: 'el-icon-loading',
+      background: 'rgba(0, 0, 0, 0.7)',
+    });
   },
 };
 </script>

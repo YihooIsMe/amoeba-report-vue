@@ -53,12 +53,12 @@
         <table class="show-query-table" border="1">
           <thead>
           <tr>
-            <th>序号</th>
-            <th>年度/月度</th>
-            <th>部门</th>
-            <th>主管</th>
-            <th>状态</th>
-            <th>更新时间</th>
+            <th width="90px">序号</th>
+            <th width="180px">年度/月度</th>
+            <th width="250px">部门</th>
+            <th width="150px">主管</th>
+            <th width="150px">状态</th>
+            <th width="180px">更新时间</th>
             <th>操作</th>
           </tr>
           </thead>
@@ -74,6 +74,16 @@
           </tr>
           </tbody>
         </table>
+        <template v-if="totalCount>10">
+          <el-pagination
+            class="month-pagination"
+            background
+            :page-size="10"
+            layout="prev, pager, next"
+            @current-change="doCurrentChange"
+            :total="totalCount">
+          </el-pagination>
+        </template>
       </div>
     </div>
 </template>
@@ -119,16 +129,21 @@ export default {
       selectDisabled: ['', '', '', ''],
       querySelectorArr: [],
       page: 1,
-      rows: 50,
+      rows: 10,
       queryTableAllData: '',
       otherParentId: '',
       secondSelected: '',
       thirdSelected: '',
       fourthSelectStoreSelected: '',
       loadingCover: '',
+      totalCount: '',
     };
   },
   methods: {
+    doCurrentChange(index) {
+      this.page = index;
+      this.auditTableQueryRequest();
+    },
     getUserRequest(permission) {
       this.loadingCover = this.$loading({
         lock: true,
@@ -165,23 +180,9 @@ export default {
     },
 
     linkToIndex() {
-      VueCookie.set('monthUserID', this.userID);
-      VueCookie.set('monthFromWhichBtn', 'newAdded');
-      this.getApprovalStatus();
-      window.location = 'monthIndex.html?a=1&b=2';
+      window.location = 'monthIndex.html?monthFromWhichBtn=0';
     },
 
-    getApprovalStatus() {
-      if (this.queryTableAllData.length === 1 && this.queryTableAllData[0].CreateByUser === null) {
-        VueCookie.set('monthFillStatus', '未填写');
-      } else {
-        this.queryTableAllData.forEach((item) => {
-          if (this.userID === item.CreateByUser) {
-            VueCookie.set('monthFillStatus', item.Status);
-          }
-        });
-      }
-    },
     getBusinessOfficeRequest(permission) {
       this.businessOffice = [];
       this.unitData = [];
@@ -342,6 +343,7 @@ export default {
           this.copyMonthSelected = this.monthSelected;
           console.log(res.data);
           this.queryTableAllData = res.data;
+          this.totalCount = res.data[0].TotalCount;
           this.loadingCover.close();
         })
         .catch((err) => {
@@ -368,13 +370,7 @@ export default {
     },
 
     viewEditor(item) {
-      VueCookie.set('monthUserID', this.userID);
-      VueCookie.set('monthFillStatus', item.Status);
-      VueCookie.set('monthCreateByUser', item.CreateByUser);
-      VueCookie.set('monthFromWhichBtn', 'viewEditorBtn');
-      VueCookie.set('monthViewEditorYear', this.copyYearSelected);
-      VueCookie.set('monthViewEditorMonth', this.copyMonthSelected);
-      window.location = 'monthIndex.html';
+      window.location = 'monthIndex.html?monthCreateByUser=' + encodeURI(item.CreateByUser) + '&monthFromWhichBtn=1&monthViewEditorYear=' + this.copyYearSelected + '&monthViewEditorMonth=' + this.copyMonthSelected;
     },
   },
   created() {
@@ -401,6 +397,9 @@ export default {
   }
   .month-select{
     margin-left: 10px;
+    option{
+      height: 30px;
+    }
   }
 }
 .department-list,.year-select{
@@ -457,4 +456,17 @@ export default {
 .show-query-table td{
   padding:5px 0;
 }
+.month-pagination{
+  text-align: center;
+  margin-top: 20px;
+}
+  .month-query-container table>thead>tr{
+    height: 40px;
+    th{
+      box-sizing: border-box;
+    }
+  }
+  option{
+    height:30px !important;
+  }
 </style>

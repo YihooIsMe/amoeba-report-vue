@@ -45,12 +45,12 @@
         <table class="show-query-table" border="1">
           <thead>
           <tr>
-            <th>序号</th>
-            <th>年度</th>
-            <th>部门</th>
-            <th>主管</th>
-            <th>状态</th>
-            <th>更新时间</th>
+            <th width="90px">序号</th>
+            <th width="180px">年度</th>
+            <th width="250px">部门</th>
+            <th width="150px">主管</th>
+            <th width="150px">状态</th>
+            <th width="180px">更新时间</th>
             <th>操作</th>
           </tr>
           </thead>
@@ -67,16 +67,16 @@
           </tbody>
         </table>
         <!-- TODO:pagination分页器 -->
-<!--
-        <el-pagination
-          class="year-pagination"
-          background
-          :page-size="5"
-          layout="prev, pager, next"
-          @current-change="doCurrentChange"
-          :total="20">
-        </el-pagination>
--->
+        <template v-if="totalCount>10">
+          <el-pagination
+            class="year-pagination"
+            background
+            :page-size="10"
+            layout="prev, pager, next"
+            @current-change="doCurrentChange"
+            :total="totalCount">
+          </el-pagination>
+        </template>
       </div>
     </div>
 </template>
@@ -122,18 +122,20 @@ export default {
       selectDisabled: ['', '', '', ''],
       querySelectorArr: [],
       page: 1,
-      rows: 100,
+      rows: 10,
       queryTableAllData: '',
       otherParentId: '',
       secondSelected: '',
       thirdSelected: '',
       fourthSelectStoreSelected: '',
       loading: '',
+      totalCount: '',
     };
   },
   methods: {
     doCurrentChange(index) {
-      console.log(index);
+      this.page = index;
+      this.auditTableQueryRequest();
     },
     getUserRequest(permission) {
       this.$api.queryAndAddedUserInfo({ userID: this.userID })
@@ -166,23 +168,9 @@ export default {
     },
 
     linkToIndex() {
-      VueCookie.set('userID', this.userID);
-      VueCookie.set('fromWhichBtn', 'newAdded');
-      this.getApprovalStatus();
-      window.location = 'yearIndex.html';
+      window.location = 'yearIndex.html?fromWhichBtn=0';
     },
 
-    getApprovalStatus() {
-      if (this.queryTableAllData.length === 1 && this.queryTableAllData[0].CreateByUser === null) {
-        VueCookie.set('fillStatus', '未填写');
-      } else {
-        this.queryTableAllData.forEach((item) => {
-          if (this.userID === item.CreateByUser) {
-            VueCookie.set('fillStatus', item.Status);
-          }
-        });
-      }
-    },
     getBusinessOfficeRequest(permission) {
       this.businessOffice = [];
       this.unitData = [];
@@ -340,6 +328,7 @@ export default {
           this.copyYearSelected = this.yearSelected;
           console.log(res.data);
           this.queryTableAllData = res.data;
+          this.totalCount = res.data[0].TotalCount;
           this.loading.close();
         })
         .catch((err) => {
@@ -366,12 +355,7 @@ export default {
     },
 
     viewEditor(item) {
-      VueCookie.set('userID', this.userID);
-      VueCookie.set('fillStatus', item.Status);
-      VueCookie.set('CreateByUser', item.CreateByUser);
-      VueCookie.set('fromWhichBtn', 'viewEditorBtn');
-      VueCookie.set('viewEditorYear', this.yearSelected);
-      window.location = 'yearIndex.html';
+      window.location = 'yearIndex.html?CreateByUser=' + encodeURI(item.CreateByUser) + '&fromWhichBtn=1&viewEditorYear=' + this.copyYearSelected;
     },
     setLoading() {
       this.loading = this.$loading({
@@ -453,6 +437,9 @@ export default {
   .show-query-table{
     thead>tr{
       height:40px;
+      th{
+        box-sizing: border-box;
+      }
     }
     width: 100%;
     text-align: center;

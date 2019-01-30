@@ -144,7 +144,6 @@ export default {
       OrganizeId: '',
       exportUrl: 'http://10.100.250.153:99/api/DownLoad',
       years: new Date().getFullYear() + 1,
-      viewEditorYear: '',
       submitBtnShow: false,
       draft: '',
       Pr0139: '',
@@ -181,16 +180,20 @@ export default {
       pullAllData: {},
       isInputValEmpty: true,
       DraftData: [],
-      CreateByUser: '',
       inputDisabled: false,
       ReviewOrRejectMPID: '',
-      fillStatus: '',
       showReviewAndReject: false,
       showDraftAndSubmit: false,
       deleteBtnDisabled: '',
       currentLineZero: '',
       dialogExcelImport: false,
       hideZero: '隐藏整行为0的数据',
+      firstLoading: '',
+      fromWhichBtn: '',
+      CreateByUser: '',
+      viewEditorYear: '',
+      ReviewStatus: '',
+      SupervisorID: '',
     };
   },
   methods: {
@@ -203,14 +206,39 @@ export default {
           console.log(err);
         });
     },
-    getFillStatus() {
-      this.fillStatus = VueCookie.get('fillStatus');
+    getQueryVariable(variable) {
+      const query = window.location.search.substring(1);
+      const vars = query.split('&');
+      for (let i = 0; i < vars.length; i += 1) {
+        const pair = vars[i].split('=');
+        if (pair[0] === variable) {
+          return pair[1];
+        }
+      }
+      return false;
+    },
+    getBaseInfo() {
+      this.userID = sessionStorage.getItem('userID');
+      this.fromWhichBtn = this.getQueryVariable('fromWhichBtn');
+      if (this.fromWhichBtn === '1') {
+        this.viewEditorYear = this.getQueryVariable('viewEditorYear');
+        this.CreateByUser = decodeURI(this.getQueryVariable('CreateByUser'));
+      }
     },
 
     getForClassName(el) {
       return el;
     },
 
+    firstLoadingCover(text) {
+      this.firstLoading = this.$loading({
+        lock: true,
+        text,
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)',
+        customClass: 'el-loading-info',
+      });
+    },
     inputFocus(i, className, event) {
       const currentEl = event.target;
       if (className === 'F1') {
@@ -332,19 +360,16 @@ export default {
     },
 
     firstLoadingRequest() {
-      this.userID = VueCookie.get('userID');
-      this.CreateByUser = VueCookie.get('CreateByUser');
-      this.viewEditorYear = VueCookie.get('viewEditorYear');
-      // this.Pr0139 = VueCookie.get('Pr0139');
+      this.firstLoadingCover('Loading');
       let paramsArgs;
-      if (VueCookie.get('fromWhichBtn') === 'newAdded') {
+      if (this.fromWhichBtn === '0') {
         paramsArgs = {
           userID: this.userID,
           IsYM: this.IsYM,
           Year: this.years,
         };
       }
-      if (VueCookie.get('fromWhichBtn') === 'viewEditorBtn') {
+      if (this.fromWhichBtn === '1') {
         paramsArgs = {
           userID: this.CreateByUser,
           IsYM: this.IsYM,
@@ -358,6 +383,8 @@ export default {
           this.OrganizeId = this.responseData.OrganizeId;
           this.draft = this.responseData.draft;
           this.Pr0139 = this.responseData.Pr0139;
+          this.ReviewStatus = this.responseData.ReviewStatus;
+          this.SupervisorID = this.responseData.SupervisorID;
           Vue.set(this.pullAllData, 'OrganizeId', this.OrganizeId);
           Vue.set(this.pullAllData, 'City', this.responseData.City);
           Vue.set(this.pullAllData, 'years', this.years); // 目前years暂无传参；
@@ -373,6 +400,8 @@ export default {
           Vue.set(this.pullAllData, 'Company', this.responseData.Company);
           Vue.set(this.pullAllData, 'District', this.responseData.District);
           Vue.set(this.pullAllData, 'Pr0111', this.responseData.Pr0111);
+          Vue.set(this.pullAllData, 'ReviewStatus', this.ReviewStatus);
+          Vue.set(this.pullAllData, 'SupervisorID', this.SupervisorID);
           this.tableSource = JSON.parse(response.data).list;
           console.log(this.tableSource);
           this.injectTableSourceData();
@@ -385,8 +414,9 @@ export default {
               document.querySelector('.F5>td:nth-child(' + j + ')>input').value = this.SigningRatio['SigningRatio' + (j - 2)];
             }
           });
-          this.$emit('closeFirstFullscreenLoading');
+          this.judgeInputDisabled();
           this.readFromDraftBoxRequest();
+          this.firstLoading.close();
         })
         .catch((error) => {
           console.log(error);
@@ -445,7 +475,7 @@ export default {
     },
 
     dataSubmissionRequest(DZIndex) {
-      this.$emit('saveToDraftBox', '数据正在提交中，请稍后');
+      this.firstLoadingCover('数据正在提交中，请稍后');
       const getSubmitData = this.tableSource;// LIST下的86个数据
       const submitListsArr = [];
       console.log(getSubmitData);
@@ -471,7 +501,7 @@ export default {
       this.$api.yearDataSubmission(this.pullAllData)
         .then((res) => {
           console.log(res);
-          this.$emit('saveToDraftBoxCompleted');
+          this.firstLoading.close();
           this.getAfterSubmissionAlertInfo(res.data.errorMessage, DZIndex);
         })
         .catch((error) => {
@@ -481,12 +511,12 @@ export default {
     },
 
     readFromDraftBoxRequest() {
-      this.$emit('getDataFromDraft', '正在读取草稿箱数据，请稍后...');
+      this.firstLoadingCover('正在读取草稿箱数据，请稍后...');
       this.$api.yearLoadingData({
         Pr0139: this.Pr0139,
         years: this.years,
       }).then((response) => {
-        this.$emit('readDraftCompleted');
+        this.firstLoading.close();
         this.DraftData = JSON.parse(response.data);
         console.log(this.DraftData);
         if (this.DraftData.length > 0) {
@@ -593,22 +623,22 @@ export default {
     },
 
     judgeInputDisabled() {
-      if (VueCookie.get('fromWhichBtn') === 'newAdded') {
+      if (this.fromWhichBtn === '0') {
         this.showReviewAndReject = false;
-        this.showDraftAndSubmit = this.fillStatus === '未填写' || this.fillStatus === '填写中' || this.fillStatus === '驳回';
-        this.deleteBtnDisabled = this.fillStatus === '待审核' || this.fillStatus === '审核通过';
-        this.inputDisabled = this.fillStatus === '待审核' || this.fillStatus === '审核通过';
+        this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
+        this.deleteBtnDisabled = this.ReviewStatus === '1' || this.ReviewStatus === '2';
+        this.inputDisabled = this.ReviewStatus === '1' || this.ReviewStatus === '2';
       } else if (this.userID !== this.CreateByUser) {
         this.deleteBtnDisabled = true;
         this.showDraftAndSubmit = false;
         this.inputDisabled = true;
         // TODO:跨级不能进行审核或者驳回,
-        this.showReviewAndReject = this.fillStatus === '待审核' && Number(this.viewEditorYear) === (new Date().getFullYear() + 1);
+        this.showReviewAndReject = this.ReviewStatus === '1' && Number(this.viewEditorYear) === (new Date().getFullYear() + 1) && this.userID === this.SupervisorID;
       } else {
         this.showReviewAndReject = false;
-        this.showDraftAndSubmit = this.fillStatus === '未填写' || this.fillStatus === '填写中' || this.fillStatus === '驳回';
-        this.deleteBtnDisabled = !(this.fillStatus !== '待审核' && this.fillStatus !== '审核通过');
-        this.inputDisabled = !(this.fillStatus !== '待审核' && this.fillStatus !== '审核通过');
+        this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
+        this.deleteBtnDisabled = !(this.ReviewStatus !== '1' && this.ReviewStatus !== '2');
+        this.inputDisabled = !(this.ReviewStatus !== '1' && this.ReviewStatus !== '2');
       }
     },
 
@@ -681,12 +711,9 @@ export default {
       document.querySelector('.F5>td:nth-child(14)>input').value = newVal;
     },
   },
-  created() {
-    this.firstLoadingRequest();
-  },
   mounted() {
-    this.getFillStatus();
-    this.judgeInputDisabled();
+    this.getBaseInfo();
+    this.firstLoadingRequest();
   },
 };
 
