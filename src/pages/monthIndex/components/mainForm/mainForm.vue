@@ -244,7 +244,7 @@ export default {
       this.$store.commit('setMainFormData', this.Amoeba_MonthlyPlandetails);
     },
     isReadOnly(item, n) {
-      if (this.$store.state.comData.commonData.JobAttribute !== '04') {
+      if (!this.$store.state.comData.commonData.isBehind) {
         return item.ReadOnly === 1
           || n !== 2
           || item.className === 'F2'

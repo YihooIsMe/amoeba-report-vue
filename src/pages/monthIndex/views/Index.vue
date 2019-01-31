@@ -374,7 +374,7 @@ export default {
       comDataObj.ReviewStatus = this.responseData.ReviewStatus;
       comDataObj.SupervisorID = this.responseData.SupervisorID;
       // Pr0111为'A1'或者'C1'或者'B0'的时候为非幕僚部门；其余全是幕僚部门；
-      this.isBehind = !(this.$store.state.comData.commonData.Pr0111 === 'A1' || this.$store.state.comData.commonData.Pr0111 === 'C1' || this.$store.state.comData.commonData.Pr0111 === 'B0');
+      this.isBehind = !(this.responseData.Pr0111 === 'A1' || this.responseData.Pr0111 === 'C1' || this.responseData.Pr0111 === 'B0');
       comDataObj.isBehind = this.isBehind;
       this.$store.commit('setCommonData', comDataObj);
       this.$nextTick(() => {

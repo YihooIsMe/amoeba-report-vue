@@ -122,8 +122,14 @@ export default {
         month = '0' + month;
       }
       const yearsAndMonth = years + month;
-      console.log({ MonthlyPlanID, years: yearsAndMonth, OrganizationID });
-      this.$api.monthScheduleTable({ MonthlyPlanID, years: yearsAndMonth, OrganizationID }).then((res) => {
+      const City = this.$store.state.comData.commonData.City;
+      console.log({ MonthlyPlanID, years: yearsAndMonth, OrganizationID, City });
+      this.$api.monthScheduleTable({
+        MonthlyPlanID,
+        years: yearsAndMonth,
+        OrganizationID,
+        City,
+      }).then((res) => {
         console.log(JSON.parse(res.data));
         this.scheduleSubmitData = JSON.parse(res.data);
         JSON.parse(res.data).ScheduleSubject.forEach((item) => {
@@ -159,6 +165,7 @@ export default {
         // sObj.Month = new Date().getMonth() + 2;
         // TODO:上一行代码改回来;
         sObj.Month = 1;
+        sObj.City = this.$store.state.comData.commonData.City;
         sObj.ScheduleSubjectID = item.ScheduleSubjectID;
         if (item.className.indexOf('A') !== -1) {
           sObj.Amount = Number(document.querySelector('.schedulePanel .' + item.className + '>td:nth-child(4)>input').value);

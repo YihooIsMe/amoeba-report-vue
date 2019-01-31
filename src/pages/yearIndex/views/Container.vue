@@ -38,7 +38,7 @@
                      @click="exportAllData"
                      v-if="draft===1"
           >导出</el-button>
-          <el-button type="danger" @click="clearData" v-if="false">清空数据</el-button>
+          <el-button type="danger" @click="clearData" v-if="true">清空数据</el-button>
         </div>
       </div>
       <div v-for="(tableData, index) in tableDataInject"
@@ -522,6 +522,7 @@ export default {
         if (this.DraftData.length > 0) {
           this.ReviewOrRejectMPID = this.DraftData[0].MPID;
         }
+        console.log(document.querySelectorAll('tr.F5>td>input'));
         this.DraftData.forEach((item) => {
           const allInputEl = document.querySelectorAll('tr.' + item.className + '>td>input');
           for (let i = 0; i < 13; i += 1) {
@@ -669,6 +670,7 @@ export default {
     },
 
     exportAllData() {
+      console.log(this.exportUrl + '?MPID=' + this.ReviewOrRejectMPID);
       this.$refs.exportIframe.setAttribute('src', this.exportUrl + '?MPID=' + this.ReviewOrRejectMPID);
     },
   },
@@ -752,7 +754,7 @@ export default {
     }
   }
   .F5{
-    display: none;
+    visibility: hidden;
   }
   .delete-btn{
     padding:5px;

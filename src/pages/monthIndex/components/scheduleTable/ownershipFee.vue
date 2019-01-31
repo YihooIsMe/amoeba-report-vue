@@ -12,17 +12,30 @@
         </thead>
         <tbody>
         <tr v-for="(item, index) in ownershipFeeData" :key="index" :class="item.className">
-          <td>{{item.Name}}</td>
-          <td>{{item.Valuation}}</td>
-          <td>{{item.Description}}</td>
-          <td>
-            <input type="text"
+          <template>
+            <td>{{item.Name}}</td>
+            <td>
+              <input type="text"
                      @keyup="handleInputNum"
-                     @change="scheduleCalculation(ownershipFeeData.length, '.ownershipFeeTable', 1, 3, 4)"
+                     @change="scheduleCalculation(ownershipFeeData, '.ownershipFeeTable', 0, 1, 2)"
+                     :value="item.Valuation"
+                     :readonly="item.IsRead === 1||item.IsRead === 3"
+                     :disabled="inputDisabled"
+              />
+            </td>
+            <td>{{item.Description}}</td>
+            <td>
+              <input type="text"
+                     @keyup="handleInputNum"
+                     @change="scheduleCalculation(ownershipFeeData, '.ownershipFeeTable', 0, 1, 2)"
                      :value="$store.state.comData.commonData.draft === 1 ? item.Amount : ''"
-                   :disabled="inputDisabled"
-            /></td>
-          <td></td>
+                     :disabled="inputDisabled"
+              >
+            </td>
+            <td>
+              <input type="text" disabled/>
+            </td>
+          </template>
         </tr>
         </tbody>
       </table>
@@ -41,7 +54,7 @@ export default {
     },
     scheduleCalculation(a, b, c, d, e) {
       sch.calculation(a, b, c, d, e);
-      this.$emit('ownershipFeeSum', [0, sch.sumCalculate(4, '.ownershipFeeTable')]);
+      this.$emit('ownershipFeeSum', [0, sch.sumCalculate('.ownershipFeeTable')]);
     },
   },
   computed: {
@@ -54,7 +67,7 @@ export default {
   },
   watch: {
     isOwnershipFeeLoadCompleted() {
-      this.scheduleCalculation(this.ownershipFeeData.length, '.ownershipFeeTable', 1, 3, 4);
+      this.scheduleCalculation(this.ownershipFeeData, '.ownershipFeeTable', 0, 1, 2);
     },
   },
   updated() {
