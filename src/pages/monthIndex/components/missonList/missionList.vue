@@ -127,16 +127,6 @@ export default {
         });
     },
   },
-  computed: {
-    isCompleted() {
-      return this.$store.state.scheduleForm.isCompleted;
-    },
-  },
-  watch: {
-    isCompleted() {
-      this.missionListLoading();
-    },
-  },
 };
 </script>
 

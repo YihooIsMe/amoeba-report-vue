@@ -13,7 +13,7 @@
         <tbody>
         <tr v-for="(item, index) in ownershipFeeData" :key="index" :class="item.className">
           <template>
-            <td>{{item.Name}}</td>
+            <td><div>{{item.Name}}</div></td>
             <td>
               <input type="text"
                      @keyup="handleInputNum"
@@ -23,7 +23,7 @@
                      :disabled="inputDisabled"
               />
             </td>
-            <td>{{item.Description}}</td>
+            <td><div>{{item.Description}}</div></td>
             <td>
               <input type="text"
                      @keyup="handleInputNum"
@@ -79,10 +79,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .ownershipFeeTable td:nth-child(4){
-    padding-left: 0;
-    input{
-      text-indent: 10px;
-    }
-  }
+
 </style>

@@ -36,7 +36,7 @@
         </div>
       </div>
       <el-tabs type="border-card" class="tab-container" :value="selectTabPane" @tab-click="tabClick">
-        <template v-if="!isBehind">
+        <template v-if="identity === 'store'">
           <el-tab-pane label="主表单" name="mainForm">
             <MainForm
               ref="mainForm"
@@ -54,6 +54,22 @@
               class="operateIncomePanel"
               :reachMatchAdjustment="reachMatchAdjustment"
             ></OperatingIncome>
+          </el-tab-pane>
+          <el-tab-pane label="任务单" name="missionList">
+            <MissionList ref="missionList" class="missionListPanel"></MissionList>
+          </el-tab-pane>
+        </template>
+        <template v-else-if="identity === 'district'">
+          <el-tab-pane label="主表单" name="mainForm">
+            <MainForm
+              ref="mainForm"
+              @closeLoading="closeLoading"
+              :mainFormTableSource="mainFormTableSource"
+              class="mainFormPanel"
+              :mainFormInputDisabled="inputDisabled"></MainForm>
+          </el-tab-pane>
+          <el-tab-pane label="区部附表" name="districtSchedule">
+            <DistrictScheduleTable ref="districtScheduleTable" class="districtSchedulePanel"></DistrictScheduleTable>
           </el-tab-pane>
           <el-tab-pane label="任务单" name="missionList">
             <MissionList ref="missionList" class="missionListPanel"></MissionList>
@@ -83,6 +99,7 @@ import VueCookie from 'vue-cookie';
 import { MessageBox, Message } from 'element-ui';
 import MainForm from '../components/mainForm/mainForm.vue';
 import ScheduleTable from '../components/scheduleTable/scheduleTable.vue';
+import DistrictScheduleTable from '../components/districtSchedule/districtSchedule.vue';
 import OperatingIncome from '../components/operatingIncome/operatingIncome.vue';
 import MissionList from '../components/missonList/missionList.vue';
 import api from '@/http/index';
@@ -95,7 +112,7 @@ Vue.use(VueCookie);
 export default {
   name: 'Container',
   components: {
-    MainForm, ScheduleTable, OperatingIncome, MissionList,
+    MainForm, ScheduleTable, OperatingIncome, MissionList, DistrictScheduleTable,
   },
   data() {
     return {
@@ -114,7 +131,8 @@ export default {
       showDraftAndSubmit: false,
       reachMatchAdjustment: false,
       inputDisabled: false,
-      isBehind: true, // 判断是否为幕僚,幕僚没有附表和营业收入
+      identity: '',
+      // isBehind: true, // 判断是否为幕僚,幕僚没有附表和营业收入
       selectTabPane: this.$store.state.comData.selectTabPane || 'mainForm',
       mainFormTableSource: '',
       ReviewStatus: '',
@@ -168,9 +186,16 @@ export default {
       });
       this.review = index;
       this.$refs.mainForm.getAllSubmissionData();
-      if (!this.isBehind) {
-        this.$refs.scheduleTable.getScheduleSubmissionData();
-        this.$refs.operateIncome.getAllOperateSubmissionData();
+      switch (true) {
+        case this.identity === 'store':
+          this.$refs.scheduleTable.getScheduleSubmissionData();
+          this.$refs.operateIncome.getAllOperateSubmissionData();
+          break;
+        case this.identity === 'district':
+          this.$refs.districtScheduleTable.getDistrictScheduleSubmissionData();
+          break;
+        default:
+          break;
       }
       this.$refs.missionList.editorSubmission();
       this.setAllSubmissionData();
@@ -224,15 +249,29 @@ export default {
       this.allSubmissionData.OrganizeName = storeCommonData.UnitName;
       this.allSubmissionData.Pr0111 = storeCommonData.Pr0111;
       this.allSubmissionData.Amoeba_MonthlyPlandetails = this.$store.state.mainForm.mainFormData;
-      if (this.isBehind) {
-        this.allSubmissionData.MonthSigningGoldYD = [];
-        this.allSubmissionData.MonthPerformanceYD = [];
-        this.allSubmissionData.Amoeba_MonthlySSDetail = [];
-      } else {
-        this.allSubmissionData.MonthSigningGoldYD = this.$store.state.operatingForm.operatingFormData;
-        this.allSubmissionData.MonthPerformanceYD = this.$store.state.operatingForm.performanceFormData;
-        this.allSubmissionData.Amoeba_MonthlySSDetail = this.$store.state.scheduleForm.scheduleFormData;
+      switch (true) {
+        case this.identity === 'store':
+          this.allSubmissionData.MonthSigningGoldYD = this.$store.state.operatingForm.operatingFormData;
+          this.allSubmissionData.MonthPerformanceYD = this.$store.state.operatingForm.performanceFormData;
+          this.allSubmissionData.Amoeba_MonthlySSDetail = this.$store.state.scheduleForm.scheduleFormData;
+          break;
+        case this.identity === 'district':
+          break;
+        default:
+          this.allSubmissionData.MonthSigningGoldYD = [];
+          this.allSubmissionData.MonthPerformanceYD = [];
+          this.allSubmissionData.Amoeba_MonthlySSDetail = [];
+          break;
       }
+      // if (this.isBehind) {
+      //   this.allSubmissionData.MonthSigningGoldYD = [];
+      //   this.allSubmissionData.MonthPerformanceYD = [];
+      //   this.allSubmissionData.Amoeba_MonthlySSDetail = [];
+      // } else {
+      //   this.allSubmissionData.MonthSigningGoldYD = this.$store.state.operatingForm.operatingFormData;
+      //   this.allSubmissionData.MonthPerformanceYD = this.$store.state.operatingForm.performanceFormData;
+      //   this.allSubmissionData.Amoeba_MonthlySSDetail = this.$store.state.scheduleForm.scheduleFormData;
+      // }
       this.allSubmissionData.Amoeba_TaskForm = this.$store.state.missionList.missionListData;
       console.log(this.allSubmissionData);
       this.$api.monthMainAndScheduleSub(this.allSubmissionData)
@@ -373,17 +412,37 @@ export default {
       comDataObj.draft = this.responseData.draft;
       comDataObj.ReviewStatus = this.responseData.ReviewStatus;
       comDataObj.SupervisorID = this.responseData.SupervisorID;
-      // Pr0111为'A1'或者'C1'或者'B0'的时候为非幕僚部门；其余全是幕僚部门；
-      this.isBehind = !(this.responseData.Pr0111 === 'A1' || this.responseData.Pr0111 === 'C1' || this.responseData.Pr0111 === 'B0');
-      comDataObj.isBehind = this.isBehind;
+      // Pr0111为'A1'或者'C1'或者'B0'的时候为门店；
+      // Pr0111为'A2'的时候为业务区；
+      // 其他的情况就相当于是幕僚;
+      switch (true) {
+        case this.responseData.Pr0111 === 'A1' || this.responseData.Pr0111 === 'C1' || this.responseData.Pr0111 === 'B0':
+          this.identity = 'store';
+          break;
+        case this.responseData.Pr0111 === 'A2':
+          this.identity = 'district';
+          break;
+        default:
+          this.identity = 'other';
+          break;
+      }
+      comDataObj.identity = this.identity;
       this.$store.commit('setCommonData', comDataObj);
-      this.$nextTick(() => {
-        this.$refs.mainForm.mainFormFirstLoading();
-        if (!this.isBehind) {
-          this.$refs.scheduleTable.firstLoadingRequest();
-        }
-        this.$refs.missionList.missionListLoading();
-      });
+      // TODO:这个暂时隐藏,后续打开
+      // this.$nextTick(() => {
+      //   this.$refs.mainForm.mainFormFirstLoading();
+      //   switch (true) {
+      //     case this.identity === 'store':
+      //       this.$refs.scheduleTable.firstLoadingRequest();
+      //       break;
+      //     case this.identity === 'district':
+      //       break;
+      //     default:
+      //       break;
+      //   }
+      //   this.$refs.missionList.missionListLoading();
+      // });
+      // TODO:这个暂时隐藏,后续打开
     },
 
   },
@@ -405,12 +464,14 @@ export default {
     this.indexFirstLoadingRequest();
   },
   created() {
-    this.loadingCover = this.$loading({
-      lock: true,
-      text: 'Loading...',
-      spinner: 'el-icon-loading',
-      background: 'rgba(0, 0, 0, 0.7)',
-    });
+    // TODO:start先隐藏后续打开
+    // this.loadingCover = this.$loading({
+    //   lock: true,
+    //   text: 'Loading...',
+    //   spinner: 'el-icon-loading',
+    //   background: 'rgba(0, 0, 0, 0.7)',
+    // });
+    // TODO:end;
   },
 };
 </script>

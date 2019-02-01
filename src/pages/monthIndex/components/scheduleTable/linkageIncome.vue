@@ -12,18 +12,18 @@
         <tbody>
         <tr v-for="(item, i ) in linkageIncomeData" :key="i" :class="item.className">
           <template v-if="item.IsRead === 2">
-            <td>{{item.Name}}</td>
+            <td><div>{{item.Name}}</div></td>
             <td colspan="2">
               <input type="text"
                      @keyup="handleInputNum"
-                     :value="item.Valuation"
+                     :value="item.Amount"
                      @change="scheduleCalculation(linkageIncomeData, '.linkageIncomeTable', 0, 1, 2)"
                      :disabled="inputDisabled"/>
             </td>
             <td><input type="text" disabled/></td>
           </template>
           <template v-else>
-            <td>{{item.Name}}</td>
+            <td><div>{{item.Name}}</div></td>
             <td>
               <input type="text"
                      @keyup="handleInputNum"
@@ -88,10 +88,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .linkageIncomeTable td:nth-child(3){
-    padding-left: 0;
-    input{
-      text-indent: 10px;
-    }
-  }
+
 </style>

@@ -624,6 +624,11 @@ export default {
     },
 
     judgeInputDisabled() {
+      // ReviewStatus = '' 未填写
+      // ReviewStatus = '0' 填写中
+      // ReviewStatus = '1' 待审核
+      // ReviewStatus = '2' 审核通过
+      // ReviewStatus = '3' 驳回
       if (this.fromWhichBtn === '0') {
         this.showReviewAndReject = false;
         this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';

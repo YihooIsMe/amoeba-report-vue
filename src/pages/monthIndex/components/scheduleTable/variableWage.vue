@@ -12,23 +12,23 @@
         <tbody>
         <tr v-for="(item, i ) in variableWageData" :key="i" :class="item.className">
           <template v-if="item.IsRead === 2">
-            <td>{{item.Name}}</td>
+            <td><div>{{item.Name}}</div></td>
             <td colspan="2">
               <input type="text"
                      @keyup="handleInputNum"
-                     :value="item.Valuation"
+                     :value="item.Amount"
                      @change="scheduleCalculation(variableWageData, '.variableWageTable', 0, 1, 2)"
-                     :disabled="inputDisabled"/>
+                     :disabled="inputDisabled || item.className === 'FD0' || item.className === 'FD1'"/>
             </td>
             <td><input type="text" disabled/></td>
           </template>
           <template v-else>
-            <td>{{item.Name}}</td>
+            <td><div>{{item.Name}}</div></td>
             <td>
               <input type="text"
                      @keyup="handleInputNum"
                      @change="scheduleCalculation(variableWageData, '.variableWageTable', 0, 1, 2)"
-                     :value="item.Valuation"
+                     :value="item.IsRead === 3 ?item.Description:item.Valuation"
                      :readonly="item.IsRead === 1||item.IsRead === 3"
                      :disabled="inputDisabled"
               />
@@ -38,7 +38,7 @@
                      @keyup="handleInputNum"
                      @change="scheduleCalculation(variableWageData, '.variableWageTable', 0, 1, 2)"
                      :value="$store.state.comData.commonData.draft === 1 ? item.Amount : ''"
-                     :disabled="inputDisabled"
+                     :disabled="inputDisabled || item.className === 'FD0' || item.className === 'FD1'"
               />
             </td>
             <td>
@@ -48,6 +48,7 @@
         </tr>
         </tbody>
       </table>
+      <div class="schedule-note red">其他奖金：绩效奖金、中秋奖金、龙虎榜奖金、激励奖金等</div>
     </div>
 </template>
 
@@ -73,10 +74,20 @@ export default {
     inputDisabled() {
       return this.$store.state.comData.inputDisabled;
     },
+    recoveryPerformance() {
+      return this.$store.state.operatingForm.performanceSum;
+    },
   },
   watch: {
     isLoadCompleted() {
       this.scheduleCalculation(this.variableWageData, '.variableWageTable', 0, 1, 2);
+    },
+    recoveryPerformance(newVal) {
+      this.$nextTick(() => {
+        document.querySelector('.variableWageTable>tbody>tr.FD0>td:nth-child(3)>input').value = Number(newVal);
+        document.querySelector('.variableWageTable>tbody>tr.FD1>td:nth-child(3)>input').value = Number(newVal);
+        this.scheduleCalculation(this.variableWageData, '.variableWageTable', 0, 1, 2);
+      });
     },
   },
   updated() {
@@ -88,10 +99,5 @@ export default {
 </script>
 
 <style scoped lang="less">
-  .variableWageTable td:nth-child(3){
-    padding-left: 0;
-    input{
-      text-indent: 10px;
-    }
-  }
+
 </style>

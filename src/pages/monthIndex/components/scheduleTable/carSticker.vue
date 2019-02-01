@@ -12,23 +12,23 @@
         <tbody>
         <tr v-for="(item, i ) in carStickerData" :key="i" :class="item.className">
           <template v-if="item.IsRead === 2">
-            <td>{{item.Name}}</td>
+            <td><div>{{item.Name}}</div></td>
             <td colspan="2">
               <input type="text"
                      @keyup="handleInputNum"
-                     :value="item.Valuation"
+                     :value="item.Amount"
                      @change="scheduleCalculation(carStickerData, '.carStickerTable', 0, 1, 2)"
-                     :disabled="inputDisabled"/>
+                     :disabled="inputDisabled || currentDisabled"/>
             </td>
             <td><input type="text" disabled/></td>
           </template>
           <template v-else>
-            <td>{{item.Name}}</td>
+            <td><div>{{item.Name}}</div></td>
             <td>
               <input type="text"
                      @keyup="handleInputNum"
                      @change="scheduleCalculation(carStickerData, '.carStickerTable', 0, 1, 2)"
-                     :value="item.Valuation"
+                     :value="item.IsRead === 3 ?item.Description:item.Valuation"
                      :readonly="item.IsRead === 1||item.IsRead === 3"
                      :disabled="inputDisabled"
               />
@@ -38,7 +38,7 @@
                      @keyup="handleInputNum"
                      @change="scheduleCalculation(carStickerData, '.carStickerTable', 0, 1, 2)"
                      :value="$store.state.comData.commonData.draft === 1 ? item.Amount : ''"
-                     :disabled="inputDisabled"
+                     :disabled="inputDisabled || currentDisabled"
               >
             </td>
             <td>
@@ -57,6 +57,12 @@ import sch from '@/assets/js/scheduleTableCalculation';
 export default {
   name: 'carSticker',
   props: ['carStickerData'],
+  data() {
+    return {
+      seniorDirectorClassName: ['FC2', 'FC3', 'FC4'], // 高级主任的className
+      currentDisabled: true,
+    };
+  },
   methods: {
     handleInputNum(e) {
       sch.scheduleHandleInputNum(e);
@@ -64,6 +70,20 @@ export default {
     scheduleCalculation(a, b, c, d, e) {
       sch.calculation(a, b, c, d, e);
       this.$emit('carStickerSum', [6, sch.sumCalculate('.carStickerTable')]);
+    },
+    setCarStickerPeople() {
+      //  因为三地高级主任和主任的类别都一样,直接写死了,如果后面有变动需要重新手动调整代码;
+      //  固定工资店主管人数
+      const fixedSalaryStoreManager = Number(document.querySelector('.fixedSalaryTable>tbody>tr.FC0>td:nth-child(3)>input').value);
+      //  固定工资高级主任人数
+      let fixedSalarySeniorDirector = 0;
+      this.seniorDirectorClassName.forEach((el) => {
+        fixedSalarySeniorDirector = Number(document.querySelector('.fixedSalaryTable>tbody>tr.' + el + '>td:nth-child(3)>input').value) + fixedSalarySeniorDirector;
+      });
+      //  固定工资主任人数
+      const fixedDirector = Number(document.querySelector('.fixedSalaryTable>tbody>tr.FC5>td:nth-child(3)>input').value);
+      document.querySelector('.carStickerTable>tbody>tr.FG0>td:nth-child(3)>input').value = fixedSalaryStoreManager;
+      document.querySelector('.carStickerTable>tbody>tr.FG1>td:nth-child(3)>input').value = fixedSalarySeniorDirector + fixedDirector;
     },
   },
   computed: {
@@ -73,10 +93,19 @@ export default {
     inputDisabled() {
       return this.$store.state.comData.inputDisabled;
     },
+    scheduleTabIndex() {
+      return this.$store.state.scheduleForm.scheduleTabIndex;
+    },
   },
   watch: {
     isLoadCompleted() {
       this.scheduleCalculation(this.carStickerData, '.carStickerTable', 0, 1, 2);
+    },
+    scheduleTabIndex(val) {
+      if (val === 6) {
+        this.setCarStickerPeople();
+        this.scheduleCalculation(this.carStickerData, '.carStickerTable', 0, 1, 2);
+      }
     },
   },
   updated() {
@@ -88,10 +117,7 @@ export default {
 </script>
 
 <style scoped lang="less">
-  .carStickerTable td:nth-child(3) {
-    padding-left: 0;
-    input{
-      text-indent: 10px;
-    }
-  }
+.carStickerTable table td{
+
+}
 </style>

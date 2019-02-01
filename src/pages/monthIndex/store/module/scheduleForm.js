@@ -18,8 +18,12 @@ const scheduleForm = {
       sumWorkingMeal: 0,
     },
     isCompleted: false,
+    scheduleTabIndex: '',
   },
   mutations: {
+    setScheduleTabIndex: (state, data) => {
+      state.scheduleTabIndex = data;
+    },
     setScheduleFormData: (state, data) => {
       state.scheduleFormData = data;
     },

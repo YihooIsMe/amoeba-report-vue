@@ -12,23 +12,23 @@
         <tbody>
         <tr v-for="(item, i ) in workingMealData" :key="i" :class="item.className">
           <template v-if="item.IsRead === 2">
-            <td>{{item.Name}}</td>
+            <td><div>{{item.Name}}</div></td>
             <td colspan="2">
               <input type="text"
                      @keyup="handleInputNum"
-                     :value="item.Valuation"
+                     :value="item.Amount"
                      @change="scheduleCalculation(workingMealData, '.workingMealTable', 0, 1, 2)"
                      :disabled="inputDisabled"/>
             </td>
             <td><input type="text" disabled/></td>
           </template>
           <template v-else>
-            <td>{{item.Name}}</td>
+            <td><div>{{item.Name}}</div></td>
             <td>
               <input type="text"
                      @keyup="handleInputNum"
                      @change="scheduleCalculation(workingMealData, '.workingMealTable', 0, 1, 2)"
-                     :value="item.Valuation"
+                     :value="item.IsRead === 3 ?item.Description:item.Valuation"
                      :readonly="item.IsRead === 1||item.IsRead === 3"
                      :disabled="inputDisabled"
               />
@@ -88,10 +88,5 @@ export default {
 </script>
 
 <style scoped lang="less">
-.workingMealTable td:nth-child(3){
-  padding-left: 0;
-  input{
-    text-indent: 10px;
-  }
-}
+
 </style>

@@ -147,7 +147,9 @@ export default {
         }
       });
       // 处于非门店的时候,数据加载完成后需要计算一遍,门店能自动计算是因为监听到数据改动
-      if (this.$store.state.comData.commonData.isBehind) {
+      // TODO:测试环境需要区部也计算一边,这是原始逻辑 this.$store.state.comData.commonData.identity === 'other'
+      if (this.$store.state.comData.commonData.identity !== 'store') {
+        console.log('ss');
         cal.whereUse('monthIndex');
         this.currentMonthAutomaticCalculation(3);
         this.calculatePredeterminedRatio();
@@ -182,7 +184,6 @@ export default {
       });
     },
     injectTableSourceData() {
-      console.log(this.mainFormTableSource);
       this.mainFormTableSource.forEach((item) => {
         this.getTypeObj(this['tableDataSource' + item.Type], item);
       });
@@ -244,7 +245,7 @@ export default {
       this.$store.commit('setMainFormData', this.Amoeba_MonthlyPlandetails);
     },
     isReadOnly(item, n) {
-      if (!this.$store.state.comData.commonData.isBehind) {
+      if (this.$store.state.comData.commonData.identity !== 'other') {
         return item.ReadOnly === 1
           || n !== 2
           || item.className === 'F2'

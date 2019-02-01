@@ -443,7 +443,7 @@ export default {
         formArrObj.caseName = newVal.demandContent;
       }
       formArrObj.bookType = '月预订';
-      formArrObj.status = 0; // TODO:后面数据库传入数据;
+      formArrObj.status = '未达成'; // TODO:后面数据库传入数据;
       formArrObj.broker = newVal.broker;
       formArrObj.searchCustomer = newVal.searchCustomer;
       formArrObj.searchCustomerName = newVal.searchCustomerName;
@@ -477,7 +477,7 @@ export default {
         formArrObj.caseName = newVal.demandContent;
       }
       formArrObj.bookType = '月预订';
-      formArrObj.status = '达成'; // TODO:后面数据库传入数据;
+      formArrObj.status = '未达成'; // TODO:后面数据库传入数据;
       formArrObj.broker = newVal.broker;
       formArrObj.searchCustomer = newVal.searchCustomer;
       formArrObj.searchCustomerName = newVal.searchCustomerName;
@@ -493,9 +493,9 @@ export default {
       formArrObj.fullCommissionSign = newVal.fullCommissionSign;
       formArrObj.discountType = newVal.discountType;
       formArrObj.discountAmount = newVal.discountAmount;
-      formArrObj.discountRelAmount = '100000'; // TODO:暂时先写死;
       formArrObj.estimatedContractMoney = newVal.fullCommissionSign - newVal.discountAmount;
       console.log(formArrObj);
+      // 预定的时候,没有实际的数据
       // Vue.set(formArrObj, 'fullCommissionSignActual', 12345);
       // Vue.set(formArrObj, 'discountAmountActual', 12345);
       // Vue.set(formArrObj, 'relContractMoney', 12345);
@@ -620,7 +620,7 @@ export default {
         addFormObj.objectNameDes = el.CaseName + '<br>' + el.ObjectName;
         // addFormObj.objectNum = el.CaseName;
         // addFormObj.caseName = el.ObjectName;
-        addFormObj.bookType = '月预订';
+
         addFormObj.status = el.Status === 0 ? '未达成' : '达成'; // TODO:后面数据库传入数据;
         addFormObj.broker = el.PersonnelID;
         addFormObj.brokerLabel = el.PersonnelName;
@@ -640,6 +640,11 @@ export default {
         addFormObj.discountAmountDiff = el.DiscountGoldDifference;
         addFormObj.ID = el.ID;
         addFormObj.PreordainID = el.PreordainID;
+        if (el.PreordainID === '') {
+          addFormObj.bookType = '';
+        } else {
+          addFormObj.bookType = '月预订';
+        }
         Vue.set(addFormObj, 'fullCommissionSignActual', el.FullCommissionSJ);
         Vue.set(addFormObj, 'discountAmountActual', el.DiscountGoldSJ);
         Vue.set(addFormObj, 'relContractMoney', el.SigningGoldSJ);
@@ -669,7 +674,7 @@ export default {
           addPerFormObj.customerPhone = '';
         }
 
-        addPerFormObj.bookType = '月预订';
+
         addPerFormObj.status = el.Status === 0 ? '未达成' : '达成';
         // addPerFormObj.status = '达成'; // TODO:后面数据库传入数据;
         addPerFormObj.broker = el.PersonnelID;
@@ -689,6 +694,11 @@ export default {
         addPerFormObj.recoveryPerformance = el.PerformanceYD;
         addPerFormObj.discountAmount = el.PerformanceDifference;
         addPerFormObj.PreordainID = el.PreordainID;
+        if (el.PreordainID === '') {
+          addPerFormObj.bookType = '';
+        } else {
+          addPerFormObj.bookType = '月预订';
+        }
         Vue.set(addPerFormObj, 'discountType', el.PerformanceSJ);
         this.addPerformanceArr.push(addPerFormObj);
       });

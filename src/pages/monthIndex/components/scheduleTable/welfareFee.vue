@@ -12,23 +12,23 @@
         <tbody>
         <tr v-for="(item, i ) in welfareFeeTableData" :key="i" :class="item.className">
           <template v-if="item.IsRead === 2">
-            <td>{{item.Name}}</td>
+            <td><div>{{item.Name}}</div></td>
             <td colspan="2">
               <input type="text"
                      @keyup="handleInputNum"
-                     :value="item.Valuation"
+                     :value="item.Amount"
                      @change="scheduleCalculation(welfareFeeTableData, '.welfareFeeTable', 0, 1, 2)"
-                     :disabled="inputDisabled"/>
+                     :disabled="inputDisabled || item.className === 'FE0'"/>
             </td>
             <td><input type="text" disabled/></td>
           </template>
           <template v-else>
-            <td>{{item.Name}}</td>
+            <td><div>{{item.Name}}</div></td>
             <td>
               <input type="text"
                      @keyup="handleInputNum"
                      @change="scheduleCalculation(welfareFeeTableData, '.welfareFeeTable', 0, 1, 2)"
-                     :value="item.Valuation"
+                     :value="item.IsRead === 3 ?item.Description:item.Valuation"
                      :readonly="item.IsRead === 1||item.IsRead === 3"
                      :disabled="inputDisabled"
               />
@@ -38,7 +38,7 @@
                      @keyup="handleInputNum"
                      @change="scheduleCalculation(welfareFeeTableData, '.welfareFeeTable', 0, 1, 2)"
                      :value="$store.state.comData.commonData.draft === 1 ? item.Amount : ''"
-                     :disabled="inputDisabled"
+                     :disabled="inputDisabled || item.className === 'FE0'"
               >
             </td>
             <td>
@@ -48,6 +48,7 @@
         </tr>
         </tbody>
       </table>
+      <div class="schedule-note red">其他福利费：门店达成奖励、工伤医疗费等</div>
     </div>
 </template>
 
@@ -56,7 +57,7 @@ import sch from '@/assets/js/scheduleTableCalculation';
 
 export default {
   name: 'welfareFee',
-  props: ['welfareFeeTableData'],
+  props: ['welfareFeeTableData', 'fixedSalaryData'],
   methods: {
     handleInputNum(e) {
       sch.scheduleHandleInputNum(e);
@@ -64,6 +65,22 @@ export default {
     scheduleCalculation(a, b, c, d, e) {
       sch.calculation(a, b, c, d, e);
       this.$emit('welfareFeeSum', [4, sch.sumCalculate('.welfareFeeTable')]);
+    },
+    setStoreNumOfPeople() {
+      let sum = 0;
+      this.fixedSalaryData.forEach((el) => {
+        if (el.IsFixedSalary === 1) {
+          sum = Number(document.querySelector('.fixedSalaryTable>tbody>tr.' + el.className + '>td:nth-child(3)>input').value) + sum;
+        }
+      });
+      // 店主管人数
+      const storeManager = Number(document.querySelector('.fixedSalaryTable>tbody>tr.FC0>td:nth-child(3)>input').value);
+      // 保障薪人数
+      const guaranteedSalary = Number(document.querySelector('.fixedSalaryTable>tbody>tr.FC9>td:nth-child(3)>input').value);
+      // 秘书人数
+      const secretary = Number(document.querySelector('.fixedSalaryTable>tbody>tr.FC10>td:nth-child(3)>input').value);
+      // 计算门店福利金人数
+      document.querySelector('.welfareFeeTable>tbody>tr.FE0>td:nth-child(3)>input').value = sum - storeManager - guaranteedSalary - secretary + 1;
     },
   },
   computed: {
@@ -73,10 +90,28 @@ export default {
     inputDisabled() {
       return this.$store.state.comData.inputDisabled;
     },
+    recoveryPerformance() {
+      return this.$store.state.operatingForm.performanceSum;
+    },
+    scheduleTabIndex() {
+      return this.$store.state.scheduleForm.scheduleTabIndex;
+    },
   },
   watch: {
     isLoadCompleted() {
       this.scheduleCalculation(this.welfareFeeTableData, '.welfareFeeTable', 0, 1, 2);
+    },
+    scheduleTabIndex(newVal) {
+      if (newVal === 4) {
+        this.setStoreNumOfPeople();
+        this.scheduleCalculation(this.welfareFeeTableData, '.welfareFeeTable', 0, 1, 2);
+      }
+    },
+    recoveryPerformance(newVal) {
+      this.$nextTick(() => {
+        document.querySelector('.welfareFeeTable>tbody>tr.FE0>td:nth-child(2)>input').value = Number(newVal) * 0.03;
+        this.scheduleCalculation(this.welfareFeeTableData, '.welfareFeeTable', 0, 1, 2);
+      });
     },
   },
   updated() {
@@ -88,10 +123,5 @@ export default {
 </script>
 
 <style scoped lang="less">
-  .welfareFeeTable td:nth-child(3){
-    padding-left: 0;
-    input{
-      text-indent: 10px;
-    }
-  }
+
 </style>

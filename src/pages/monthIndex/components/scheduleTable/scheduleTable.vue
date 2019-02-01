@@ -34,6 +34,7 @@
     <div v-show="tabIndex === 4">
       <SelectedWelfareFee
         :welfareFeeTableData="scheduleTableData[4]"
+        :fixedSalaryData="scheduleTableData[2]"
         @welfareFeeSum="getComponentSum"
         ref="welfareFee"
       ></SelectedWelfareFee>
@@ -109,6 +110,7 @@ export default {
         liElements[i].classList.remove('active');
       }
       liElements[index].classList.add('active');
+      this.$store.commit('setScheduleTabIndex', index);
     },
     firstLoadingRequest() {
       const OrganizationID = this.$store.state.comData.commonData.OrganizeId;
@@ -123,7 +125,6 @@ export default {
       }
       const yearsAndMonth = years + month;
       const City = this.$store.state.comData.commonData.City;
-      console.log({ MonthlyPlanID, years: yearsAndMonth, OrganizationID, City });
       this.$api.monthScheduleTable({
         MonthlyPlanID,
         years: yearsAndMonth,
@@ -182,9 +183,6 @@ export default {
       this.setTabIndex(0);
     });
   },
-  created() {
-
-  },
 };
 </script>
 
@@ -242,4 +240,15 @@ export default {
       color:white !important;
     }
   }
+</style>
+<style lang="less">
+  div.schedule > div > div > table >tbody>tr>td{
+    input{
+      text-indent: 10px;
+    }
+    div{
+      padding-left: 10px;
+    }
+  }
+
 </style>
