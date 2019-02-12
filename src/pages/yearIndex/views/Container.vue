@@ -241,7 +241,7 @@ export default {
     },
     inputFocus(i, className, event) {
       const currentEl = event.target;
-      if (className === 'F1') {
+      if (className === 'F1' && this.Pr0111 !== 'A2') {
         this.alertIndex = i;
         this.isAlertShow = true;
       } else {
@@ -376,6 +376,7 @@ export default {
           Year: this.viewEditorYear,
         };
       }
+      console.log(paramsArgs);
       this.$api.yearLoadingData(paramsArgs)
         .then((response) => {
           this.responseData = JSON.parse(response.data);
@@ -385,6 +386,7 @@ export default {
           this.Pr0139 = this.responseData.Pr0139;
           this.ReviewStatus = this.responseData.ReviewStatus;
           this.SupervisorID = this.responseData.SupervisorID;
+          this.Pr0111 = this.responseData.Pr0111;
           Vue.set(this.pullAllData, 'OrganizeId', this.OrganizeId);
           Vue.set(this.pullAllData, 'City', this.responseData.City);
           Vue.set(this.pullAllData, 'years', this.years); // 目前years暂无传参；
@@ -522,7 +524,6 @@ export default {
         if (this.DraftData.length > 0) {
           this.ReviewOrRejectMPID = this.DraftData[0].MPID;
         }
-        console.log(document.querySelectorAll('tr.F5>td>input'));
         this.DraftData.forEach((item) => {
           const allInputEl = document.querySelectorAll('tr.' + item.className + '>td>input');
           for (let i = 0; i < 13; i += 1) {
@@ -605,8 +606,9 @@ export default {
       }
       console.log(this.SigningRatio);
       cal.whereUse('yearIndex');
+      cal.judgeDepartment(this.Pr0111);
       cal.getVueSigningRatio(this.SigningRatio);
-      if (className !== 'F1') {
+      if (className !== 'F1' || (className === 'F1' && this.Pr0111 === 'A2')) {
         currentEl.value = Number(currentEl.value).toLocaleString();
         if (this.isInputValEmpty) {
           this.autoFillTwelveMonthData(i, className);
@@ -759,7 +761,7 @@ export default {
     }
   }
   .F5{
-    visibility: hidden;
+    display: none;
   }
   .delete-btn{
     padding:5px;

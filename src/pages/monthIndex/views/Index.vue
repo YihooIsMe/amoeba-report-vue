@@ -429,19 +429,19 @@ export default {
       comDataObj.identity = this.identity;
       this.$store.commit('setCommonData', comDataObj);
       // TODO:这个暂时隐藏,后续打开
-      // this.$nextTick(() => {
-      //   this.$refs.mainForm.mainFormFirstLoading();
-      //   switch (true) {
-      //     case this.identity === 'store':
-      //       this.$refs.scheduleTable.firstLoadingRequest();
-      //       break;
-      //     case this.identity === 'district':
-      //       break;
-      //     default:
-      //       break;
-      //   }
-      //   this.$refs.missionList.missionListLoading();
-      // });
+      this.$nextTick(() => {
+        this.$refs.mainForm.mainFormFirstLoading();
+        switch (true) {
+          case this.identity === 'store':
+            this.$refs.scheduleTable.firstLoadingRequest();
+            break;
+          case this.identity === 'district':
+            break;
+          default:
+            break;
+        }
+        this.$refs.missionList.missionListLoading();
+      });
       // TODO:这个暂时隐藏,后续打开
     },
 
@@ -465,12 +465,12 @@ export default {
   },
   created() {
     // TODO:start先隐藏后续打开
-    // this.loadingCover = this.$loading({
-    //   lock: true,
-    //   text: 'Loading...',
-    //   spinner: 'el-icon-loading',
-    //   background: 'rgba(0, 0, 0, 0.7)',
-    // });
+    this.loadingCover = this.$loading({
+      lock: true,
+      text: 'Loading...',
+      spinner: 'el-icon-loading',
+      background: 'rgba(0, 0, 0, 0.7)',
+    });
     // TODO:end;
   },
 };

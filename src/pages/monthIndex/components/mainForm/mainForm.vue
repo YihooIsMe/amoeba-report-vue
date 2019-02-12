@@ -120,7 +120,7 @@ export default {
     },
     inputFocus(className, event) {
       const currentEl = event.target;
-      if (className === 'F1') {
+      if (className === 'F1' && this.$store.state.comData.commonData.Pr0111 !== 'A2') {
         this.isAlertShow = true;
       } else if (currentEl.value !== '') {
         currentEl.value = cal.remSep(currentEl.value);
@@ -149,8 +149,8 @@ export default {
       // 处于非门店的时候,数据加载完成后需要计算一遍,门店能自动计算是因为监听到数据改动
       // TODO:测试环境需要区部也计算一边,这是原始逻辑 this.$store.state.comData.commonData.identity === 'other'
       if (this.$store.state.comData.commonData.identity !== 'store') {
-        console.log('ss');
         cal.whereUse('monthIndex');
+        cal.judgeDepartment(this.$store.state.comData.commonData.Pr0111);
         this.currentMonthAutomaticCalculation(3);
         this.calculatePredeterminedRatio();
       }
@@ -213,8 +213,9 @@ export default {
         currentEl = event.target;
       }
       cal.whereUse('monthIndex');
+      cal.judgeDepartment(this.$store.state.comData.commonData.Pr0111);
       cal.getVueSigningRatio(this.SigningRatio);
-      if (className !== 'F1') {
+      if (className !== 'F1' || (className === 'F1' && this.$store.state.comData.commonData.Pr0111 === 'A2')) {
         currentEl.value = Number(currentEl.value).toLocaleString();
       }
       this.currentMonthAutomaticCalculation(i);

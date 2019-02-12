@@ -9,6 +9,7 @@ import {
   Form,
   FormItem,
   Loading,
+  Card
 } from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import '@/assets/css/statisticalReport.css';
@@ -26,6 +27,7 @@ Vue.use(Dialog);
 Vue.use(Form);
 Vue.use(FormItem);
 Vue.use(Loading);
+Vue.use(Card);
 
 new Vue({
   store,

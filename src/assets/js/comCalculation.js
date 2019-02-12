@@ -5,6 +5,7 @@ import { Message } from 'element-ui';
 export default {
   VueSigningRatio: '',
   fromWhere: '',
+  department: '',
   calHandleInputNum(e) {
     if (e.keyCode !== 8 && e.keyCode !== 13) {
       if (!/^\d+$/.test(e.target.value)) {
@@ -16,6 +17,9 @@ export default {
         e.target.value = '';
       }
     }
+  },
+  judgeDepartment(val) {
+    this.department = val;
   },
   whereUse(val) {
     this.fromWhere = val;
@@ -269,15 +273,13 @@ export default {
     // TODO:这里着重测试一下；
     if (this.fromWhere === 'yearIndex') {
       // this.tableSix(index).ManagementServiceFee.value = (Number(Number(this.remSep(this.tableOne(index).OriginalContractFee.value)) * Number(this.getVueSigningRatio['SigningRatio' + (index - 2)]) + 12000).toFixed(2)).toLocaleString();
-      if (this.tableSix(index).ManagementServiceFee) {
-        console.log(this.tableSix(index));
-        console.log(this.tableSix(index).ManagementServiceFee);
+      if (this.tableSix(index).ManagementServiceFee && this.department !== 'A2') {
         this.tableSix(index).ManagementServiceFee.value = (this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio['SigningRatio' + (index - 2)]) + 12000).toLocaleString(undefined, {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         });
       }
-    } else if (this.tableSix(index).ManagementServiceFee) {
+    } else if (this.tableSix(index).ManagementServiceFee && this.department !== 'A2') {
       this.tableSix(index).ManagementServiceFee.value = (this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio) + 12000).toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
@@ -288,10 +290,11 @@ export default {
     // this.tableSix(index).SigningFeeProfitAndLoss.value = ((Number(this.remSep(this.tableOne(index).OperatingNetProfit.value)) - Number(this.remSep(this.tableSix(index).OperatingExpenses.value)) - Number(this.remSep(this.tableSix(index).ManagementServiceFee.value))).toFixed(2)).toLocaleString();
     if (this.tableSix(index).SigningFeeProfitAndLoss) {
       // TODO:代码改过之后,这里出问题了;
-      console.log(this.tableSix(index));
-      console.log(this.tableSix(index).SigningFeeProfitAndLoss);
-      console.log((this.remSep(this.tableOne(index).OperatingNetProfit.value) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableSix(index).ManagementServiceFee.value) - this.remSep(this.tableSix(index).OwnershipFee ? this.tableSix(index).OwnershipFee.value : 0)));
-      this.tableSix(index).SigningFeeProfitAndLoss.value = (this.remSep(this.tableOne(index).OperatingNetProfit.value) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableSix(index).ManagementServiceFee.value) - this.remSep(this.tableSix(index).OwnershipFee ? this.tableSix(index).OwnershipFee.value : 0)).toLocaleString(undefined, {
+      // console.log(this.tableSix(index));
+      // console.log(this.tableSix(index).SigningFeeProfitAndLoss);
+      // TODO:区部的服务管理费呢??
+      // console.log((this.remSep(this.tableOne(index).OperatingNetProfit.value) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableSix(index).ManagementServiceFee.value) - this.remSep(this.tableSix(index).OwnershipFee ? this.tableSix(index).OwnershipFee.value : 0)));
+      this.tableSix(index).SigningFeeProfitAndLoss.value = (this.remSep(this.tableOne(index).OperatingNetProfit.value) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableSix(index).ManagementServiceFee ? this.tableSix(index).ManagementServiceFee.value : 0) - this.remSep(this.tableSix(index).OwnershipFee ? this.tableSix(index).OwnershipFee.value : 0)).toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       });
@@ -322,7 +325,7 @@ export default {
     /* 业绩损益 */
     // this.tableSeven(index).PerformanceGainsAndLosses.value = ((Number(this.remSep(this.tableSeven(index).Performance.value)) - Number(this.remSep(this.tableSix(index).ManagementServiceFee.value)) - Number(this.remSep(this.tableSix(index).OperatingExpenses.value)) - Number(this.remSep(this.tableOne(index).BusinessTax.value))).toFixed(2)).toLocaleString();
     if (this.tableSeven(index).PerformanceGainsAndLosses) {
-      this.tableSeven(index).PerformanceGainsAndLosses.value = (this.remSep(this.tableSeven(index).Performance.value) - this.remSep(this.tableSix(index).ManagementServiceFee.value) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableOne(index).BusinessTax.value)).toLocaleString(undefined, {
+      this.tableSeven(index).PerformanceGainsAndLosses.value = (this.remSep(this.tableSeven(index).Performance.value) - this.remSep(this.tableSix(index).ManagementServiceFee ? this.tableSix(index).ManagementServiceFee.value : 0) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableOne(index).BusinessTax.value)).toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       });
