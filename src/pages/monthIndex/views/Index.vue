@@ -157,24 +157,13 @@ export default {
     tabClick(el) {
       this.$store.commit('setSelectTabPane', el.name);
     },
-    getQueryVariable(variable) {
-      const query = window.location.search.substring(1);
-      const vars = query.split('&');
-      for (let i = 0; i < vars.length; i += 1) {
-        const pair = vars[i].split('=');
-        if (pair[0] === variable) {
-          return pair[1];
-        }
-      }
-      return false;
-    },
     getBaseInfo() {
       this.monthUserID = sessionStorage.getItem('userID');
-      this.monthFromWhichBtn = this.getQueryVariable('monthFromWhichBtn');
+      this.monthFromWhichBtn = news.getQueryVariable('monthFromWhichBtn');
       if (this.monthFromWhichBtn === '1') {
-        this.monthCreateByUser = decodeURI(this.getQueryVariable('monthCreateByUser'));
-        this.monthViewEditorYear = this.getQueryVariable('monthViewEditorYear');
-        this.monthViewEditorMonth = this.getQueryVariable('monthViewEditorMonth');
+        this.monthCreateByUser = decodeURI(news.getQueryVariable('monthCreateByUser'));
+        this.monthViewEditorYear = news.getQueryVariable('monthViewEditorYear');
+        this.monthViewEditorMonth = news.getQueryVariable('monthViewEditorMonth');
       }
     },
     dataSubmission(index) {
@@ -305,6 +294,8 @@ export default {
       // ReviewStatus = '1' 待审核
       // ReviewStatus = '2' 审核通过
       // ReviewStatus = '3' 驳回
+      // monthFromWhichBtn = '0' 表示是新增的；
+      // monthFromWhichBtn = '１' 表示是查询编辑的；
       if (this.monthFromWhichBtn === '0') {
         this.showReviewAndReject = false;
         this.reachMatchAdjustment = this.ReviewStatus === '2' && (new Date().getMonth() + 1) === (Number(this.monthViewEditorMonth) + 1);
@@ -436,6 +427,7 @@ export default {
             this.$refs.scheduleTable.firstLoadingRequest();
             break;
           case this.identity === 'district':
+            this.$refs.districtScheduleTable.districtRequest();
             break;
           default:
             break;

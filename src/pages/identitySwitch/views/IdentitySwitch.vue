@@ -5,10 +5,12 @@
     <el-tabs type="border-card">
       <el-tab-pane label="年度身份选择">
         <el-button type="primary" class="index" @click="joinQuery('index', 'year')">瑞虹一店</el-button>
+        <el-button type="primary" class="index" @click="joinQuery('index4', 'year')">徐汇东曼一店</el-button>
         <el-button type="primary"  @click="joinQuery('zxb', 'year')">资讯部</el-button>
         <el-button type="primary"  @click="joinQuery('sh', 'year')">上海中介</el-button>
         <el-button type="primary"  @click="joinQuery('fwc', 'year')">上海服务处</el-button>
         <el-button type="primary" class="region" @click="joinQuery('region', 'year')">业务一区主管</el-button>
+        <el-button type="primary" class="region" @click="joinQuery('region3', 'year')">业务三区主管</el-button>
         <el-button type="primary"  @click="joinQuery('cw', 'year')">财务部</el-button>
         <br><br>
         <el-button type="success" @click="joinQuery('szStore', 'year')">苏州店长</el-button>
@@ -21,10 +23,12 @@
         <el-button type="primary" class="index" @click="joinQuery('index', 'month')">瑞虹一店</el-button>
         <el-button type="primary" class="index" @click="joinQuery('index2', 'month')">徐汇店</el-button>
         <el-button type="primary" class="index" @click="joinQuery('index3', 'month')">浦东一店</el-button>
+        <el-button type="primary" class="index" @click="joinQuery('index4', 'month')">徐汇东曼一店</el-button>
         <el-button type="primary"  @click="joinQuery('zxb', 'month')">资讯部</el-button>
         <el-button type="primary"  @click="joinQuery('sh', 'month')">上海中介</el-button>
         <el-button type="primary"  @click="joinQuery('fwc', 'month')">上海服务处</el-button>
         <el-button type="primary" class="region" @click="joinQuery('region', 'month')">业务一区主管</el-button>
+        <el-button type="primary" class="region" @click="joinQuery('region3', 'month')">业务三区主管</el-button>
         <el-button type="primary"  @click="joinQuery('cw', 'month')">财务部</el-button>
         <br><br>
         <el-button type="success" @click="joinQuery('szStore', 'month')">苏州店长</el-button>
@@ -52,8 +56,14 @@ export default {
         case index === 'index3':
           sessionStorage.setItem('userID', '{EE66B8D3-612D-442E-97CC-158843CEF04D}');
           break;
+        case index === 'index4':
+          sessionStorage.setItem('userID', '{8607C099-4210-44AD-A6AB-21E10DCB564D}');
+          break;
         case index === 'region':
           sessionStorage.setItem('userID', '{E1DD5988-4E98-403A-8BAA-23F0C1A3AE2C}');
+          break;
+        case index === 'region3':
+          sessionStorage.setItem('userID', '{A896CAC6-0B8E-49C7-9547-18D5678C25A6}');
           break;
         case index === 'zxb':
           sessionStorage.setItem('userID', '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}');

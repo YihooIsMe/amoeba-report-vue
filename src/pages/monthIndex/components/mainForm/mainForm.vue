@@ -17,11 +17,13 @@
           <thead>
           <tr>
             <th><i class="el-icon-arrow-down" @click="toggleSubject($event)" id="toggle-icon">科目</i></th>
-            <th>11月实际</th>
-            <th>12月预定</th>
-            <th>12月实际</th>
+            <th>1月实际</th>
+            <!--TODO:待确定-->
+            <!--TODO:新增情况下,若当前月为2月,预定为3月,1月实际出来那就是1月,1月实际不出来就是12月-->
+            <th>3月预定</th>
+            <th>3月实际</th>
             <th>预定比(%)</th>
-            <th>12月预定实际差异</th>
+            <th>3月预定实际差异</th>
             <th>MP</th>
             <th>MP比</th>
             <th>累计MP</th>
@@ -99,6 +101,7 @@ export default {
         sumWorkingMeal: 0,
       },
       scheduleForm: this.$store.state.scheduleForm.sumScheduleForm,
+      districtScheduleSum: this.$store.state.districtSchedule.sumDistrictSchedule,
       isZero: false,
     };
   },
@@ -262,6 +265,12 @@ export default {
       return item.ReadOnly === 1
         || n !== 2;
     },
+    watchCommonEvent(className, val) {
+      document.querySelector('.mainForm>tbody>tr.' + className + '>td:nth-child(3)>input').value = Number(val).toLocaleString();
+      cal.whereUse('monthIndex');
+      this.currentMonthAutomaticCalculation(3);
+      this.calculatePredeterminedRatio();
+    },
   },
   computed: {
     sumOwnershipFee() {
@@ -297,65 +306,84 @@ export default {
     recoveryPerformance() {
       return this.$store.state.operatingForm.performanceSum;
     },
+    sumDistrictSigningFeeAdjustment() {
+      return this.districtScheduleSum.sumSigningFeeAdjustment;
+    },
+    sumDistrictChangeBonus() {
+      return this.districtScheduleSum.sumChangeBonus;
+    },
+    sumDistrictWithholdingBonus() {
+      return this.districtScheduleSum.sumWithholdingBonus;
+    },
+    sumDistrictBusinessAdjustment() {
+      return this.districtScheduleSum.sumBusinessAdjustment;
+    },
+    sumDistrictWelfareFee() {
+      return this.districtScheduleSum.sumWelfareFee;
+    },
   },
   watch: {
+    // 店附表数据回填;
     estimatedContractMoneySum(newVal) {
       this.$nextTick(() => {
-        document.querySelector('.mainForm>tbody>tr.A0>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
-        cal.whereUse('monthIndex');
-        this.currentMonthAutomaticCalculation(3);
-        this.calculatePredeterminedRatio();
+        this.watchCommonEvent('A0', newVal);
       });
     },
     recoveryPerformance(newVal) {
       this.$nextTick(() => {
-        document.querySelector('.mainForm>tbody>tr.G0>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
-        cal.whereUse('monthIndex');
-        this.currentMonthAutomaticCalculation(3);
-        this.calculatePredeterminedRatio();
+        this.watchCommonEvent('G0', newVal);
       });
     },
     sumOwnershipFee(newVal) {
-      document.querySelector('.mainForm>tbody>tr.F2>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
-      cal.whereUse('monthIndex');// TODO:每次进行计算需要进行是否为年度或者月度计算；因为服务管理费ABCDE等级不一样；
-      this.currentMonthAutomaticCalculation(3);
-      this.calculatePredeterminedRatio();// TODO:联动收入，归属费用年度计划表中并没有，月度计划新增的，确定计算逻辑的时候要特别注意；
+      this.watchCommonEvent('F2', newVal);
+      // document.querySelector('.mainForm>tbody>tr.F2>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
+      // cal.whereUse('monthIndex');// TODO:每次进行计算需要进行是否为年度或者月度计算；因为服务管理费ABCDE等级不一样；
+      // this.currentMonthAutomaticCalculation(3);
+      // this.calculatePredeterminedRatio();// TODO:联动收入，归属费用年度计划表中并没有，月度计划新增的，确定计算逻辑的时候要特别注意；
     },
     sumCarSticker(newVal) {
-      document.querySelector('.mainForm>tbody>tr.B10>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
-      cal.whereUse('monthIndex');
-      this.currentMonthAutomaticCalculation(3);
-      this.calculatePredeterminedRatio();
+      this.watchCommonEvent('B10', newVal);
     },
     sumFixedSalary(newVal) {
-      document.querySelector('.mainForm>tbody>tr.B1>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
-      cal.whereUse('monthIndex');
-      this.currentMonthAutomaticCalculation(3);
-      this.calculatePredeterminedRatio();
+      this.watchCommonEvent('B1', newVal);
     },
     sumLinkageIncome(newVal) {
-      document.querySelector('.mainForm>tbody>tr.A2>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
-      cal.whereUse('monthIndex');
-      this.currentMonthAutomaticCalculation(3);
-      this.calculatePredeterminedRatio();
+      this.watchCommonEvent('A2', newVal);
     },
     sumVariableWage(newVal) {
-      document.querySelector('.mainForm>tbody>tr.B2>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
-      cal.whereUse('monthIndex');
-      this.currentMonthAutomaticCalculation(3);
-      this.calculatePredeterminedRatio();
+      this.watchCommonEvent('B2', newVal);
     },
     sumWelfareFee(newVal) {
-      document.querySelector('.mainForm>tbody>tr.B4>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
-      cal.whereUse('monthIndex');
-      this.currentMonthAutomaticCalculation(3);
-      this.calculatePredeterminedRatio();
+      this.watchCommonEvent('B4', newVal);
     },
     sumWorkingMeal(newVal) {
-      document.querySelector('.mainForm>tbody>tr.B8>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
-      cal.whereUse('monthIndex');
-      this.currentMonthAutomaticCalculation(3);
-      this.calculatePredeterminedRatio();
+      this.watchCommonEvent('B8', newVal);
+    },
+    // 区部附表数据回填到主表;
+    sumDistrictSigningFeeAdjustment(val) {
+      this.$nextTick(() => {
+        this.watchCommonEvent('A0', -val);
+      });
+    },
+    sumDistrictChangeBonus(val) {
+      this.$nextTick(() => {
+        this.watchCommonEvent('B2', val);
+      });
+    },
+    sumDistrictBusinessAdjustment(val) {
+      this.$nextTick(() => {
+        this.watchCommonEvent('G0', val);
+      });
+    },
+    sumDistrictWelfareFee(val) {
+      this.$nextTick(() => {
+        this.watchCommonEvent('B4', val);
+      });
+    },
+    sumDistrictWithholdingBonus(val) {
+      this.$nextTick(() => {
+        this.watchCommonEvent('B3', val);
+      });
     },
   },
   mounted() {

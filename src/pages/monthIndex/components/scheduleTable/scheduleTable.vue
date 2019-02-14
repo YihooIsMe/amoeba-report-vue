@@ -57,8 +57,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import VueCookie from 'vue-cookie';
 import SelectedOwnershipFee from './ownershipFee.vue';
 import SelectedLinkageIncome from './linkageIncome.vue';
 import SelectedFixedSalary from './fixedSalary.vue';
@@ -68,8 +66,6 @@ import SelectedWorkingMeal from './workingMeal.vue';
 import SelectedCarSticker from './carSticker.vue';
 import '@/assets/css/scheduleTable.less';
 import news from '@/assets/js/notification';
-
-Vue.use(VueCookie);
 
 export default {
   name: 'scheduleTable',
@@ -115,16 +111,22 @@ export default {
     firstLoadingRequest() {
       const OrganizationID = this.$store.state.comData.commonData.OrganizeId;
       const MonthlyPlanID = this.$store.state.comData.commonData.MPID; // TODO:如果是201812月那么就要变成201901月；后续完善；
-      const years = VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn' ? VueCookie.get('monthViewEditorYear') : new Date().getFullYear();
+      const years = news.getQueryVariable('monthFromWhichBtn') === 1 ? this.getQueryVariable('monthViewEditorYear') : new Date().getFullYear();
       // TODO:测试阶段,以1月为测试数据;
-      // let month = VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn' ? VueCookie.get('monthViewEditorMonth') : new Date().getMonth() + 2;
+      // let month = news.getQueryVariable('monthFromWhichBtn') === 1 ? this.getQueryVariable('monthViewEditorMonth') : new Date().getMonth() + 2;
       // TODO:后续改回来
-      let month = VueCookie.get('monthFromWhichBtn') === 'viewEditorBtn' ? VueCookie.get('monthViewEditorMonth') : 1;
+      let month = news.getQueryVariable('monthFromWhichBtn') === 1 ? this.getQueryVariable('monthViewEditorMonth') : 1;
       if (month < 10) {
         month = '0' + month;
       }
       const yearsAndMonth = years + month;
       const City = this.$store.state.comData.commonData.City;
+      console.log({
+        MonthlyPlanID,
+        years: yearsAndMonth,
+        OrganizationID,
+        City,
+      });
       this.$api.monthScheduleTable({
         MonthlyPlanID,
         years: yearsAndMonth,
@@ -146,7 +148,7 @@ export default {
       });
     },
     getComponentSum(newVal) {
-      this.tabList[newVal[0]].modelVal = newVal[1].toFixed(2);
+      this.tabList[newVal[0]].modelVal = Math.round(newVal[1]);
       this.tabList.forEach((item) => {
         this.$store.commit('sumScheduleForm', { type: item.type, sumVal: item.modelVal });
       });

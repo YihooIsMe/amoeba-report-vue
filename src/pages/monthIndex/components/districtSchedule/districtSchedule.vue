@@ -4,29 +4,43 @@
       <li v-for="(item, i) in tabList" :class="{active : activeArr[i]}" :key="i" @click="setTabIndex(i)">{{item.Name}}<br><input type="text" v-model="item.modelVal" readonly /></li>
     </ul>
     <div v-show="tabIndex === 0">
-      <SigningFeeAdjustment></SigningFeeAdjustment>
+      <SigningFeeAdjustment
+        @giveSumSigningFeeAdjustment="getSumSigningFeeAdjustment"></SigningFeeAdjustment>
     </div>
-    <div v-show="tabIndex ===1">
-      <ChangeBonus></ChangeBonus>
+    <div v-show="tabIndex === 1">
+      <ChangeBonus
+        @giveSumChangeBonus="getSumChangeBonus"
+        :changeBonusList="changeBonusList"></ChangeBonus>
     </div>
-    <div v-show="tabIndex ===2">
-      <WithholdingBonus></WithholdingBonus>
+    <div v-show="tabIndex === 2">
+      <WithholdingBonus
+        :withholdingBonusDeduction="withholdingBonusDeduction"
+        :withholdingBonusIncrement="withholdingBonusIncrement"
+        :withholdingBonus="withholdingBonus"></WithholdingBonus>
     </div>
-    <div v-show="tabIndex ===3">
-      <BusinessAdjustment></BusinessAdjustment>
+    <div v-show="tabIndex === 3">
+      <BusinessAdjustment
+        @giveSumBusinessAdjustment="getSumBusinessAdjustment"></BusinessAdjustment>
     </div>
-    <div v-show="tabIndex ===4">
-      <WelfareFee></WelfareFee>
+    <div v-show="tabIndex === 4">
+      <WelfareFee
+        @giveSumWelfareFee="getSumWelfareFee"
+        :welfareFeeList="welfareFeeList"></WelfareFee>
     </div>
   </div>
 </template>
 
 <script>
+import Vue from 'vue';
 import SigningFeeAdjustment from './signingFeeAdjustment.vue';
 import ChangeBonus from './changeBonus.vue';
 import WithholdingBonus from './withholdingBonusAdjustment.vue';
 import BusinessAdjustment from './businessAdjustment.vue';
 import WelfareFee from './welfareFee.vue';
+import news from '@/assets/js/notification';
+import api from '@/http/index';
+
+Vue.use(api);
 
 export default {
   name: 'index',
@@ -48,6 +62,13 @@ export default {
         { Name: '业绩调整', modelVal: 0, type: 'sumBusinessAdjustment' },
         { Name: '福利费', modelVal: 0, type: 'sumWelfareFee' },
       ],
+      changeBonusList: [],
+      withholdingBonusDeduction: [],
+      withholdingBonusIncrement: [],
+      withholdingBonus: [],
+      sumWithholdingBonusArr: [],
+      sumWithholdingBonus: '',
+      welfareFeeList: [],
     };
   },
   methods: {
@@ -56,6 +77,99 @@ export default {
       this.activeArr = [false, false, false, false];
       this.activeArr.splice(i, 1, true);
     },
+    getStoreRequest() {
+      const ParentId = this.$store.state.comData.commonData.OrganizeId;
+      this.$api.queryAndAddedUserInfo({ ParentId })
+        .then((res) => {
+          console.log(JSON.parse(res.data));
+          this.$store.commit('setStoreList', JSON.parse(res.data));
+        })
+        .catch((errMsg) => {
+          console.log(errMsg);
+        });
+    },
+    districtRequest() {
+      const OrganizationID = this.$store.state.comData.commonData.OrganizeId;
+      const MonthlyPlanID = this.$store.state.comData.commonData.MPID; // TODO:如果是201812月那么就要变成201901月；后续完善；
+      const years = news.getQueryVariable('monthFromWhichBtn') === 1 ? this.getQueryVariable('monthViewEditorYear') : new Date().getFullYear();
+      // TODO:测试阶段,以1月为测试数据;
+      // let month = news.getQueryVariable('monthFromWhichBtn') === 1 ? this.getQueryVariable('monthViewEditorMonth') : new Date().getMonth() + 2;
+      // TODO:后续改回来
+      let month = news.getQueryVariable('monthFromWhichBtn') === 1 ? this.getQueryVariable('monthViewEditorMonth') : 1;
+      if (month < 10) {
+        month = '0' + month;
+      }
+      const yearsAndMonth = years + month;
+      const City = this.$store.state.comData.commonData.City;
+      this.$api.monthScheduleTable({
+        MonthlyPlanID,
+        years: yearsAndMonth,
+        OrganizationID,
+        City,
+      }).then((res) => {
+        console.log(JSON.parse(res.data));
+        JSON.parse(res.data).MonthAreaFB.forEach((item) => {
+          switch (item.Type) {
+            case 0:
+              this.changeBonusList.push(item);
+              break;
+            case 1:
+              this.withholdingBonusDeduction.push(item);
+              this.sumWithholdingBonusArr.push(item.Amount);
+              break;
+            case 2:
+              this.withholdingBonusIncrement.push(item);
+              this.sumWithholdingBonusArr.push(item.Amount);
+              break;
+            case 3:
+              this.welfareFeeList.push(item);
+              break;
+            default:
+          }
+        });
+        this.withholdingBonus = JSON.parse(res.data).MonthAreaYTJJ;
+        this.sumWithholdingBonus = this.sumWithholdingBonusArr.reduce((total, num) => total + num, 0);
+        // TODO:?
+        // this.scheduleSubmitData = JSON.parse(res.data);
+        // JSON.parse(res.data).ScheduleSubject.forEach((item) => {
+        //   this.scheduleTableData[item.Type].push(item);
+        // });
+        // this.$store.commit('setOperatingForm', JSON.parse(res.data).MonthSigningGoldYD);
+        // this.$store.commit('setPerformanceForm', JSON.parse(res.data).MonthPerformanceYD);
+        // this.$store.commit('setMissionListData', JSON.parse(res.data).Amoeba_TaskForm);
+        // this.$store.commit('setCompleted', true);
+      }).catch((err) => {
+        console.log(err);
+        news.ElErrorMessage(err);
+      });
+    },
+    getSumSigningFeeAdjustment(val) {
+      Vue.set(this.tabList[0], 'modelVal', val);
+      this.$store.commit('setSumDistrictSchedule', { type: 'sumSigningFeeAdjustment', sumVal: val });
+    },
+    getSumBusinessAdjustment(val) {
+      Vue.set(this.tabList[3], 'modelVal', val);
+      this.$store.commit('setSumDistrictSchedule', { type: 'sumBusinessAdjustment', sumVal: val });
+    },
+    getSumWelfareFee(val) {
+      Vue.set(this.tabList[4], 'modelVal', val);
+      this.$store.commit('setSumDistrictSchedule', { type: 'sumWelfareFee', sumVal: val });
+    },
+    getSumChangeBonus(val) {
+      Vue.set(this.tabList[1], 'modelVal', val);
+      this.$store.commit('setSumDistrictSchedule', { type: 'sumChangeBonus', sumVal: val });
+    },
+  },
+  watch: {
+    sumWithholdingBonus(val) {
+      Vue.set(this.tabList[2], 'modelVal', val);
+      this.$store.commit('setSumDistrictSchedule', { type: 'sumWithholdingBonus', sumVal: val });
+    },
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.getStoreRequest();
+    });
   },
 };
 </script>
