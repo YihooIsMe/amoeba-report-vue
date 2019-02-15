@@ -238,7 +238,7 @@ export default {
       this.allSubmissionData.OrganizeName = storeCommonData.UnitName;
       this.allSubmissionData.Pr0111 = storeCommonData.Pr0111;
       this.allSubmissionData.Amoeba_MonthlyPlandetails = this.$store.state.mainForm.mainFormData;
-      const AdjustmentList = this.$store.state.districtSchedule.signingFeeAdjustmentData.concat(this.$store.state.districtSchedule.businessAdjustmentData)
+      const AdjustmentList = this.$store.state.districtSchedule.signingFeeAdjustmentData.concat(this.$store.state.districtSchedule.businessAdjustmentData);
       switch (true) {
         case this.identity === 'store':
           this.allSubmissionData.MonthSigningGoldYD = this.$store.state.operatingForm.operatingFormData;
