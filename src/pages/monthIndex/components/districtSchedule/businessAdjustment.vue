@@ -133,6 +133,22 @@ export default {
     sortArr(a, b) {
       return a - b;
     },
+    getBusinessAdjustment() {
+      const submitBusinessAdjustmentData = [];
+      this.businessAdjustmentData.forEach((item) => {
+        const obj = {};
+        obj.MonthlyPlanID = this.$store.state.comData.commonData.MPID;
+        obj.OrganizeName_A = item.store;
+        obj.YDAmount_A = item.bookAmount;
+        obj.OrganizeName_B = item.storeOther;
+        obj.YDAmount_B = item.bookAmountOther;
+        obj.AdjustmentAmount = item.reducePerformance;
+        obj.Name = item.name;
+        obj.type = 1;
+        submitBusinessAdjustmentData.push(obj);
+      });
+      this.$store.commit('setBusinessAdjustmentData', submitBusinessAdjustmentData);
+    },
   },
 };
 </script>

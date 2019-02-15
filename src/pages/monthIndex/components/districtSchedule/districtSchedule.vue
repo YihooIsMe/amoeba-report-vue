@@ -5,6 +5,7 @@
     </ul>
     <div v-show="tabIndex === 0">
       <SigningFeeAdjustment
+        ref="signingFeeAdjustment"
         @giveSumSigningFeeAdjustment="getSumSigningFeeAdjustment"></SigningFeeAdjustment>
     </div>
     <div v-show="tabIndex === 1">
@@ -20,10 +21,12 @@
     </div>
     <div v-show="tabIndex === 3">
       <BusinessAdjustment
+        ref="businessAdjustment"
         @giveSumBusinessAdjustment="getSumBusinessAdjustment"></BusinessAdjustment>
     </div>
     <div v-show="tabIndex === 4">
       <WelfareFee
+        ref="welfareFee"
         @giveSumWelfareFee="getSumWelfareFee"
         :welfareFeeList="welfareFeeList"></WelfareFee>
     </div>
@@ -128,7 +131,7 @@ export default {
           }
         });
         this.withholdingBonus = JSON.parse(res.data).MonthAreaYTJJ;
-        this.sumWithholdingBonus = this.sumWithholdingBonusArr.reduce((total, num) => total + num, 0);
+        this.sumWithholdingBonus = Math.round(this.sumWithholdingBonusArr.reduce((total, num) => total + num, 0));
         // TODO:?
         // this.scheduleSubmitData = JSON.parse(res.data);
         // JSON.parse(res.data).ScheduleSubject.forEach((item) => {
@@ -142,6 +145,24 @@ export default {
         console.log(err);
         news.ElErrorMessage(err);
       });
+    },
+    getDistrictScheduleSubmissionData() {
+      const MonthAreaFB = [];
+      this.changeBonusList.forEach((item) => {
+        const obj = {};
+        obj.ID = item.ID;
+        obj.Amount = Number(item.Amount);
+        MonthAreaFB.push(obj);
+      });
+      this.welfareFeeList.forEach((item) => {
+        const obj = {};
+        obj.ID = item.ID;
+        obj.Amount = Number(item.Amount);
+        MonthAreaFB.push(obj);
+      });
+      this.$store.commit('setMonthAreaFB', MonthAreaFB);
+      this.$refs.signingFeeAdjustment.getSigningFeeAdjustmentData();
+      this.$refs.businessAdjustment.getBusinessAdjustment();
     },
     getSumSigningFeeAdjustment(val) {
       Vue.set(this.tabList[0], 'modelVal', val);

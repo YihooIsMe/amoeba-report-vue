@@ -136,6 +136,22 @@ export default {
     sortArr(a, b) {
       return a - b;
     },
+    getSigningFeeAdjustmentData() {
+      const submitSigningFeeAdjustmentData = [];
+      this.signingFeeAdjustmentData.forEach((item) => {
+        const obj = {};
+        obj.MonthlyPlanID = this.$store.state.comData.commonData.MPID;
+        obj.OrganizeName_A = item.store;
+        obj.YDAmount_A = item.bookAmount;
+        obj.OrganizeName_B = item.storeOther;
+        obj.YDAmount_B = item.bookAmountOther;
+        obj.AdjustmentAmount = item.adjustmentContractMoney;
+        obj.Name = item.name;
+        obj.type = 0;
+        submitSigningFeeAdjustmentData.push(obj);
+      });
+      this.$store.commit('setSigningFeeAdjustmentData', submitSigningFeeAdjustmentData);
+    },
   },
 };
 </script>

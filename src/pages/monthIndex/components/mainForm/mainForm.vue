@@ -249,7 +249,8 @@ export default {
       this.$store.commit('setMainFormData', this.Amoeba_MonthlyPlandetails);
     },
     isReadOnly(item, n) {
-      if (this.$store.state.comData.commonData.identity !== 'other') {
+      // 门店从附表带过来的数据,不能输入
+      if (this.$store.state.comData.commonData.identity === 'store') {
         return item.ReadOnly === 1
           || n !== 2
           || item.className === 'F2'
@@ -262,8 +263,21 @@ export default {
           || item.className === 'G0'
           || item.className === 'B10';
       }
-      return item.ReadOnly === 1
-        || n !== 2;
+      // 区部不能输入的数据
+      if (this.$store.state.comData.commonData.identity === 'district') {
+        return item.ReadOnly === 1
+          || n !== 2
+          || item.className === 'A0'
+          || item.className === 'B2'
+          || item.className === 'B3'
+          || item.className === 'B4'
+          || item.className === 'G0';
+      }
+      if (this.$store.state.comData.commonData.identity === 'other') {
+        return item.ReadOnly === 1
+          || n !== 2;
+      }
+      return true;
     },
     watchCommonEvent(className, val) {
       document.querySelector('.mainForm>tbody>tr.' + className + '>td:nth-child(3)>input').value = Number(val).toLocaleString();
