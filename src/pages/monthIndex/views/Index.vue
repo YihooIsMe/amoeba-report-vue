@@ -246,8 +246,8 @@ export default {
           this.allSubmissionData.Amoeba_MonthlySSDetail = this.$store.state.scheduleForm.scheduleFormData;
           break;
         case this.identity === 'district':
-          this.allSubmissionData.MonthAreaFB = this.$store.state.districtSchedule.MonthAreaFB;
-          this.allSubmissionData.AdjustmentList = AdjustmentList;
+          this.allSubmissionData.Amoeba_MonthAreaFBDetail = this.$store.state.districtSchedule.MonthAreaFB;
+          this.allSubmissionData.Amoeba_AdjustmentList = AdjustmentList;
           break;
         default:
           this.allSubmissionData.MonthSigningGoldYD = [];
