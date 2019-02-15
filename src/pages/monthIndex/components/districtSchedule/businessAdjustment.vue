@@ -19,27 +19,27 @@
         <el-table-column
           label="客户名/案名"
           width="120">
-          <template slot-scope="scope">{{ scope.row.name }}</template>
+          <template slot-scope="scope">{{ scope.row.Name }}</template>
         </el-table-column>
         <el-table-column
-          prop="store"
+          prop="OrganizeName_A"
           label="店名"
           width="120">
         </el-table-column>
         <el-table-column
-          prop="bookAmount"
+          prop="YDAmount_A"
           label="预定金额">
         </el-table-column>
         <el-table-column
-          prop="storeOther"
+          prop="OrganizeName_B"
           label="店名">
         </el-table-column>
         <el-table-column
-          prop="bookAmountOther"
+          prop="YDAmount_B"
           label="预定金额">
         </el-table-column>
         <el-table-column
-          prop="reducePerformance"
+          prop="AdjustmentAmount"
           label="调减业绩">
         </el-table-column>
       </el-table>
@@ -74,12 +74,12 @@ export default {
     },
     getBusinessAdjustmentForm(val) {
       const obj = {};
-      obj.name = val.name;
-      obj.store = val.store;
-      obj.bookAmount = val.bookAmount;
-      obj.storeOther = val.storeOther;
-      obj.bookAmountOther = val.bookAmountOther;
-      obj.reducePerformance = val.reducePerformance;
+      obj.Name = val.Name;
+      obj.OrganizeName_A = val.OrganizeName_A;
+      obj.YDAmount_A = val.YDAmount_A;
+      obj.OrganizeName_B = val.OrganizeName_B;
+      obj.YDAmount_B = val.YDAmount_B;
+      obj.AdjustmentAmount = val.AdjustmentAmount;
       this.businessAdjustmentData.push(obj);
     },
     getSummaries(param) {
@@ -138,12 +138,12 @@ export default {
       this.businessAdjustmentData.forEach((item) => {
         const obj = {};
         obj.MonthlyPlanID = this.$store.state.comData.commonData.MPID;
-        obj.OrganizeName_A = item.store;
-        obj.YDAmount_A = item.bookAmount;
-        obj.OrganizeName_B = item.storeOther;
-        obj.YDAmount_B = item.bookAmountOther;
-        obj.AdjustmentAmount = item.reducePerformance;
-        obj.Name = item.name;
+        obj.OrganizeName_A = item.OrganizeName_A;
+        obj.YDAmount_A = item.YDAmount_A;
+        obj.OrganizeName_B = item.OrganizeName_B;
+        obj.YDAmount_B = item.YDAmount_B;
+        obj.AdjustmentAmount = item.AdjustmentAmount;
+        obj.Name = item.Name;
         obj.type = 1;
         submitBusinessAdjustmentData.push(obj);
       });

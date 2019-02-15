@@ -5,11 +5,14 @@
     </ul>
     <div v-show="tabIndex === 0">
       <SigningFeeAdjustment
+        :inputDisabled="inputDisabled"
         ref="signingFeeAdjustment"
+        :signingFeeAdjustment="signingFeeAdjustment"
         @giveSumSigningFeeAdjustment="getSumSigningFeeAdjustment"></SigningFeeAdjustment>
     </div>
     <div v-show="tabIndex === 1">
       <ChangeBonus
+        :inputDisabled="inputDisabled"
         @giveSumChangeBonus="getSumChangeBonus"
         :changeBonusList="changeBonusList"></ChangeBonus>
     </div>
@@ -21,12 +24,15 @@
     </div>
     <div v-show="tabIndex === 3">
       <BusinessAdjustment
+        :inputDisabled="inputDisabled"
+        :businessAdjustment="businessAdjustment"
         ref="businessAdjustment"
         @giveSumBusinessAdjustment="getSumBusinessAdjustment"></BusinessAdjustment>
     </div>
     <div v-show="tabIndex === 4">
       <WelfareFee
         ref="welfareFee"
+        :inputDisabled="inputDisabled"
         @giveSumWelfareFee="getSumWelfareFee"
         :welfareFeeList="welfareFeeList"></WelfareFee>
     </div>
@@ -65,6 +71,8 @@ export default {
         { Name: '业绩调整', modelVal: 0, type: 'sumBusinessAdjustment' },
         { Name: '福利费', modelVal: 0, type: 'sumWelfareFee' },
       ],
+      signingFeeAdjustment: [],
+      businessAdjustment: [],
       changeBonusList: [],
       withholdingBonusDeduction: [],
       withholdingBonusIncrement: [],
@@ -72,6 +80,7 @@ export default {
       sumWithholdingBonusArr: [],
       sumWithholdingBonus: '',
       welfareFeeList: [],
+      inputDisabled: this.$store.state.comData.inputDisabled,
     };
   },
   methods: {
@@ -126,6 +135,17 @@ export default {
               break;
             case 3:
               this.welfareFeeList.push(item);
+              break;
+            default:
+          }
+        });
+        JSON.parse(res.data).AdjustmentList.forEach((item) => {
+          switch (item.Type) {
+            case 0:
+              this.signingFeeAdjustment.push(item);
+              break;
+            case 1:
+              this.businessAdjustment.push(item);
               break;
             default:
           }
