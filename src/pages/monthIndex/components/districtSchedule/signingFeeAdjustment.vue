@@ -14,6 +14,7 @@
         @selection-change="handleSelectionChange">
         <el-table-column
           type="selection"
+          :selectable="checkSelectable"
           width="80">
         </el-table-column>
         <el-table-column
@@ -68,6 +69,10 @@ export default {
     };
   },
   methods: {
+    checkSelectable() {
+      // 数据提交保存之后变为不可选;
+      return this.inputDisabled === false;
+    },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
@@ -127,6 +132,7 @@ export default {
         console.log(this.selectedIndexArr);
         if (this.multipleSelection.length === this.signingFeeAdjustmentData.length) {
           this.signingFeeAdjustmentData = [];
+          this.$emit('giveSumSigningFeeAdjustment', 0);
         } else {
           for (let i = this.selectedIndexArr.length - 1; i >= 0; i -= 1) {
             this.signingFeeAdjustmentData.splice(this.selectedIndexArr[i], 1);

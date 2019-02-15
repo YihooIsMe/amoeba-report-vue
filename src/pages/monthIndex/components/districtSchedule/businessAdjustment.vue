@@ -14,6 +14,7 @@
         @selection-change="handleSelectionChange">
         <el-table-column
           type="selection"
+          :selectable="checkSelectable"
           width="80">
         </el-table-column>
         <el-table-column
@@ -57,16 +58,20 @@ import BusinessAdjustmentAdd from './businessAdjustmentAdd.vue';
 export default {
   name: 'businessAdjustment',
   components: { BusinessAdjustmentAdd },
+  props: ['businessAdjustment', 'inputDisabled'],
   data() {
     return {
       dialogIsShow: false,
-      businessAdjustmentData: [],
+      businessAdjustmentData: this.businessAdjustment,
       multipleSelection: [],
       selectedIndexArr: [],
     };
   },
   methods: {
-    // TODO:test git
+    checkSelectable() {
+      // 数据提交保存之后变为不可选;
+      return this.inputDisabled === false;
+    },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
@@ -124,6 +129,7 @@ export default {
         console.log(this.selectedIndexArr);
         if (this.multipleSelection.length === this.businessAdjustmentData.length) {
           this.businessAdjustmentData = [];
+          this.$emit('giveSumBusinessAdjustment', 0);
         } else {
           for (let i = this.selectedIndexArr.length - 1; i >= 0; i -= 1) {
             this.businessAdjustmentData.splice(this.selectedIndexArr[i], 1);

@@ -20,7 +20,7 @@
         <el-table-column
           label="金额">
           <template scope="scope">
-            <el-input placeholder="请输入金额" v-model="scope.row.Amount" clearable size="small"></el-input>
+            <el-input placeholder="请输入金额" v-model="scope.row.Amount" clearable size="small" :disabled="inputDisabled"></el-input>
           </template>
         </el-table-column>
       </el-table>
@@ -31,7 +31,7 @@
 <script>
 export default {
   name: 'changeBonus',
-  props: ['changeBonusList'],
+  props: ['changeBonusList', 'inputDisabled'],
   data() {
     return {
     };
