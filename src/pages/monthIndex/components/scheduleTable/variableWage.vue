@@ -15,9 +15,8 @@
             <td><div>{{item.Name}}</div></td>
             <td colspan="2">
               <input type="text"
-                     @keyup="handleInputNum"
                      :value="item.Amount"
-                     @change="scheduleCalculation(variableWageData, '.variableWageTable', 0, 1, 2)"
+                     @change="scheduleCalculation(variableWageData, '.variableWageTable', 0, 1, 2, $event)"
                      :disabled="inputDisabled || item.className === 'FD0' || item.className === 'FD1'"/>
             </td>
             <td><input type="text" disabled/></td>
@@ -26,8 +25,7 @@
             <td><div>{{item.Name}}</div></td>
             <td>
               <input type="text"
-                     @keyup="handleInputNum"
-                     @change="scheduleCalculation(variableWageData, '.variableWageTable', 0, 1, 2)"
+                     @change="scheduleCalculation(variableWageData, '.variableWageTable', 0, 1, 2, $event)"
                      :value="item.IsRead === 3 ?item.Description:item.Valuation"
                      :readonly="item.IsRead === 1||item.IsRead === 3"
                      :disabled="inputDisabled"
@@ -35,8 +33,7 @@
             </td>
             <td>
               <input type="text"
-                     @keyup="handleInputNum"
-                     @change="scheduleCalculation(variableWageData, '.variableWageTable', 0, 1, 2)"
+                     @change="scheduleCalculation(variableWageData, '.variableWageTable', 0, 1, 2, $event)"
                      :value="$store.state.comData.commonData.draft === 1 ? item.Amount : ''"
                      :disabled="inputDisabled || item.className === 'FD0' || item.className === 'FD1'"
               />
@@ -59,12 +56,13 @@ export default {
   name: 'variableWage',
   props: ['variableWageData'],
   methods: {
-    handleInputNum(e) {
-      sch.scheduleHandleInputNum(e);
-    },
-    scheduleCalculation(a, b, c, d, e) {
+    commonCalculation(a, b, c, d, e) {
       sch.calculation(a, b, c, d, e);
       this.$emit('variableWageSum', [3, sch.sumCalculate('.variableWageTable')]);
+    },
+    scheduleCalculation(a, b, c, d, e, f) {
+      sch.scheduleHandleInputNum(f);
+      this.commonCalculation(a, b, c, d, e);
     },
   },
   computed: {
@@ -80,13 +78,13 @@ export default {
   },
   watch: {
     isLoadCompleted() {
-      this.scheduleCalculation(this.variableWageData, '.variableWageTable', 0, 1, 2);
+      this.commonCalculation(this.variableWageData, '.variableWageTable', 0, 1, 2);
     },
     recoveryPerformance(newVal) {
       this.$nextTick(() => {
         document.querySelector('.variableWageTable>tbody>tr.FD0>td:nth-child(3)>input').value = Number(newVal);
         document.querySelector('.variableWageTable>tbody>tr.FD1>td:nth-child(3)>input').value = Number(newVal);
-        this.scheduleCalculation(this.variableWageData, '.variableWageTable', 0, 1, 2);
+        this.commonCalculation(this.variableWageData, '.variableWageTable', 0, 1, 2);
       });
     },
   },

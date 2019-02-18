@@ -2,16 +2,19 @@ import { Message } from 'element-ui';
 
 export default {
   scheduleHandleInputNum(e) {
-    if (e.keyCode !== 8 && e.keyCode !== 13) {
-      if (!/^\d+$/.test(e.target.value)) {
-        Message({
-          message: '请输入整数',
-          duration: 1000,
-          type: 'warning',
-        });
-        e.target.value = '';
-      }
+    if (!/^[0-9]+([.]{1}[0-9]+){0,1}$/.test(e.target.value)) {
+      console.log(e);
+      console.log(e.target);
+      Message({
+        message: '请输入有效数字!',
+        duration: 1000,
+        type: 'warning',
+      });
+      e.target.value = '';
+      e.target.focus();
+      return false;
     }
+    return true;
   },
 
   // a:当前数组对象

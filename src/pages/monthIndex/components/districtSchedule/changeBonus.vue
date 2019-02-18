@@ -20,7 +20,14 @@
         <el-table-column
           label="金额">
           <template scope="scope">
-            <el-input placeholder="请输入金额" v-model="scope.row.Amount" clearable size="small" :disabled="inputDisabled"></el-input>
+            <el-input
+              placeholder="请输入金额"
+              v-model="scope.row.Amount"
+              clearable
+              size="small"
+              :disabled="inputDisabled"
+              ref="changeBonusInput"
+              @change="scheduleHandleInputNum"></el-input>
           </template>
         </el-table-column>
       </el-table>
@@ -29,6 +36,9 @@
 </template>
 
 <script>
+import Vue from 'vue';
+import { Message } from 'element-ui';
+
 export default {
   name: 'changeBonus',
   props: ['changeBonusList', 'inputDisabled'],
@@ -37,6 +47,19 @@ export default {
     };
   },
   methods: {
+    scheduleHandleInputNum() {
+      if (!/^[0-9]+([.]{1}[0-9]+){0,1}$/.test(Number(this.changeBonusList[0].Amount))) {
+        Message({
+          message: '请输入有效数字!',
+          duration: 1000,
+          type: 'warning',
+        });
+        Vue.set(this.changeBonusList[0], 'Amount', '');
+        this.$refs.changeBonusInput.focus();
+        return false;
+      }
+      return true;
+    },
     getSummaries(param) {
       const { columns, data } = param;
       const sums = [];
@@ -62,6 +85,8 @@ export default {
       });
       if (sums.length > 0 && sums[2] !== 'N/A') {
         this.$emit('giveSumChangeBonus', Math.round(sums[2]));
+      } else {
+        this.$emit('giveSumChangeBonus', 0);
       }
       return sums;
     },

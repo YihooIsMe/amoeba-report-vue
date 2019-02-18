@@ -207,6 +207,25 @@ export default {
       });
       this.$emit('closeLoading');
     },
+
+    commonEvent(i, className, event) {
+      let currentEl;
+      if (event !== '') {
+        currentEl = event.target;
+      }
+      cal.whereUse('monthIndex');
+      cal.judgeDepartment(this.$store.state.comData.commonData.Pr0111);
+      cal.getVueSigningRatio(this.SigningRatio);
+      if (className !== 'F1' || (className === 'F1' && this.$store.state.comData.commonData.Pr0111 === 'A2')) {
+        currentEl.value = Math.round(Number(currentEl.value)).toLocaleString();
+      }
+      this.currentMonthAutomaticCalculation(i);
+      this.calculatePredeterminedRatio();
+      if (event !== '') {
+        currentEl.blur();
+      }
+    },
+
     AutomaticCalculation(i, className, event) {
       if (className !== 'F1') {
         if (!/^-?[0-9]+([.]{1}[0-9]+){0,1}$/.test(event.target.value)) {
@@ -218,23 +237,10 @@ export default {
           event.target.value = '';
           event.target.focus();
         } else {
-          let currentEl;
-          if (event !== '') {
-            currentEl = event.target;
-          }
-          cal.whereUse('monthIndex');
-          cal.judgeDepartment(this.$store.state.comData.commonData.Pr0111);
-          cal.getVueSigningRatio(this.SigningRatio);
-          if (className !== 'F1' || (className === 'F1' && this.$store.state.comData.commonData.Pr0111 === 'A2')) {
-            currentEl.value = Number(currentEl.value).toLocaleString();
-          }
-          this.currentMonthAutomaticCalculation(i);
-          this.calculatePredeterminedRatio();
-          if (event !== '') {
-            currentEl.blur();
-          }
+          this.commonEvent(i, className, event);
         }
-
+      } else {
+        this.commonEvent(i, className, event);
       }
     },
     getAllSubmissionData() {
@@ -253,7 +259,11 @@ export default {
         // TODO:上一行代码;
         obj.Month = 1;
         obj.SubjectID = item.SubjectID;
-        obj.EstimatedAmount = cal.remSep(document.querySelector('.mainFormPanel .' + item.className + '>td:nth-child(3)>input').value);
+        if (item.className === 'F4' || item.className === 'G2' || item.className === 'H1') {
+          obj.EstimatedAmount = cal.remPercent(document.querySelector('.mainFormPanel .' + item.className + '>td:nth-child(3)>input').value);
+        } else {
+          obj.EstimatedAmount = cal.remSep(document.querySelector('.mainFormPanel .' + item.className + '>td:nth-child(3)>input').value);
+        }
         this.Amoeba_MonthlyPlandetails.push(obj);
       });
       this.$store.commit('setMainFormData', this.Amoeba_MonthlyPlandetails);

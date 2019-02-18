@@ -16,8 +16,7 @@
             <td><div>{{item.Name}}</div></td>
             <td>
               <input type="text"
-                     @keyup="handleInputNum"
-                     @change="scheduleCalculation(ownershipFeeData, '.ownershipFeeTable', 0, 1, 2)"
+                     @change="scheduleCalculation(ownershipFeeData, '.ownershipFeeTable', 0, 1, 2, $event)"
                      :value="item.Valuation"
                      :readonly="item.IsRead === 1||item.IsRead === 3"
                      :disabled="inputDisabled"
@@ -26,8 +25,7 @@
             <td><div>{{item.Description}}</div></td>
             <td>
               <input type="text"
-                     @keyup="handleInputNum"
-                     @change="scheduleCalculation(ownershipFeeData, '.ownershipFeeTable', 0, 1, 2)"
+                     @change="scheduleCalculation(ownershipFeeData, '.ownershipFeeTable', 0, 1, 2, $event)"
                      :value="$store.state.comData.commonData.draft === 1 ? item.Amount : ''"
                      :disabled="inputDisabled"
               >
@@ -49,12 +47,13 @@ export default {
   name: 'ownershipFee',
   props: ['ownershipFeeData'],
   methods: {
-    handleInputNum(e) {
-      sch.scheduleHandleInputNum(e);
-    },
-    scheduleCalculation(a, b, c, d, e) {
+    commonCalculation(a, b, c, d, e) {
       sch.calculation(a, b, c, d, e);
       this.$emit('ownershipFeeSum', [0, sch.sumCalculate('.ownershipFeeTable')]);
+    },
+    scheduleCalculation(a, b, c, d, e, f) {
+      sch.scheduleHandleInputNum(f);
+      this.commonCalculation(a, b, c, d, e);
     },
   },
   computed: {
@@ -67,7 +66,7 @@ export default {
   },
   watch: {
     isOwnershipFeeLoadCompleted() {
-      this.scheduleCalculation(this.ownershipFeeData, '.ownershipFeeTable', 0, 1, 2);
+      this.commonCalculation(this.ownershipFeeData, '.ownershipFeeTable', 0, 1, 2);
     },
   },
   updated() {

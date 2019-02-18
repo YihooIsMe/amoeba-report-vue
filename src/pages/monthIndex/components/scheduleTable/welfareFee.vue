@@ -15,9 +15,8 @@
             <td><div>{{item.Name}}</div></td>
             <td colspan="2">
               <input type="text"
-                     @keyup="handleInputNum"
                      :value="item.Amount"
-                     @change="scheduleCalculation(welfareFeeTableData, '.welfareFeeTable', 0, 1, 2)"
+                     @change="scheduleCalculation(welfareFeeTableData, '.welfareFeeTable', 0, 1, 2, $event)"
                      :disabled="inputDisabled || item.className === 'FE0'"/>
             </td>
             <td><input type="text" disabled/></td>
@@ -26,8 +25,7 @@
             <td><div>{{item.Name}}</div></td>
             <td>
               <input type="text"
-                     @keyup="handleInputNum"
-                     @change="scheduleCalculation(welfareFeeTableData, '.welfareFeeTable', 0, 1, 2)"
+                     @change="scheduleCalculation(welfareFeeTableData, '.welfareFeeTable', 0, 1, 2, $event)"
                      :value="item.IsRead === 3 ?item.Description:item.Valuation"
                      :readonly="item.IsRead === 1||item.IsRead === 3"
                      :disabled="inputDisabled"
@@ -35,8 +33,7 @@
             </td>
             <td>
               <input type="text"
-                     @keyup="handleInputNum"
-                     @change="scheduleCalculation(welfareFeeTableData, '.welfareFeeTable', 0, 1, 2)"
+                     @change="scheduleCalculation(welfareFeeTableData, '.welfareFeeTable', 0, 1, 2, $event)"
                      :value="$store.state.comData.commonData.draft === 1 ? item.Amount : ''"
                      :disabled="inputDisabled || item.className === 'FE0'"
               >
@@ -59,12 +56,13 @@ export default {
   name: 'welfareFee',
   props: ['welfareFeeTableData', 'fixedSalaryData'],
   methods: {
-    handleInputNum(e) {
-      sch.scheduleHandleInputNum(e);
-    },
-    scheduleCalculation(a, b, c, d, e) {
+    commonCalculation(a, b, c, d, e) {
       sch.calculation(a, b, c, d, e);
       this.$emit('welfareFeeSum', [4, sch.sumCalculate('.welfareFeeTable')]);
+    },
+    scheduleCalculation(a, b, c, d, e, f) {
+      sch.scheduleHandleInputNum(f);
+      this.commonCalculation(a, b, c, d, e);
     },
     setStoreNumOfPeople() {
       let sum = 0;
@@ -99,18 +97,18 @@ export default {
   },
   watch: {
     isLoadCompleted() {
-      this.scheduleCalculation(this.welfareFeeTableData, '.welfareFeeTable', 0, 1, 2);
+      this.commonCalculation(this.welfareFeeTableData, '.welfareFeeTable', 0, 1, 2);
     },
     scheduleTabIndex(newVal) {
       if (newVal === 4) {
         this.setStoreNumOfPeople();
-        this.scheduleCalculation(this.welfareFeeTableData, '.welfareFeeTable', 0, 1, 2);
+        this.commonCalculation(this.welfareFeeTableData, '.welfareFeeTable', 0, 1, 2);
       }
     },
     recoveryPerformance(newVal) {
       this.$nextTick(() => {
         document.querySelector('.welfareFeeTable>tbody>tr.FE0>td:nth-child(2)>input').value = Number(newVal) * 0.03;
-        this.scheduleCalculation(this.welfareFeeTableData, '.welfareFeeTable', 0, 1, 2);
+        this.commonCalculation(this.welfareFeeTableData, '.welfareFeeTable', 0, 1, 2);
       });
     },
   },

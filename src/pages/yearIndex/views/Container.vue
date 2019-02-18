@@ -525,9 +525,13 @@ export default {
         this.DraftData.forEach((item) => {
           const allInputEl = document.querySelectorAll('tr.' + item.className + '>td>input');
           for (let i = 0; i < 13; i += 1) {
-            allInputEl[(i + 1)].value = item[this.months[i]].toLocaleString();
-            if (item.className === 'F5') {
-              this.SigningRatio['SigningRatio' + (i + 1)] = item[this.months[i]];
+            if (item.className === 'F4' || item.className === 'G2' || item.className === 'H1') {
+              allInputEl[(i + 1)].value = cal.addPercent(item[this.months[i]]);
+            } else {
+              allInputEl[(i + 1)].value = item[this.months[i]].toLocaleString();
+              if (item.className === 'F5') {
+                this.SigningRatio['SigningRatio' + (i + 1)] = item[this.months[i]];
+              }
             }
           }
         });

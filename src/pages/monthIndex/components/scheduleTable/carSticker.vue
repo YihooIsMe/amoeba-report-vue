@@ -15,9 +15,8 @@
             <td><div>{{item.Name}}</div></td>
             <td colspan="2">
               <input type="text"
-                     @keyup="handleInputNum"
                      :value="item.Amount"
-                     @change="scheduleCalculation(carStickerData, '.carStickerTable', 0, 1, 2)"
+                     @change="scheduleCalculation(carStickerData, '.carStickerTable', 0, 1, 2, $event)"
                      :disabled="inputDisabled || currentDisabled"/>
             </td>
             <td><input type="text" disabled/></td>
@@ -26,8 +25,7 @@
             <td><div>{{item.Name}}</div></td>
             <td>
               <input type="text"
-                     @keyup="handleInputNum"
-                     @change="scheduleCalculation(carStickerData, '.carStickerTable', 0, 1, 2)"
+                     @change="scheduleCalculation(carStickerData, '.carStickerTable', 0, 1, 2, $event)"
                      :value="item.IsRead === 3 ?item.Description:item.Valuation"
                      :readonly="item.IsRead === 1||item.IsRead === 3"
                      :disabled="inputDisabled"
@@ -35,8 +33,7 @@
             </td>
             <td>
               <input type="text"
-                     @keyup="handleInputNum"
-                     @change="scheduleCalculation(carStickerData, '.carStickerTable', 0, 1, 2)"
+                     @change="scheduleCalculation(carStickerData, '.carStickerTable', 0, 1, 2, $event)"
                      :value="$store.state.comData.commonData.draft === 1 ? item.Amount : ''"
                      :disabled="inputDisabled || currentDisabled"
               >
@@ -64,12 +61,13 @@ export default {
     };
   },
   methods: {
-    handleInputNum(e) {
-      sch.scheduleHandleInputNum(e);
-    },
-    scheduleCalculation(a, b, c, d, e) {
+    commonCalculation(a, b, c, d, e) {
       sch.calculation(a, b, c, d, e);
       this.$emit('carStickerSum', [6, sch.sumCalculate('.carStickerTable')]);
+    },
+    scheduleCalculation(a, b, c, d, e, f) {
+      sch.scheduleHandleInputNum(f);
+      this.commonCalculation(a, b, c, d, e);
     },
     setCarStickerPeople() {
       //  因为三地高级主任和主任的类别都一样,直接写死了,如果后面有变动需要重新手动调整代码;
@@ -99,12 +97,12 @@ export default {
   },
   watch: {
     isLoadCompleted() {
-      this.scheduleCalculation(this.carStickerData, '.carStickerTable', 0, 1, 2);
+      this.commonCalculation(this.carStickerData, '.carStickerTable', 0, 1, 2);
     },
     scheduleTabIndex(val) {
       if (val === 6) {
         this.setCarStickerPeople();
-        this.scheduleCalculation(this.carStickerData, '.carStickerTable', 0, 1, 2);
+        this.commonCalculation(this.carStickerData, '.carStickerTable', 0, 1, 2);
       }
     },
   },

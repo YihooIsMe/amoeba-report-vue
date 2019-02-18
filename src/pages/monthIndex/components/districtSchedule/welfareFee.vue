@@ -15,7 +15,14 @@
         <el-table-column
           label="金额">
           <template slot-scope="scope">
-            <el-input placeholder="请输入金额" v-model="scope.row.Amount" clearable size="small" :disabled="inputDisabled"></el-input>
+            <el-input
+              placeholder="请输入金额"
+              v-model="scope.row.Amount"
+              clearable
+              size="small"
+              :ref="welfareFee(scope.$index)"
+              :disabled="inputDisabled"
+              @change="scheduleHandleInputNum(scope.$index, scope.row.Amount)"></el-input>
           </template>
         </el-table-column>
       </el-table>
@@ -24,6 +31,9 @@
 </template>
 
 <script>
+import Vue from 'vue';
+import { Message } from 'element-ui';
+
 export default {
   name: 'welfareFee',
   props: ['welfareFeeList', 'inputDisabled'],
@@ -32,6 +42,26 @@ export default {
     };
   },
   methods: {
+    welfareFee(index) {
+      return 'welfareFee' + index;
+    },
+    scheduleHandleInputNum(row, val) {
+      if (!/^[0-9]+([.]{1}[0-9]+){0,1}$/.test(Number(val))) {
+        Message({
+          message: '请输入有效数字!',
+          duration: 1000,
+          type: 'warning',
+        });
+        console.log(row);
+        console.log(Number(val));
+        console.log(val);
+        console.log('welfareFee' + row);
+        console.log(this.$refs['welfareFee' + row]);
+        this.$refs['welfareFee' + row].focus();
+        return false;
+      }
+      return true;
+    },
     getSummaries(param) {
       const { columns, data } = param;
       const sums = [];
