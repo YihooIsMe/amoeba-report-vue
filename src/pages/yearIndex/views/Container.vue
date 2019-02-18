@@ -63,11 +63,11 @@
               <td><input type="text" readonly :value="item.Amount"></td>
               <td v-for="n in 12"
                   :key="n">
+                <!--执行顺序 onChange > onBlur-->
                 <input type="text"
                        :readonly="item.ReadOnly === 1?true:false"
                        v-on="item.ReadOnly === 0 ? { focus : ($event) => inputFocus(n+2,item.className, $event), blur : ($event) => addSep($event) } : {}"
                        @change="AutomaticCalculation(n+2, item.className, $event)"
-                       @keyup="handleInputNum"
                        :disabled="inputDisabled"
                 >
               </td>
@@ -119,7 +119,6 @@
 
 <script>
 import Vue from 'vue';
-import VueCookie from 'vue-cookie';
 import { MessageBox, Message } from 'element-ui';
 import cal from '@/assets/js/comCalculation';
 import ManagementAlert from '@/components/managementAlert.vue';
@@ -128,7 +127,6 @@ import news from '@/assets/js/notification';
 
 
 Vue.component(MessageBox.name, MessageBox);
-Vue.use(VueCookie);
 Vue.use(api);
 
 export default {
@@ -255,10 +253,6 @@ export default {
       cal.calAddSep(event);
     },
 
-    handleInputNum(e) {
-      cal.calHandleInputNum(e);
-    },
-
     changeShow() {
       this.isAlertShow = false;
     },
@@ -271,7 +265,7 @@ export default {
     },
     calProfitLoss(firstClassName, secondClassName) {
       if (cal.remSep(this.elSelector(secondClassName)[13].value) !== 0) {
-        return cal.remSep(this.elSelector(firstClassName)[13].value) / cal.remSep(this.elSelector(secondClassName)[13].value);
+        return cal.addPercent(cal.remSep(this.elSelector(firstClassName)[13].value) / cal.remSep(this.elSelector(secondClassName)[13].value));
       }
       return '';
     },
@@ -493,7 +487,11 @@ export default {
         const dataClassName = getSubmitData[i].className;
         const allInput = document.querySelectorAll('table.commonTable .' + dataClassName + ' input');
         for (let j = 0; j < 13; j += 1) {
-          submitObj[this.months[j]] = cal.remSep(allInput[(j + 1)].value);
+          if (dataClassName === 'F4' || dataClassName === 'G2' || dataClassName === 'H1') {
+            submitObj[this.months[j]] = cal.remPercent(allInput[(j + 1)].value);
+          } else {
+            submitObj[this.months[j]] = cal.remSep(allInput[(j + 1)].value);
+          }
         }
         submitListsArr.push(submitObj);
       }
@@ -599,7 +597,7 @@ export default {
       cal.allTableCalculation(index);
     },
 
-    AutomaticCalculation(i, className, event) {
+    commonEvent(i, className, event) {
       let currentEl;
       if (event !== '') {
         currentEl = event.target;
@@ -609,7 +607,7 @@ export default {
       cal.judgeDepartment(this.Pr0111);
       cal.getVueSigningRatio(this.SigningRatio);
       if (className !== 'F1' || (className === 'F1' && this.Pr0111 === 'A2')) {
-        currentEl.value = Number(currentEl.value).toLocaleString();
+        currentEl.value = Math.round(Number(currentEl.value)).toLocaleString();
         if (this.isInputValEmpty) {
           this.autoFillTwelveMonthData(i, className);
           this.AllMonthsAutomaticCalculation();
@@ -622,6 +620,25 @@ export default {
       this.oneToTwelveSum();
       if (event !== '') {
         currentEl.blur();
+      }
+    },
+
+    AutomaticCalculation(i, className, event) {
+      if (className !== 'F1') {
+        // 首先判断输入数据是否是合法有效的（整数或者小数，包括负数）；
+        if (!/^-?[0-9]+([.]{1}[0-9]+){0,1}$/.test(event.target.value)) {
+          Message({
+            message: '请输入有效数字!',
+            duration: 1000,
+            type: 'warning',
+          });
+          event.target.value = '';
+          event.target.focus();
+        } else {
+          this.commonEvent(i, className, event);
+        }
+      } else {
+        this.commonEvent(i, className, event);
       }
     },
 
@@ -654,7 +671,7 @@ export default {
       this.$api.queryAndAddedQuery({
         MPID: this.ReviewOrRejectMPID,
         status: index,
-        User: VueCookie.get('userID'),
+        User: this.userID,
         IsYM: 0, // 0是年,1是月;
       }).then((res) => {
         console.log(res);

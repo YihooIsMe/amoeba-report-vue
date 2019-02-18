@@ -84,14 +84,12 @@
 <script>
 import Vue from 'vue';
 import { MessageBox, Pagination, Loading } from 'element-ui';
-import VueCookie from 'vue-cookie';
 import api from '@/http/index';
 import news from '@/assets/js/notification';
 
 Vue.use(Pagination);
 Vue.use(Loading);
 Vue.component(MessageBox.name, MessageBox);
-Vue.use(VueCookie);
 Vue.use(api);
 
 export default {

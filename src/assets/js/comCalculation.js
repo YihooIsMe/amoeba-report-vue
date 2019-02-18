@@ -6,6 +6,7 @@ export default {
   VueSigningRatio: '',
   fromWhere: '',
   department: '',
+  districtOrStore: '',
   calHandleInputNum(e) {
     if (e.keyCode !== 8 && e.keyCode !== 13) {
       if (!/^\d+$/.test(e.target.value)) {
@@ -54,10 +55,7 @@ export default {
     /** 減：营业税金* */
     if (this.tableOne(index).BusinessTax) {
       // this.tableOne(index).BusinessTax.value = (Number(this.remSep(this.tableOne(index).TotalOperatingIncome.value)) * 0.05.toFixed(2)).toLocaleString();
-      this.tableOne(index).BusinessTax.value = (this.remSep(this.tableOne(index).TotalOperatingIncome.value) * 0.05).toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
+      this.tableOne(index).BusinessTax.value = Math.round(this.remSep(this.tableOne(index).TotalOperatingIncome.value) * 0.05).toLocaleString();
     }
     /* 营业收入净额 */
     if (this.tableOne(index).OperatingNetProfit) {
@@ -109,16 +107,37 @@ export default {
     this.tableTwo(index).Wage.value = (this.remSep(this.tableTwo(index).FixedSalary.value) + this.remSep(this.tableTwo(index).VariableWage.value)).toLocaleString();
     /* 社会保险金 */
     // this.tableTwo(index).SocialInsurancePremium.value = (Number(this.remSep(this.tableTwo(index).Wage.value)) * 0.305.toFixed(2)).toLocaleString();
-    this.tableTwo(index).SocialInsurancePremium.value = (this.remSep(this.tableTwo(index).Wage.value) * 0.305).toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-    /* 公积金 */
-    // this.tableTwo(index).ProvidentFund.value = ((Number(this.remSep(this.tableTwo(index).Wage.value)) * 0.07).toFixed(2)).toLocaleString();
-    this.tableTwo(index).ProvidentFund.value = (this.remSep(this.tableTwo(index).Wage.value) * 0.07).toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
+    if (this.fromWhere === 'yearIndex') {
+      /* 社会保险金 */
+      this.tableTwo(index).SocialInsurancePremium.value = (this.remSep(this.tableTwo(index).Wage.value) * 0.305).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+      /* 公积金 */
+      // this.tableTwo(index).ProvidentFund.value = ((Number(this.remSep(this.tableTwo(index).Wage.value)) * 0.07).toFixed(2)).toLocaleString();
+      this.tableTwo(index).ProvidentFund.value = (this.remSep(this.tableTwo(index).Wage.value) * 0.07).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+    if (this.fromWhere === 'monthIndex') {
+      if (this.districtOrStore === 'district') {
+        /* 社会保险金 */
+        this.tableTwo(index).SocialInsurancePremium.value = (this.remSep(this.tableTwo(index).Wage.value) * 0.305).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+        /* 公积金 */
+        // this.tableTwo(index).ProvidentFund.value = ((Number(this.remSep(this.tableTwo(index).Wage.value)) * 0.07).toFixed(2)).toLocaleString();
+        this.tableTwo(index).ProvidentFund.value = (this.remSep(this.tableTwo(index).Wage.value) * 0.07).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      }
+      if (this.districtOrStore === 'store') {
+
+      }
+    }
     /* 用人费用 */
     this.tableTwo(index).EmploymentFee.value = (this.remSep(this.tableTwo(index).Wage.value) + this.remSep(this.tableTwo(index).WithholdingBonus.value) + this.remSep(this.tableTwo(index).WelfareFee.value) + this.remSep(this.tableTwo(index).AccommodationFee.value) + this.remSep(this.tableTwo(index).SocialInsurancePremium.value) + this.remSep(this.tableTwo(index).LifeInsurance.value) + this.remSep(this.tableTwo(index).WorkingMeal.value) + this.remSep(this.tableTwo(index).UniformFee.value) + this.remSep(this.tableTwo(index).CarSticker.value) + this.remSep(this.tableTwo(index).EducationalTrainingFee.value) + this.remSep(this.tableTwo(index).LaborCosts.value) + this.remSep(this.tableTwo(index).ProvidentFund.value)).toLocaleString();
   },
@@ -272,18 +291,12 @@ export default {
     /* 管理服务费 */
     // TODO:这里着重测试一下；
     if (this.fromWhere === 'yearIndex') {
-      // this.tableSix(index).ManagementServiceFee.value = (Number(Number(this.remSep(this.tableOne(index).OriginalContractFee.value)) * Number(this.getVueSigningRatio['SigningRatio' + (index - 2)]) + 12000).toFixed(2)).toLocaleString();
+      // this.tableSix(index).ManagementServiceFee.value = (ber(Number(this.remSep(this.tableOne(index).OriginalContractFee.value)) * Number(this.getVueSigningRatio['SigningRatio' + (index - 2)]) + 12000).toFixed(2)).toLocaleString();
       if (this.tableSix(index).ManagementServiceFee && this.department !== 'A2') {
-        this.tableSix(index).ManagementServiceFee.value = (this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio['SigningRatio' + (index - 2)]) + 12000).toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
+        this.tableSix(index).ManagementServiceFee.value = Math.round(this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio['SigningRatio' + (index - 2)]) + 12000).toLocaleString();
       }
     } else if (this.tableSix(index).ManagementServiceFee && this.department !== 'A2') {
-      this.tableSix(index).ManagementServiceFee.value = (this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio) + 12000).toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
+      this.tableSix(index).ManagementServiceFee.value = Math.round(this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio) + 12000).toLocaleString();
     }
 
     /* 签约金损益 */
@@ -294,19 +307,13 @@ export default {
       // console.log(this.tableSix(index).SigningFeeProfitAndLoss);
       // TODO:区部的服务管理费呢??
       // console.log((this.remSep(this.tableOne(index).OperatingNetProfit.value) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableSix(index).ManagementServiceFee.value) - this.remSep(this.tableSix(index).OwnershipFee ? this.tableSix(index).OwnershipFee.value : 0)));
-      this.tableSix(index).SigningFeeProfitAndLoss.value = (this.remSep(this.tableOne(index).OperatingNetProfit.value) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableSix(index).ManagementServiceFee ? this.tableSix(index).ManagementServiceFee.value : 0) - this.remSep(this.tableSix(index).OwnershipFee ? this.tableSix(index).OwnershipFee.value : 0)).toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
+      this.tableSix(index).SigningFeeProfitAndLoss.value = (this.remSep(this.tableOne(index).OperatingNetProfit.value) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableSix(index).ManagementServiceFee ? this.tableSix(index).ManagementServiceFee.value : 0) - this.remSep(this.tableSix(index).OwnershipFee ? this.tableSix(index).OwnershipFee.value : 0)).toLocaleString();
     }
 
     /* 签约金损益收益率 */
     if (this.tableSix(index).ContractedFeeProfitAndLossYield && Number(this.remSep(this.tableOne(index).TotalIncome.value)) !== 0) {
       // this.tableSix(index).ContractedFeeProfitAndLossYield.value = ((Number(this.remSep(this.tableSix(index).SigningFeeProfitAndLoss.value)) / Number(this.remSep(this.tableOne(index).TotalIncome.value))).toFixed(2)).toLocaleString();
-      this.tableSix(index).ContractedFeeProfitAndLossYield.value = (this.remSep(this.tableSix(index).SigningFeeProfitAndLoss.value) / this.remSep(this.tableOne(index).TotalIncome.value)).toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
+      this.tableSix(index).ContractedFeeProfitAndLossYield.value = this.addPercent((this.remSep(this.tableSix(index).SigningFeeProfitAndLoss.value) / this.remSep(this.tableOne(index).TotalIncome.value)));
     }
   },
 
@@ -325,18 +332,12 @@ export default {
     /* 业绩损益 */
     // this.tableSeven(index).PerformanceGainsAndLosses.value = ((Number(this.remSep(this.tableSeven(index).Performance.value)) - Number(this.remSep(this.tableSix(index).ManagementServiceFee.value)) - Number(this.remSep(this.tableSix(index).OperatingExpenses.value)) - Number(this.remSep(this.tableOne(index).BusinessTax.value))).toFixed(2)).toLocaleString();
     if (this.tableSeven(index).PerformanceGainsAndLosses) {
-      this.tableSeven(index).PerformanceGainsAndLosses.value = (this.remSep(this.tableSeven(index).Performance.value) - this.remSep(this.tableSix(index).ManagementServiceFee ? this.tableSix(index).ManagementServiceFee.value : 0) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableOne(index).BusinessTax.value)).toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
+      this.tableSeven(index).PerformanceGainsAndLosses.value = (this.remSep(this.tableSeven(index).Performance.value) - this.remSep(this.tableSix(index).ManagementServiceFee ? this.tableSix(index).ManagementServiceFee.value : 0) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableOne(index).BusinessTax.value)).toLocaleString();
     }
     /* 业绩损益收益率 */
     if (this.tableSeven(index).PerformanceGainsAndLossesRate && Number(this.tableSeven(index).Performance.value) !== 0) {
       // this.tableSeven(index).PerformanceGainsAndLossesRate.value = ((Number(this.remSep(this.tableSeven(index).PerformanceGainsAndLosses.value)) / Number(this.remSep(this.tableSeven(index).Performance.value))).toFixed(2)).toLocaleString();
-      this.tableSeven(index).PerformanceGainsAndLossesRate.value = (this.remSep(this.tableSeven(index).PerformanceGainsAndLosses.value) / this.remSep(this.tableSeven(index).Performance.value)).toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
+      this.tableSeven(index).PerformanceGainsAndLossesRate.value = this.addPercent((this.remSep(this.tableSeven(index).PerformanceGainsAndLosses.value) / this.remSep(this.tableSeven(index).Performance.value)));
     }
   },
 
@@ -352,7 +353,7 @@ export default {
   tableEightCalculation(index) {
     /* 单位时间损益 */
     if (this.tableEight(index).UnitTimeProfitAndLoss && Number(this.tableEight(index).AttendanceTime.value) !== 0) {
-      this.tableEight(index).UnitTimeProfitAndLoss.value = ((this.remSep(this.tableSix(index).SigningFeeProfitAndLoss.value) / this.remSep(this.tableEight(index).AttendanceTime.value)).toFixed(2)).toLocaleString();
+      this.tableEight(index).UnitTimeProfitAndLoss.value = this.addPercent((this.remSep(this.tableSix(index).SigningFeeProfitAndLoss.value) / this.remSep(this.tableEight(index).AttendanceTime.value)));
     }
   },
   // 去处千分位符号；
@@ -369,6 +370,14 @@ export default {
     if (currentEl.value !== '') {
       currentEl.value = this.remSep(currentEl.value).toLocaleString();
     }
+  },
+
+  addPercent(val) {
+    return Math.round(val * 100) + '%';
+  },
+
+  remPercent(val) {
+    return parseFloat(val) / 100;
   },
 
   allInputEl(el) {

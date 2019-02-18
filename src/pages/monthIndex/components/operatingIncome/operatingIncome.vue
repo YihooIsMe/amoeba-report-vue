@@ -13,6 +13,7 @@
         stripe
         show-summary
         :summary-method="getSummaries"
+        :row-class-name="tableRowClassName"
         @selection-change="handleSelectionChange">
         <!--TODO:selectable可以控制复选框是否禁用-->
         <el-table-column
@@ -129,6 +130,7 @@
         stripe
         show-summary
         :summary-method="getSummaries"
+        :row-class-name="tableRowClassName"
         @selection-change="handleSelectionChangePer">
         <el-table-column
           type="selection"
@@ -258,6 +260,7 @@ export default {
       MonthSigningGoldYD: [],
       MonthPerformanceYD: [],
       operatingSumIndex: 0,
+      selectedIndexArr: '',
     };
   },
   methods: {
@@ -379,37 +382,56 @@ export default {
     sortNumber(a, b) {
       return a - b;
     },
+    tableRowClassName({ row, rowIndex }) {
+      row.index = rowIndex;
+    },
     deleteSelected(sel) {
       if (sel === 'operate') {
         if (this.multipleSelection.length === this.addFormArr.length) {
           this.addFormArr = [];
         } else {
-          const copyAddFormArr = this.addFormArr.concat();
-          // 特别注意此处的逻辑,删除array的数据后要自动往前挪一步;
-          for (let i = 0; i < this.selectIndexArray.length; i += 1) {
-            if (i === 0) {
-              copyAddFormArr.splice(this.selectIndexArray[i], 1);
-            } else {
-              copyAddFormArr.splice(this.selectIndexArray[i] - 1, 1);
-            }
+          // const copyAddFormArr = this.addFormArr.concat();
+          // // 特别注意此处的逻辑,删除array的数据后要自动往前挪一步;
+          // for (let i = 0; i < this.selectIndexArray.length; i += 1) {
+          //   if (i === 0) {
+          //     copyAddFormArr.splice(this.selectIndexArray[i], 1);
+          //   } else {
+          //     copyAddFormArr.splice(this.selectIndexArray[i] - 1, 1);
+          //   }
+          // }
+          // console.log(copyAddFormArr);
+          // this.addFormArr = copyAddFormArr;
+          const arr = [];
+          this.multipleSelection.forEach((item) => {
+            arr.push(item.index);
+          });
+          this.selectIndexArray = arr.sort(this.sortNumber);
+          for (let i = this.selectIndexArray.length - 1; i >= 0; i -= 1) {
+            this.addFormArr.splice(this.selectIndexArray[i], 1);
           }
-          console.log(copyAddFormArr);
-          this.addFormArr = copyAddFormArr;
         }
       } else if (sel === 'performance') {
         if (this.multipleSelectionPer.length === this.addPerformanceArr.length) {
           this.addPerformanceArr = [];
         } else {
-          const copyAddPerformanceArr = this.addPerformanceArr.concat();
-          for (let i = 0; i < this.selectIndexArrayPer.length; i += 1) {
-            if (i === 0) {
-              copyAddPerformanceArr.splice(this.selectIndexArrayPer[i], 1);
-            } else {
-              copyAddPerformanceArr.splice(this.selectIndexArrayPer[i] - 1, 1);
-            }
+          // const copyAddPerformanceArr = this.addPerformanceArr.concat();
+          // for (let i = 0; i < this.selectIndexArrayPer.length; i += 1) {
+          //   if (i === 0) {
+          //     copyAddPerformanceArr.splice(this.selectIndexArrayPer[i], 1);
+          //   } else {
+          //     copyAddPerformanceArr.splice(this.selectIndexArrayPer[i] - 1, 1);
+          //   }
+          // }
+          // console.log(copyAddPerformanceArr);
+          // this.addPerformanceArr = copyAddPerformanceArr;
+          const arr = [];
+          this.multipleSelectionPer.forEach((item) => {
+            arr.push(item.index);
+          });
+          this.selectIndexArrayPer = arr.sort(this.sortNumber);
+          for (let i = this.selectIndexArrayPer.length - 1; i >= 0; i -= 1) {
+            this.addPerformanceArr.splice(this.selectIndexArrayPer[i], i);
           }
-          console.log(copyAddPerformanceArr);
-          this.addPerformanceArr = copyAddPerformanceArr;
         }
       }
     },

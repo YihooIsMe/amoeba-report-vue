@@ -38,7 +38,6 @@
               <input type="text"
                      :readonly="isReadOnly(item, n)"
                      v-on="n === 2 && item.ReadOnly === 0 && !isReadOnly(item, n) ? { focus : ($event) => inputFocus(item.className, $event), blur : ($event) => addSep($event)} : {}"
-                     @keyup="handleInputNum"
                      @change="AutomaticCalculation(3, item.className, $event)"
                      :disabled="mainFormInputDisabled"
               >
@@ -62,11 +61,11 @@
 
 <script>
 import Vue from 'vue';
-import VueCookie from 'vue-cookie';
+import { MessageBox, Message } from 'element-ui';
 import ManagementAlert from '@/components/managementAlert.vue';
 import cal from '@/assets/js/comCalculation';
 
-Vue.use(VueCookie);
+Vue.component(MessageBox.name, MessageBox);
 
 export default {
   name: 'mainForm',
@@ -132,9 +131,7 @@ export default {
     addSep(event) {
       cal.calAddSep(event);
     },
-    handleInputNum(e) {
-      cal.calHandleInputNum(e);
-    },
+
     dataInjection(data, draft) {
       data.forEach((el) => {
         const elInput = document.querySelectorAll('table.commonTable tr.' + el.className + ' input');
@@ -211,20 +208,33 @@ export default {
       this.$emit('closeLoading');
     },
     AutomaticCalculation(i, className, event) {
-      let currentEl;
-      if (event !== '') {
-        currentEl = event.target;
-      }
-      cal.whereUse('monthIndex');
-      cal.judgeDepartment(this.$store.state.comData.commonData.Pr0111);
-      cal.getVueSigningRatio(this.SigningRatio);
-      if (className !== 'F1' || (className === 'F1' && this.$store.state.comData.commonData.Pr0111 === 'A2')) {
-        currentEl.value = Number(currentEl.value).toLocaleString();
-      }
-      this.currentMonthAutomaticCalculation(i);
-      this.calculatePredeterminedRatio();
-      if (event !== '') {
-        currentEl.blur();
+      if (className !== 'F1') {
+        if (!/^-?[0-9]+([.]{1}[0-9]+){0,1}$/.test(event.target.value)) {
+          Message({
+            message: '请输入有效数字!',
+            duration: 1000,
+            type: 'warning',
+          });
+          event.target.value = '';
+          event.target.focus();
+        } else {
+          let currentEl;
+          if (event !== '') {
+            currentEl = event.target;
+          }
+          cal.whereUse('monthIndex');
+          cal.judgeDepartment(this.$store.state.comData.commonData.Pr0111);
+          cal.getVueSigningRatio(this.SigningRatio);
+          if (className !== 'F1' || (className === 'F1' && this.$store.state.comData.commonData.Pr0111 === 'A2')) {
+            currentEl.value = Number(currentEl.value).toLocaleString();
+          }
+          this.currentMonthAutomaticCalculation(i);
+          this.calculatePredeterminedRatio();
+          if (event !== '') {
+            currentEl.blur();
+          }
+        }
+
       }
     },
     getAllSubmissionData() {

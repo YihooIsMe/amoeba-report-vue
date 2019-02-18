@@ -91,12 +91,10 @@
 <script>
 import Vue from 'vue';
 import { MessageBox } from 'element-ui';
-import VueCookie from 'vue-cookie';
 import api from '@/http/index';
 import news from '@/assets/js/notification';
 
 Vue.component(MessageBox.name, MessageBox);
-Vue.use(VueCookie);
 Vue.use(api);
 
 export default {

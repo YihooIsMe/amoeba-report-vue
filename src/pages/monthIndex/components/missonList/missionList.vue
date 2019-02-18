@@ -19,11 +19,9 @@
 
 <script>
 import Vue from 'vue';
-import VueCookie from 'vue-cookie';
 import MissionTextarea from './missionTextarea.vue';
 import MaskLayer from './maskLayer.vue';
 
-Vue.use(VueCookie);
 
 export default {
   name: 'missionList',

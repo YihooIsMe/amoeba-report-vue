@@ -95,7 +95,6 @@
 
 <script>
 import Vue from 'vue';
-import VueCookie from 'vue-cookie';
 import { MessageBox, Message } from 'element-ui';
 import MainForm from '../components/mainForm/mainForm.vue';
 import ScheduleTable from '../components/scheduleTable/scheduleTable.vue';
@@ -107,7 +106,6 @@ import news from '@/assets/js/notification';
 
 Vue.component(MessageBox.name, MessageBox);
 Vue.use(api);
-Vue.use(VueCookie);
 
 export default {
   name: 'Container',
