@@ -43,20 +43,20 @@ module.exports = {
     port: 85,
     index: 'monthIndex.html',
   },
-  configureWebpack: {
-    optimization: {
-      minimizer: [
-        new UglifyJsPlugin({
-          uglifyOptions: {
-            compress: {
-              drop_console: true,
-              pure_funcs: ['console.log'],
-            },
-          },
-        }),
-      ],
-    },
-  },
+  // configureWebpack: {
+  //   optimization: {
+  //     minimizer: [
+  //       new UglifyJsPlugin({
+  //         uglifyOptions: {
+  //           compress: {
+  //             drop_console: true,
+  //             pure_funcs: ['console.log'],
+  //           },
+  //         },
+  //       }),
+  //     ],
+  //   },
+  // },
   // configureWebpack: {
   //   optimization: {
   //     splitChunks: {

@@ -56,7 +56,7 @@ export default {
   props: ['carStickerData'],
   data() {
     return {
-      seniorDirectorClassName: ['FC2', 'FC3', 'FC4'], // 高级主任的className
+      seniorDirectorClassName: ['FC12', 'FC2', 'FC2', 'FC3', 'FC4'], // 高级主任的className
       currentDisabled: true,
     };
   },
@@ -91,19 +91,27 @@ export default {
     inputDisabled() {
       return this.$store.state.comData.inputDisabled;
     },
-    scheduleTabIndex() {
-      return this.$store.state.scheduleForm.scheduleTabIndex;
+    // scheduleTabIndex() {
+    //   return this.$store.state.scheduleForm.scheduleTabIndex;
+    // },
+    /* 当固定工资变动的时候，此时的车贴费用也应当变化 */
+    isSumFixedSalary() {
+      return this.$store.state.scheduleForm.sumScheduleForm.sumFixedSalary;
     },
   },
   watch: {
     isLoadCompleted() {
       this.commonCalculation(this.carStickerData, '.carStickerTable', 0, 1, 2);
     },
-    scheduleTabIndex(val) {
-      if (val === 6) {
-        this.setCarStickerPeople();
-        this.commonCalculation(this.carStickerData, '.carStickerTable', 0, 1, 2);
-      }
+    // scheduleTabIndex(val) {
+    //   if (val === 6) {
+    //     this.setCarStickerPeople();
+    //     this.commonCalculation(this.carStickerData, '.carStickerTable', 0, 1, 2);
+    //   }
+    // },
+    isSumFixedSalary() {
+      this.setCarStickerPeople();
+      this.commonCalculation(this.carStickerData, '.carStickerTable', 0, 1, 2);
     },
   },
   updated() {

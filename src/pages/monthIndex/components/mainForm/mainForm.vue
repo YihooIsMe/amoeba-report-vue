@@ -150,6 +150,7 @@ export default {
       // TODO:测试环境需要区部也计算一边,这是原始逻辑 this.$store.state.comData.commonData.identity === 'other'
       if (this.$store.state.comData.commonData.identity !== 'store') {
         cal.whereUse('monthIndex');
+        cal.getCity(this.$store.state.comData.commonData.City);
         cal.judgeDepartment(this.$store.state.comData.commonData.Pr0111);
         this.currentMonthAutomaticCalculation(3);
         this.calculatePredeterminedRatio();
@@ -213,7 +214,9 @@ export default {
       if (event !== '') {
         currentEl = event.target;
       }
+      console.log(1299);
       cal.whereUse('monthIndex');
+      cal.getCity(this.$store.state.comData.commonData.City);
       cal.judgeDepartment(this.$store.state.comData.commonData.Pr0111);
       cal.getVueSigningRatio(this.SigningRatio);
       if (className !== 'F1' || (className === 'F1' && this.$store.state.comData.commonData.Pr0111 === 'A2')) {
@@ -302,6 +305,8 @@ export default {
     watchCommonEvent(className, val) {
       document.querySelector('.mainForm>tbody>tr.' + className + '>td:nth-child(3)>input').value = Number(val).toLocaleString();
       cal.whereUse('monthIndex');
+      cal.getCity(this.$store.state.comData.commonData.City);
+      cal.judgeDepartment(this.$store.state.comData.commonData.Pr0111);
       this.currentMonthAutomaticCalculation(3);
       this.calculatePredeterminedRatio();
     },

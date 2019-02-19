@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     scheduleHandleInputNum() {
-      if (!/^[0-9]+([.]{1}[0-9]+){0,1}$/.test(Number(this.changeBonusList[0].Amount))) {
+      if (!/^[0-9]+([.]{1}[0-9]+){0,1}$/.test(this.changeBonusList[0].Amount)) {
         Message({
           message: '请输入有效数字!',
           duration: 1000,

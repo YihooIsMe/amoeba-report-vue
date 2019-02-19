@@ -146,6 +146,7 @@ export default {
       draft: '',
       Pr0139: '',
       Pr0111: '',
+      City: '',
       tableSource: [],
       responseData: {},
       tableDataSource0: [], // Type类型为0的数据;
@@ -216,7 +217,8 @@ export default {
       return false;
     },
     getBaseInfo() {
-      this.userID = sessionStorage.getItem('userID');
+      this.userID = decodeURI(sessionStorage.getItem('userID'));
+      // this.userID = this.getQueryVariable('UserID');
       this.fromWhichBtn = this.getQueryVariable('fromWhichBtn');
       if (this.fromWhichBtn === '1') {
         this.viewEditorYear = this.getQueryVariable('viewEditorYear');
@@ -381,6 +383,7 @@ export default {
           this.ReviewStatus = this.responseData.ReviewStatus;
           this.SupervisorID = this.responseData.SupervisorID;
           this.Pr0111 = this.responseData.Pr0111;
+          this.City = this.responseData.City;
           Vue.set(this.pullAllData, 'OrganizeId', this.OrganizeId);
           Vue.set(this.pullAllData, 'City', this.responseData.City);
           Vue.set(this.pullAllData, 'years', this.years); // 目前years暂无传参；
@@ -608,6 +611,7 @@ export default {
       }
       console.log(this.SigningRatio);
       cal.whereUse('yearIndex');
+      cal.getCity(this.City);
       cal.judgeDepartment(this.Pr0111);
       cal.getVueSigningRatio(this.SigningRatio);
       if (className !== 'F1' || (className === 'F1' && this.Pr0111 === 'A2')) {

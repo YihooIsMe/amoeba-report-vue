@@ -75,6 +75,10 @@ export default {
     recoveryPerformance() {
       return this.$store.state.operatingForm.performanceSum;
     },
+    /* 当固定工资变动的时候，此时的变动工资也随之变化 */
+    isSumFixedSalary() {
+      return this.$store.state.scheduleForm.sumScheduleForm.sumFixedSalary;
+    },
   },
   watch: {
     isLoadCompleted() {
@@ -86,6 +90,9 @@ export default {
         document.querySelector('.variableWageTable>tbody>tr.FD1>td:nth-child(3)>input').value = Number(newVal);
         this.commonCalculation(this.variableWageData, '.variableWageTable', 0, 1, 2);
       });
+    },
+    isSumFixedSalary() {
+      this.commonCalculation(this.variableWageData, '.variableWageTable', 0, 1, 2);
     },
   },
   updated() {

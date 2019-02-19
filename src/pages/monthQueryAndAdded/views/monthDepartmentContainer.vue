@@ -149,6 +149,7 @@ export default {
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)',
       });
+      console.log({ userID: this.userID });
       this.$api.queryAndAddedUserInfo({ userID: this.userID })
         .then((res) => {
           console.log(JSON.parse(res.data));
@@ -372,7 +373,11 @@ export default {
     },
   },
   created() {
+    // TODO:以下方便本地使用
     this.userID = sessionStorage.getItem('userID');
+    // TODO:以下是测试环境使用;
+    // this.userID = decodeURI(this.getQueryVariable('UserID'));
+    sessionStorage.setItem('userID', this.userID);
     this.getUserRequest(0);
   },
 };

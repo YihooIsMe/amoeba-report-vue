@@ -1,23 +1,21 @@
 /* 公共的计算方法都在这里 */
 import Vue from 'vue';
-import { Message } from 'element-ui';
 
 export default {
   VueSigningRatio: '',
+  city: '',
   fromWhere: '',
   department: '',
-  districtOrStore: '',
-  calHandleInputNum(e) {
-    if (e.keyCode !== 8 && e.keyCode !== 13) {
-      if (!/^\d+$/.test(e.target.value)) {
-        Message({
-          message: '请输入整数',
-          duration: 1000,
-          type: 'warning',
-        });
-        e.target.value = '';
-      }
-    }
+  SocialInsurancePremium: '',
+  ProvidentFundPeople: '',
+  setSocialInsurancePremium(val) {
+    this.SocialInsurancePremium = val;
+  },
+  setProvidentFundPeople(val) {
+    this.ProvidentFundPeople = val;
+  },
+  getCity(val) {
+    this.city = val;
   },
   judgeDepartment(val) {
     this.department = val;
@@ -109,33 +107,93 @@ export default {
     // this.tableTwo(index).SocialInsurancePremium.value = (Number(this.remSep(this.tableTwo(index).Wage.value)) * 0.305.toFixed(2)).toLocaleString();
     if (this.fromWhere === 'yearIndex') {
       /* 社会保险金 */
-      this.tableTwo(index).SocialInsurancePremium.value = (this.remSep(this.tableTwo(index).Wage.value) * 0.305).toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-      /* 公积金 */
-      // this.tableTwo(index).ProvidentFund.value = ((Number(this.remSep(this.tableTwo(index).Wage.value)) * 0.07).toFixed(2)).toLocaleString();
-      this.tableTwo(index).ProvidentFund.value = (this.remSep(this.tableTwo(index).Wage.value) * 0.07).toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
+      /* 三地区分公积金的计算  社会保险金 */
+      switch (this.city) {
+        case '001':
+          this.tableTwo(index).SocialInsurancePremium.value = Math.round(this.remSep(this.tableTwo(index).FixedSalary.value) * 0.305).toLocaleString();
+          break;
+        case '002':
+          this.tableTwo(index).SocialInsurancePremium.value = 0;
+          break;
+        case '003':
+          this.tableTwo(index).SocialInsurancePremium.value = Math.round(this.remSep(this.tableTwo(index).FixedSalary.value) * 0.265).toLocaleString();
+          break;
+        default:
+      }
+      /* 三地区分公积金的计算  公积金 */
+      switch (this.city) {
+        /* 上海 */
+        case '001':
+          this.tableTwo(index).ProvidentFund.value = Math.round(this.remSep(this.tableTwo(index).FixedSalary.value) * 0.07).toLocaleString();
+          break;
+          /* 苏州 */
+        case '002':
+          this.tableTwo(index).ProvidentFund.value = Math.round(this.remSep(this.tableTwo(index).FixedSalary.value) * 0.266).toLocaleString();
+          break;
+          /* 杭州 */
+        case '003':
+          this.tableTwo(index).ProvidentFund.value = Math.round(this.remSep(this.tableTwo(index).FixedSalary.value) * 0.08).toLocaleString();
+          break;
+        default:
+      }
     }
     if (this.fromWhere === 'monthIndex') {
-      if (this.districtOrStore === 'district') {
-        /* 社会保险金 */
-        this.tableTwo(index).SocialInsurancePremium.value = (this.remSep(this.tableTwo(index).Wage.value) * 0.305).toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
-        /* 公积金 */
-        // this.tableTwo(index).ProvidentFund.value = ((Number(this.remSep(this.tableTwo(index).Wage.value)) * 0.07).toFixed(2)).toLocaleString();
-        this.tableTwo(index).ProvidentFund.value = (this.remSep(this.tableTwo(index).Wage.value) * 0.07).toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
+      /* 社会保险金 */
+      switch (this.city) {
+        case '001':
+          if (this.department === 'A2') {
+            this.tableTwo(index).SocialInsurancePremium.value = Math.round(this.remSep(this.tableTwo(index).FixedSalary.value) * 0.305).toLocaleString();
+          }
+          if (this.department === 'A1' || this.department === 'C1' || this.department === 'B0') {
+            this.tableTwo(index).SocialInsurancePremium.value = Math.round(this.SocialInsurancePremium * 0.305).toLocaleString();
+          }
+          break;
+        case '002':
+          this.tableTwo(index).SocialInsurancePremium.value = 0;
+          break;
+        case '003':
+          if (this.department === 'A2') {
+            this.tableTwo(index).SocialInsurancePremium.value = Math.round(this.remSep(this.tableTwo(index).FixedSalary.value) * 0.265).toLocaleString();
+          }
+          if (this.department === 'A1' || this.department === 'C1' || this.department === 'B0') {
+            this.tableTwo(index).SocialInsurancePremium.value = Math.round(this.SocialInsurancePremium * 0.265).toLocaleString();
+          }
+          break;
+        default:
       }
-      if (this.districtOrStore === 'store') {
-
+      /* 公积金 */
+      /* 三地区分公积金,在月度的情况下 公积金 */
+      switch (this.city) {
+        /* 上海 */
+        case '001':
+          /* 区部 */
+          if (this.department === 'A2') {
+            this.tableTwo(index).ProvidentFund.value = Math.round(this.remSep(this.tableTwo(index).FixedSalary.value) * 0.07).toLocaleString();
+          }
+          if (this.department === 'A1' || this.department === 'C1' || this.department === 'B0') {
+            /* 需要统计出相关人数,从附表中拉取过来 */
+            this.tableTwo(index).ProvidentFund.value = Math.round(this.ProvidentFundPeople * 0.07).toLocaleString();
+          }
+          break;
+          /* 苏州 */
+        case '002':
+          if (this.department === 'A2') {
+            this.tableTwo(index).ProvidentFund.value = Math.round(this.remSep(this.tableTwo(index).FixedSalary.value) * 0.266).toLocaleString();
+          }
+          if (this.department === 'A1' || this.department === 'C1' || this.department === 'B0') {
+            this.tableTwo(index).ProvidentFund.value = Math.round(this.ProvidentFundPeople * 0.266).toLocaleString();
+          }
+          break;
+          /* 杭州 */
+        case '003':
+          if (this.department === 'A2') {
+            this.tableTwo(index).ProvidentFund.value = Math.round(this.remSep(this.tableTwo(index).FixedSalary.value) * 0.08).toLocaleString();
+          }
+          if (this.department === 'A1' || this.department === 'C1' || this.department === 'B0') {
+            this.tableTwo(index).ProvidentFund.value = Math.round(this.ProvidentFundPeople * 0.08).toLocaleString();
+          }
+          break;
+        default:
       }
     }
     /* 用人费用 */
@@ -288,15 +346,23 @@ export default {
   tableSixCalculation(index) {
     /* 营业支出 */
     this.tableSix(index).OperatingExpenses.value = (this.remSep(this.tableTwo(index).EmploymentFee.value) + this.remSep(this.tableThree(index).EquipmentCost.value) + this.remSep(this.tableFour(index).TotalTransactionCost.value) + this.remSep(this.tableFive(index).TotalMarketingFee.value)).toLocaleString();
+    /* 管理服务费固定加数上海12000, 苏州和杭州10000 */
+    let FixedAddendum;
+    if (this.city === '001') {
+      FixedAddendum = 12000;
+    }
+    if (this.city === '002' || this.city === '003') {
+      FixedAddendum = 10000;
+    }
     /* 管理服务费 */
     // TODO:这里着重测试一下；
     if (this.fromWhere === 'yearIndex') {
       // this.tableSix(index).ManagementServiceFee.value = (ber(Number(this.remSep(this.tableOne(index).OriginalContractFee.value)) * Number(this.getVueSigningRatio['SigningRatio' + (index - 2)]) + 12000).toFixed(2)).toLocaleString();
       if (this.tableSix(index).ManagementServiceFee && this.department !== 'A2') {
-        this.tableSix(index).ManagementServiceFee.value = Math.round(this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio['SigningRatio' + (index - 2)]) + 12000).toLocaleString();
+        this.tableSix(index).ManagementServiceFee.value = Math.round(this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio['SigningRatio' + (index - 2)]) + FixedAddendum).toLocaleString();
       }
     } else if (this.tableSix(index).ManagementServiceFee && this.department !== 'A2') {
-      this.tableSix(index).ManagementServiceFee.value = Math.round(this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio) + 12000).toLocaleString();
+      this.tableSix(index).ManagementServiceFee.value = Math.round(this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio) + FixedAddendum).toLocaleString();
     }
 
     /* 签约金损益 */

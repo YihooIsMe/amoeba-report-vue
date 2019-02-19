@@ -46,18 +46,15 @@ export default {
       return 'welfareFee' + index;
     },
     scheduleHandleInputNum(row, val) {
-      if (!/^[0-9]+([.]{1}[0-9]+){0,1}$/.test(Number(val))) {
+      if (!/^[0-9]+([.]{1}[0-9]+){0,1}$/.test(val)) {
         Message({
           message: '请输入有效数字!',
           duration: 1000,
           type: 'warning',
         });
-        console.log(row);
-        console.log(Number(val));
-        console.log(val);
-        console.log('welfareFee' + row);
-        console.log(this.$refs['welfareFee' + row]);
-        this.$refs['welfareFee' + row].focus();
+        Vue.set(this.welfareFeeList[row], 'Amount', '');
+        // 注意el-input中this.$refs['welfareFee' + row].focus()并未起作用,用以下方是替换;
+        this.$refs['welfareFee' + row].$el.querySelector('input').focus();
         return false;
       }
       return true;

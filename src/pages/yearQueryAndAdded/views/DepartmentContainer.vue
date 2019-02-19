@@ -136,6 +136,7 @@ export default {
       this.auditTableQueryRequest();
     },
     getUserRequest(permission) {
+      console.log({ userID: this.userID });
       this.$api.queryAndAddedUserInfo({ userID: this.userID })
         .then((res) => {
           console.log(JSON.parse(res.data));
@@ -365,7 +366,11 @@ export default {
   },
   created() {
     this.setLoading();
+    // TODO:本地环境需要改回来
     this.userID = sessionStorage.getItem('userID');
+    // TOdo:下面的是测试环境;
+    // this.userID = decodeURI(this.getQueryVariable('UserID'));
+    sessionStorage.setItem('userID', this.userID);
     this.getUserRequest(0);
   },
 };

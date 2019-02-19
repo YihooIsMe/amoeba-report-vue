@@ -66,6 +66,7 @@ export default {
     },
     setStoreNumOfPeople() {
       let sum = 0;
+      // IsFixedSalary表示固定工资人数合计;
       this.fixedSalaryData.forEach((el) => {
         if (el.IsFixedSalary === 1) {
           sum = Number(document.querySelector('.fixedSalaryTable>tbody>tr.' + el.className + '>td:nth-child(3)>input').value) + sum;
@@ -79,6 +80,7 @@ export default {
       const secretary = Number(document.querySelector('.fixedSalaryTable>tbody>tr.FC10>td:nth-child(3)>input').value);
       // 计算门店福利金人数
       document.querySelector('.welfareFeeTable>tbody>tr.FE0>td:nth-child(3)>input').value = sum - storeManager - guaranteedSalary - secretary + 1;
+      sch.setCalculatedPeopleNumber(sum - storeManager - guaranteedSalary - secretary);
     },
   },
   computed: {
@@ -91,25 +93,33 @@ export default {
     recoveryPerformance() {
       return this.$store.state.operatingForm.performanceSum;
     },
-    scheduleTabIndex() {
-      return this.$store.state.scheduleForm.scheduleTabIndex;
+    // scheduleTabIndex() {
+    //   return this.$store.state.scheduleForm.scheduleTabIndex;
+    // },
+    /* 当固定工资变动的时候，此时的福利费用也应当变化 */
+    isSumFixedSalary() {
+      return this.$store.state.scheduleForm.sumScheduleForm.sumFixedSalary;
     },
   },
   watch: {
     isLoadCompleted() {
       this.commonCalculation(this.welfareFeeTableData, '.welfareFeeTable', 0, 1, 2);
     },
-    scheduleTabIndex(newVal) {
-      if (newVal === 4) {
-        this.setStoreNumOfPeople();
-        this.commonCalculation(this.welfareFeeTableData, '.welfareFeeTable', 0, 1, 2);
-      }
-    },
+    // scheduleTabIndex(newVal) {
+    //   if (newVal === 4) {
+    //     this.setStoreNumOfPeople();
+    //     this.commonCalculation(this.welfareFeeTableData, '.welfareFeeTable', 0, 1, 2);
+    //   }
+    // },
     recoveryPerformance(newVal) {
       this.$nextTick(() => {
         document.querySelector('.welfareFeeTable>tbody>tr.FE0>td:nth-child(2)>input').value = Number(newVal) * 0.03;
         this.commonCalculation(this.welfareFeeTableData, '.welfareFeeTable', 0, 1, 2);
       });
+    },
+    isSumFixedSalary() {
+      this.setStoreNumOfPeople();
+      this.commonCalculation(this.welfareFeeTableData, '.welfareFeeTable', 0, 1, 2);
     },
   },
   updated() {

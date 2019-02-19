@@ -1,6 +1,11 @@
 import { Message } from 'element-ui';
 
 export default {
+  // 此时计算的是:固定工资合计人数-店主管人数-保障薪人数-秘书人数;
+  calculatedPeopleNumber: '',
+  setCalculatedPeopleNumber(val) {
+    this.calculatedPeopleNumber = val;
+  },
   scheduleHandleInputNum(e) {
     if (!/^[0-9]+([.]{1}[0-9]+){0,1}$/.test(e.target.value)) {
       console.log(e);
@@ -31,7 +36,17 @@ export default {
     a.forEach((el) => {
       const currentTrAllInput = document.querySelectorAll(b + '>tbody>tr.' + el.className + '>td>input');
       if (el.IsRead === 0 || el.IsRead === 1) {
-        currentTrAllInput[e].value = Number(currentTrAllInput[c].value) * Number(currentTrAllInput[d].value);
+        switch (el.className) {
+          case 'FD1':
+            currentTrAllInput[e].value = Number(currentTrAllInput[c].value) * Number(currentTrAllInput[d].value) / (this.calculatedPeopleNumber + 1) * this.calculatedPeopleNumber;
+            break;
+          case 'FE0':
+            currentTrAllInput[e].value = Number(currentTrAllInput[c].value) * Number(currentTrAllInput[d].value) / (this.calculatedPeopleNumber + 1);
+            break;
+          default:
+            currentTrAllInput[e].value = Number(currentTrAllInput[c].value) * Number(currentTrAllInput[d].value);
+            break;
+        }
       }
       if (el.IsRead === 2) {
         currentTrAllInput[e - 1].value = Number(currentTrAllInput[d - 1].value);
@@ -40,6 +55,32 @@ export default {
         currentTrAllInput[e].value = Number(currentTrAllInput[d].value);
       }
     });
+  },
+
+  // 下面的计算方法运用到公积金和社保的计算,需单独拎出来计算
+  // 获取社会保险金和公积金的人数;
+  // StatisticsType = 0 代表公共的;
+  // StatisticsType = 1 代表社会保险金;
+  // StatisticsType = 2 代表公积金;
+
+  socialOrProvidentSumCalculation(a, b) {
+    let sum = 0;
+    a.forEach((el) => {
+      switch (b) {
+        case 'social':
+          if (el.StatisticsType === 0 || el.StatisticsType === 1) {
+            sum = Number(document.querySelector('tr.' + el.className + '>td:last-child>input').value) + sum;
+          }
+          break;
+        case 'provident':
+          if (el.StatisticsType === 0 || el.StatisticsType === 2) {
+            sum = Number(document.querySelector('tr.' + el.className + '>td:last-child>input').value) + sum;
+          }
+          break;
+        default:
+      }
+    });
+    return sum;
   },
 
   sumCalculate(className) {
