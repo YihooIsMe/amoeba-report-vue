@@ -38,10 +38,16 @@ module.exports = {
       filename: 'identitySwitch.html',
       title: '权限选择',
     },
+    annualDataSummary: {
+      entry: 'src/pages/annualDataSummary/main.js',
+      template: 'public/index.html',
+      filename: 'annualDataSummary.html',
+      title: '年度汇总表',
+    },
   },
   devServer: {
     port: 85,
-    index: 'monthIndex.html',
+    index: 'annualDataSummary.html',
   },
   // configureWebpack: {
   //   optimization: {

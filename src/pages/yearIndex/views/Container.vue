@@ -4,7 +4,8 @@
       <h2>阿米巴报表核算系统</h2>
       <div class="submitBtn" v-if="submitBtnShow">
         <div class="top-left">
-          {{responseData.UnitName}}{{years}}年年度预定计划
+          <!-- TODO:fixedYear更改回来 -->
+          {{responseData.UnitName}}{{fixedYear}}年年度预定计划
         </div>
         <div class="top-right">
           <el-button type="primary"
@@ -92,7 +93,6 @@
                        @giveSelectedNum="getSigningRatio">
       </ManagementAlert>
     </transition>
-    <input type="hidden" value="0" id="zeroVal">
     <iframe src="" frameborder="0" id="exportIframe" ref="exportIframe"></iframe>
     <el-dialog title="Excel导入" :visible.sync="dialogExcelImport">
       <el-upload
@@ -140,8 +140,10 @@ export default {
       // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 权限小
       IsYM: 0,
       OrganizeId: '',
+      /* TODO:地址要改成正式的环境 */
       exportUrl: 'http://10.100.250.153:99/api/DownLoad',
       years: new Date().getFullYear() + 1,
+      fixedYear: 2019,
       submitBtnShow: false,
       draft: '',
       Pr0139: '',
@@ -362,7 +364,8 @@ export default {
         paramsArgs = {
           userID: this.userID,
           IsYM: this.IsYM,
-          Year: this.years,
+          // Year: this.years,
+          Year: this.fixedYear,
         };
       }
       if (this.fromWhichBtn === '1') {
@@ -386,7 +389,9 @@ export default {
           this.City = this.responseData.City;
           Vue.set(this.pullAllData, 'OrganizeId', this.OrganizeId);
           Vue.set(this.pullAllData, 'City', this.responseData.City);
-          Vue.set(this.pullAllData, 'years', this.years); // 目前years暂无传参；
+          // TODO
+          // Vue.set(this.pullAllData, 'years', this.years); // 目前years暂无传参；
+          Vue.set(this.pullAllData, 'years', this.fixedYear); // 目前years暂无传参；
           Vue.set(this.pullAllData, 'MPID', this.responseData.MPID); // MPID暂无传参；
           Vue.set(this.pullAllData, 'ParentId', this.responseData.ParentId);
           Vue.set(this.pullAllData, 'JobAttribute', this.responseData.JobAttribute);
@@ -483,7 +488,9 @@ export default {
         submitObj.SubjectID = getSubmitData[i].SubjectID;
         submitObj.MPID = this.responseData.MPID;
         submitObj.OrganizeId = this.OrganizeId;
-        submitObj.years = this.years;
+        // TODO:
+        // submitObj.years = this.years;
+        submitObj.years = this.fixedYear;
         if (this.draft === 1) {
           submitObj.ID = this.DraftData[i].ID;
         }
@@ -517,7 +524,9 @@ export default {
       this.firstLoadingCover('正在读取草稿箱数据，请稍后...');
       this.$api.yearLoadingData({
         Pr0139: this.Pr0139,
-        years: this.years,
+        // TODO:
+        // years: this.years,
+        years: this.fixedYear,
       }).then((response) => {
         this.firstLoading.close();
         this.DraftData = JSON.parse(response.data);
@@ -665,8 +674,9 @@ export default {
         this.deleteBtnDisabled = true;
         this.showDraftAndSubmit = false;
         this.inputDisabled = true;
-        // TODO:跨级不能进行审核或者驳回,
-        this.showReviewAndReject = this.ReviewStatus === '1' && Number(this.viewEditorYear) === (new Date().getFullYear() + 1) && this.userID === this.SupervisorID;
+        // TODO:跨级不能进行审核或者驳回,下面的权限判断为正确逻辑
+        // this.showReviewAndReject = this.ReviewStatus === '1' && Number(this.viewEditorYear) === (new Date().getFullYear() + 1) && this.userID === this.SupervisorID;
+        this.showReviewAndReject = true;
       } else {
         this.showReviewAndReject = false;
         this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';

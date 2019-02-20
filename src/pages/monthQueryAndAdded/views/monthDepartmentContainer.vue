@@ -46,7 +46,8 @@
         </ul>
         <div class="button-container">
           <el-button type="primary" @click="auditTableQueryRequest">查询</el-button>
-          <el-button type="success" @click="linkToIndex">新增</el-button>
+          <el-button type="success" @click="linkToIndex(0)">新增</el-button>
+          <el-button type="warning" @click="linkToIndex(1)">新增2月</el-button>
         </div>
       </div>
       <div v-if="queryTableAllData.length>0">
@@ -178,8 +179,16 @@ export default {
       return (false);
     },
 
-    linkToIndex() {
-      window.location = 'monthIndex.html?monthFromWhichBtn=0';
+    linkToIndex(index) {
+      switch (index) {
+        case 0:
+          window.location = 'monthIndex.html?monthFromWhichBtn=0&isFixedMonth=0';
+          break;
+        case 1:
+          window.location = 'monthIndex.html?monthFromWhichBtn=0&isFixedMonth=1';
+          break;
+        default:
+      }
     },
 
     getBusinessOfficeRequest(permission) {
@@ -312,7 +321,6 @@ export default {
         page: this.page,
         rows: this.rows,
         years: this.yearSelected,
-        // years: 'jdsk',
         Month: this.monthSelected,
       };
       for (let i = 3; i >= 0; i -= 1) {

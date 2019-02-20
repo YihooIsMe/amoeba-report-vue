@@ -56,7 +56,7 @@ export default {
   props: ['carStickerData'],
   data() {
     return {
-      seniorDirectorClassName: ['FC12', 'FC2', 'FC2', 'FC3', 'FC4'], // 高级主任的className
+      seniorDirectorClassName: ['FC12', 'FC1', 'FC2', 'FC3', 'FC4', 'FC5'], // 高级主任的className
       currentDisabled: true,
     };
   },
@@ -78,10 +78,8 @@ export default {
       this.seniorDirectorClassName.forEach((el) => {
         fixedSalarySeniorDirector = Number(document.querySelector('.fixedSalaryTable>tbody>tr.' + el + '>td:nth-child(3)>input').value) + fixedSalarySeniorDirector;
       });
-      //  固定工资主任人数
-      const fixedDirector = Number(document.querySelector('.fixedSalaryTable>tbody>tr.FC5>td:nth-child(3)>input').value);
       document.querySelector('.carStickerTable>tbody>tr.FG0>td:nth-child(3)>input').value = fixedSalaryStoreManager;
-      document.querySelector('.carStickerTable>tbody>tr.FG1>td:nth-child(3)>input').value = fixedSalarySeniorDirector + fixedDirector;
+      document.querySelector('.carStickerTable>tbody>tr.FG1>td:nth-child(3)>input').value = fixedSalarySeniorDirector;
     },
   },
   computed: {

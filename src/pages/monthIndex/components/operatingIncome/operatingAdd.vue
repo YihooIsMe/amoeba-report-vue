@@ -237,7 +237,7 @@ export default {
           { required: true, message: '请选择折让中人类型', trigger: 'change' },
         ],
         discountAmount: [
-          { required: true, message: '请输入折让中人金额', trigger: 'blur' },
+          // { required: true, message: '请输入折让中人金额', trigger: 'blur' },
           { type: 'number', message: '折让中人金额必须为数字值', trigger: 'blur' },
         ],
         objectNum: [

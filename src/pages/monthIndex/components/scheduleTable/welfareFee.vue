@@ -80,7 +80,6 @@ export default {
       const secretary = Number(document.querySelector('.fixedSalaryTable>tbody>tr.FC10>td:nth-child(3)>input').value);
       // 计算门店福利金人数
       document.querySelector('.welfareFeeTable>tbody>tr.FE0>td:nth-child(3)>input').value = sum - storeManager - guaranteedSalary - secretary + 1;
-      sch.setCalculatedPeopleNumber(sum - storeManager - guaranteedSalary - secretary);
     },
   },
   computed: {

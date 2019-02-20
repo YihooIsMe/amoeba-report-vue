@@ -3,9 +3,14 @@ import { Message } from 'element-ui';
 export default {
   // 此时计算的是:固定工资合计人数-店主管人数-保障薪人数-秘书人数;
   calculatedPeopleNumber: '',
-  setCalculatedPeopleNumber(val) {
-    this.calculatedPeopleNumber = val;
-  },
+  // 固定工资合计人数
+  fixedSalaryTotalClass: ['FC0', 'FC12', 'FC1', 'FC2', 'FC3', 'FC4', 'FC5', 'FC6', 'FC7', 'FC7', 'FC9', 'FC10'],
+  // 点主管人数
+  PointSupervisorTotalClass: ['FC0'],
+  // 保障薪人数
+  GuaranteedSalaryClass: ['FC9'],
+  // 秘书人数
+  secretaryClass: ['FC10'],
   scheduleHandleInputNum(e) {
     if (!/^[0-9]+([.]{1}[0-9]+){0,1}$/.test(e.target.value)) {
       console.log(e);
@@ -38,21 +43,23 @@ export default {
       if (el.IsRead === 0 || el.IsRead === 1) {
         switch (el.className) {
           case 'FD1':
-            currentTrAllInput[e].value = Number(currentTrAllInput[c].value) * Number(currentTrAllInput[d].value) / (this.calculatedPeopleNumber + 1) * this.calculatedPeopleNumber;
+            currentTrAllInput[e].value = Math.round(Number(currentTrAllInput[c].value) * Number(currentTrAllInput[d].value) / (this.calculatedPeopleNumber + 1) * this.calculatedPeopleNumber);
             break;
           case 'FE0':
-            currentTrAllInput[e].value = Number(currentTrAllInput[c].value) * Number(currentTrAllInput[d].value) / (this.calculatedPeopleNumber + 1);
+            if (Number(currentTrAllInput[d].value) !== 0) {
+              currentTrAllInput[e].value = Math.round(Number(currentTrAllInput[c].value) / Number(currentTrAllInput[d].value));
+            }
             break;
           default:
-            currentTrAllInput[e].value = Number(currentTrAllInput[c].value) * Number(currentTrAllInput[d].value);
+            currentTrAllInput[e].value = Math.round(Number(currentTrAllInput[c].value) * Number(currentTrAllInput[d].value));
             break;
         }
       }
       if (el.IsRead === 2) {
-        currentTrAllInput[e - 1].value = Number(currentTrAllInput[d - 1].value);
+        currentTrAllInput[e - 1].value = Math.round(Number(currentTrAllInput[d - 1].value));
       }
       if (el.IsRead === 3) {
-        currentTrAllInput[e].value = Number(currentTrAllInput[d].value);
+        currentTrAllInput[e].value = Math.round(Number(currentTrAllInput[d].value));
       }
     });
   },
@@ -93,5 +100,16 @@ export default {
       }
     });
     return sum;
+  },
+  peopleCounting(classNameList) {
+    let sum = 0;
+    classNameList.forEach((el) => {
+      sum = Number(document.querySelector('table.fixedSalaryTable tr.' + el + '>td:nth-child(3)>input').value) + sum;
+    });
+    return sum;
+  },
+  setCalculatedPeopleNumber() {
+    // 此时计算的是:固定工资合计人数-店主管人数-保障薪人数-秘书人数;
+    this.calculatedPeopleNumber = this.peopleCounting(this.fixedSalaryTotalClass) - this.peopleCounting(this.PointSupervisorTotalClass) - this.peopleCounting(this.GuaranteedSalaryClass) - this.peopleCounting(this.secretaryClass);
   },
 };

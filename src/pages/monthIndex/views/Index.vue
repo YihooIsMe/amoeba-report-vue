@@ -42,6 +42,7 @@
               ref="mainForm"
               @closeLoading="closeLoading"
               :mainFormTableSource="mainFormTableSource"
+              :historicalMonth="historicalMonth"
               class="mainFormPanel"
               :mainFormInputDisabled="inputDisabled"></MainForm>
           </el-tab-pane>
@@ -65,6 +66,7 @@
               ref="mainForm"
               @closeLoading="closeLoading"
               :mainFormTableSource="mainFormTableSource"
+              :historicalMonth="historicalMonth"
               class="mainFormPanel"
               :mainFormInputDisabled="inputDisabled"></MainForm>
           </el-tab-pane>
@@ -80,6 +82,7 @@
             <MainForm
               :mainFormTableSource="mainFormTableSource"
               :mainFormInputDisabled="inputDisabled"
+              :historicalMonth="historicalMonth"
               @closeLoading="closeLoading"
               class="mainFormPanel"
               ref="mainForm"></MainForm>
@@ -137,6 +140,8 @@ export default {
       SupervisorID: '',
       // monthFromWhichBtn = '0' 代表从新增按钮过来的
       // monthFromWhichBtn = '1' 代表从查看编辑过来的
+      isFixedMonth: '', // 此数据只为了方便测试数据所用
+      historicalMonth: '', // 历史数据月份
     };
   },
   methods: {
@@ -156,6 +161,7 @@ export default {
       this.$store.commit('setSelectTabPane', el.name);
     },
     getBaseInfo() {
+      this.isFixedMonth = news.getQueryVariable('isFixedMonth');
       this.monthUserID = sessionStorage.getItem('userID');
       this.monthFromWhichBtn = news.getQueryVariable('monthFromWhichBtn');
       if (this.monthFromWhichBtn === '1') {
@@ -214,14 +220,19 @@ export default {
     setAllSubmissionData() {
       this.allSubmissionData = {};
       const storeCommonData = this.$store.state.comData.commonData;
-      // this.allSubmissionData.Years = new Date().getFullYear();
       this.allSubmissionData.Years = this.getQueryAddYear();
-      // this.allSubmissionData.Month = new Date().getMonth() + 2;
-      // this.allSubmissionData.Month = 5;
-      // TODO:这里代码需要改回来;
-      // this.allSubmissionData.Month = this.getQueryAddMonth();
-      // TODO:上一行的代码改回来;
-      this.allSubmissionData.Month = 1;
+      // TODO:NOTE3正式环境更改;
+      if (this.monthFromWhichBtn === '0') {
+        if (this.isFixedMonth === '0') {
+          this.allSubmissionData.Month = this.getQueryAddMonth();
+        }
+        if (this.isFixedMonth === '1') {
+          this.allSubmissionData.month = 2;
+        }
+      }
+      if (this.monthFromWhichBtn === '1') {
+        this.allSubmissionData.Month = this.getQueryAddMonth();
+      }
       this.allSubmissionData.MonthlyPlanID = storeCommonData.MPID;
       this.allSubmissionData.CostCode = storeCommonData.Pr0139;
       this.allSubmissionData.OrganizeId = storeCommonData.OrganizeId;
@@ -279,8 +290,7 @@ export default {
             type,
           });
           if (type === 'success') {
-            // window.location.reload();
-            /* TODO:正式环境的时候reload需要，但是现在不需要 */
+            window.location.reload();
           }
         })
         .catch((err) => {
@@ -343,15 +353,21 @@ export default {
     },
     indexFirstLoadingRequest() {
       let paramsArgs;
-      if (this.monthFromWhichBtn === '0') {
+      // TODO:NOTE2正式环境修改;
+      if (this.monthFromWhichBtn === '0' && this.isFixedMonth === '0') {
         paramsArgs = {
           userID: this.monthUserID,
           IsYM: 1,
           Year: new Date().getFullYear(),
-          // TODO:production change
-          // Month: new Date().getMonth() + 2,
-          // TODO: end
-          Month: 1,
+          Month: new Date().getMonth() + 2,
+        };
+      }
+      if (this.monthFromWhichBtn === '0' && this.isFixedMonth === '1') {
+        paramsArgs = {
+          userID: this.monthUserID,
+          IsYM: 1,
+          Year: new Date().getFullYear(),
+          Month: 2,
         };
       }
       if (this.monthFromWhichBtn === '1') {
@@ -362,16 +378,11 @@ export default {
           Month: this.monthViewEditorMonth,
         };
       }
-      // const params = {
-      //   userID: this.userID,
-      //   IsYM: 1,
-      //   Year: new Date().getFullYear(),
-      //   Month: new Date().getMonth() + 1,
-      // };
       console.log(paramsArgs);
       this.$api.yearLoadingData(paramsArgs).then((res) => {
         console.log(JSON.parse(res.data));
         this.responseData = JSON.parse(res.data);
+        this.historicalMonth = this.responseData.LastMonth;
         this.UnitName = this.responseData.UnitName;
         this.ReviewStatus = this.responseData.ReviewStatus;
         this.SupervisorID = this.responseData.SupervisorID;
@@ -441,13 +452,17 @@ export default {
   },
   computed: {
     storeYearMonth() {
+      // TODO:NOTE1正式环境需要修改;
+      if (this.monthFromWhichBtn === '0') {
+        if (this.isFixedMonth === '0') {
+          return this.UnitName + ' ' + new Date().getFullYear() + '年' + (new Date().getMonth() + 2) + '月';
+        }
+        if (this.isFixedMonth === '1') {
+          return this.UnitName + ' ' + new Date().getFullYear() + '年02月';
+        }
+      }
       if (this.monthFromWhichBtn === '1') {
         return this.UnitName + ' ' + this.monthViewEditorYear + '年' + this.monthViewEditorMonth + '月';
-      }
-      // TODO:正是环境改回来;
-      // return this.index + ' ' + new Date().getFullYear() + '年' + (new Date().getMonth() + 2) + '月';
-      if (this.monthFromWhichBtn === '0') {
-        return this.UnitName + ' ' + new Date().getFullYear() + '年01月';
       }
       return '';
     },

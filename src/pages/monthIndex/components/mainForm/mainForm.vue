@@ -6,7 +6,7 @@
         plain
         size="small"
         @click="hideSubjectWithZero"
-      >{{hideSubject}}</el-button>
+      >{{hideZero}}</el-button>
       <div class="red mt10">说明：白色为输入，灰色数据编辑【附表】【营业收入】后自动计算。当月实际，次月财务做账后会有数据。本表单主管审核后数据锁定。</div>
     </div>
     <div v-for="(tableData, index) in tableDataInject"
@@ -17,13 +17,13 @@
           <thead>
           <tr>
             <th><i class="el-icon-arrow-down" @click="toggleSubject($event)" id="toggle-icon">科目</i></th>
-            <th>1月实际</th>
+            <th>{{historicalMonth}}月实际</th>
             <!--TODO:待确定-->
             <!--TODO:新增情况下,若当前月为2月,预定为3月,1月实际出来那就是1月,1月实际不出来就是12月-->
-            <th>3月预定</th>
-            <th>3月实际</th>
+            <th>{{scheduledMonth}}月预定</th>
+            <th>{{scheduledMonth}}月实际</th>
             <th>预定比(%)</th>
-            <th>3月预定实际差异</th>
+            <th>{{scheduledMonth}}月预定实际差异</th>
             <th>MP</th>
             <th>MP比</th>
             <th>累计MP</th>
@@ -64,12 +64,13 @@ import Vue from 'vue';
 import { MessageBox, Message } from 'element-ui';
 import ManagementAlert from '@/components/managementAlert.vue';
 import cal from '@/assets/js/comCalculation';
+import news from '@/assets/js/notification';
 
 Vue.component(MessageBox.name, MessageBox);
 
 export default {
   name: 'mainForm',
-  props: ['mainFormInputDisabled', 'mainFormTableSource'],
+  props: ['mainFormInputDisabled', 'mainFormTableSource', 'historicalMonth'],
   components: { ManagementAlert },
   data() {
     return {
@@ -101,7 +102,11 @@ export default {
       },
       scheduleForm: this.$store.state.scheduleForm.sumScheduleForm,
       districtScheduleSum: this.$store.state.districtSchedule.sumDistrictSchedule,
-      isZero: false,
+      monthFromWhichBtn: '',
+      monthViewEditorYear: '',
+      monthViewEditorMonth: '',
+      isFixedMonth: '',
+      hideZero: '隐藏整行为0的数据',
     };
   },
   methods: {
@@ -131,7 +136,14 @@ export default {
     addSep(event) {
       cal.calAddSep(event);
     },
-
+    getBaseInfo() {
+      this.isFixedMonth = news.getQueryVariable('isFixedMonth');
+      this.monthFromWhichBtn = news.getQueryVariable('monthFromWhichBtn');
+      if (this.monthFromWhichBtn === '1') {
+        this.monthViewEditorYear = news.getQueryVariable('monthViewEditorYear');
+        this.monthViewEditorMonth = news.getQueryVariable('monthViewEditorMonth');
+      }
+    },
     dataInjection(data, draft) {
       data.forEach((el) => {
         const elInput = document.querySelectorAll('table.commonTable tr.' + el.className + ' input');
@@ -157,22 +169,24 @@ export default {
       }
     },
     hideSubjectWithZero() {
-      if (!this.isZero) {
-        this.isZero = true;
+      if (this.hideZero === '隐藏整行为0的数据') {
+        this.hideZero = '显示所有数据';
         this.mainFormTableSource.forEach((item) => {
-          const inputEl = document.querySelector('table.mainForm tr.' + item.className + ' td:nth-child(3) input');
-          console.log(inputEl.value);
-          if (inputEl.value === '' || inputEl.value === '0' || inputEl.value === '0.0' || inputEl.value === '0.00') {
-            // document.querySelector('table.mainForm tr.' + item.className).style.display = 'none';
+          const allInputEl = document.querySelectorAll('table.mainForm tr.' + item.className + ' input');
+          let sumData = 0;
+          for (let i = 1; i < 8; i += 1) {
+            sumData = Number(allInputEl[i].value) + sumData;
+          }
+          if ((sumData === 0 || sumData === 0.0 || sumData === 0.00) && (allInputEl[0].value === '0' || allInputEl[0].value === '0.0' || allInputEl[0].value === '0.00' || allInputEl[0].value === '')) {
             document.querySelector('table.mainForm tr.' + item.className).classList.add('hide-zero');
           }
         });
       } else {
-        this.isZero = false;
-        this.mainFormTableSource.forEach((item) => {
-          document.querySelector('table.mainForm tr.' + item.className).classList.remove('hide-zero');
-        });
-        // window.location.reload();
+        this.hideZero = '隐藏整行为0的数据';
+        const allEl = document.querySelectorAll('table.mainForm tr');
+        for (let i = 0; i < allEl.length; i += 1) {
+          allEl[i].classList.remove('hide-zero');
+        }
       }
     },
     mainFormFirstLoading() {
@@ -202,6 +216,7 @@ export default {
     },
     calculatePredeterminedRatio() {
       this.mainFormTableSource.forEach((el) => {
+        // TODO:为什么cal.allInputEl(el)[1].value === 'NaN'会有这种情况出现； && cal.allInputEl(el)[1].value !== 'NaN'
         if (cal.allInputEl(el)[1].value !== '' && cal.allInputEl(el)[1].value !== '0' && cal.allInputEl(el)[1].value !== '0.0' && cal.allInputEl(el)[1].value !== '0.00') {
           cal.allInputEl(el)[3].value = (cal.remSep(cal.allInputEl(el)[2].value) / cal.remSep(cal.allInputEl(el)[1].value)).toLocaleString();
         }
@@ -214,7 +229,6 @@ export default {
       if (event !== '') {
         currentEl = event.target;
       }
-      console.log(1299);
       cal.whereUse('monthIndex');
       cal.getCity(this.$store.state.comData.commonData.City);
       cal.judgeDepartment(this.$store.state.comData.commonData.Pr0111);
@@ -248,6 +262,8 @@ export default {
     },
     getAllSubmissionData() {
       const draft = this.$store.state.comData.commonData.draft;
+      const Years = news.injectYearAndMonth().Years;
+      const Month = news.injectYearAndMonth().Month;
       this.mainFormTableSource.forEach((item) => {
         const obj = {};
         if (draft === 1) {
@@ -256,11 +272,13 @@ export default {
         obj.MonthlyPlanID = this.$store.state.comData.commonData.MPID;
         obj.OrganizeId = this.$store.state.comData.commonData.OrganizeId;
         obj.CostCode = this.$store.state.comData.commonData.Pr0139;
-        obj.Years = new Date().getFullYear();
+        obj.Years = Years;
+        obj.Month = Month;
+        // obj.Years = new Date().getFullYear();
         // TODO:这里后续改回来;
         // obj.Month = new Date().getMonth() + 2;
         // TODO:上一行代码;
-        obj.Month = 1;
+        // obj.Month = 1;
         obj.SubjectID = item.SubjectID;
         if (item.className === 'F4' || item.className === 'G2' || item.className === 'H1') {
           obj.EstimatedAmount = cal.remPercent(document.querySelector('.mainFormPanel .' + item.className + '>td:nth-child(3)>input').value);
@@ -333,12 +351,6 @@ export default {
     sumWorkingMeal() {
       return this.scheduleForm.sumWorkingMeal;
     },
-    hideSubject() {
-      if (this.isZero) {
-        return '显示所有细项';
-      }
-      return '隐藏月预订为0的数据';
-    },
     estimatedContractMoneySum() {
       return this.$store.state.operatingForm.operatingSum;
     },
@@ -359,6 +371,10 @@ export default {
     },
     sumDistrictWelfareFee() {
       return this.districtScheduleSum.sumWelfareFee;
+    },
+    // 预定月份
+    scheduledMonth() {
+      return news.injectYearAndMonth().Month;
     },
   },
   watch: {
@@ -426,6 +442,7 @@ export default {
     },
   },
   mounted() {
+    this.getBaseInfo();
   },
 };
 </script>

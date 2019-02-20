@@ -54,7 +54,7 @@ import sch from '@/assets/js/scheduleTableCalculation';
 
 export default {
   name: 'variableWage',
-  props: ['variableWageData'],
+  props: ['variableWageData', 'fixedSalaryData'],
   methods: {
     commonCalculation(a, b, c, d, e) {
       sch.calculation(a, b, c, d, e);
@@ -62,6 +62,7 @@ export default {
     },
     scheduleCalculation(a, b, c, d, e, f) {
       sch.scheduleHandleInputNum(f);
+      sch.setCalculatedPeopleNumber();
       this.commonCalculation(a, b, c, d, e);
     },
   },

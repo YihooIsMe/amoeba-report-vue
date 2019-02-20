@@ -5,6 +5,7 @@
     <el-tabs type="border-card">
       <el-tab-pane label="年度身份选择">
         <el-button type="primary" class="index" @click="joinQuery('index', 'year')">瑞虹一店</el-button>
+        <el-button type="primary" class="index" @click="joinQuery('index5', 'year')">四平一店</el-button>
         <el-button type="primary" class="index" @click="joinQuery('index4', 'year')">徐汇东曼一店</el-button>
         <el-button type="primary"  @click="joinQuery('zxb', 'year')">资讯部</el-button>
         <el-button type="primary"  @click="joinQuery('sh', 'year')">上海中介</el-button>
@@ -58,6 +59,9 @@ export default {
           break;
         case index === 'index4':
           sessionStorage.setItem('userID', '{8607C099-4210-44AD-A6AB-21E10DCB564D}');
+          break;
+        case index === 'index5':
+          sessionStorage.setItem('userID', '{7AF6004A-CA2D-4B7A-80ED-BBECDB9493AA}');
           break;
         case index === 'region':
           sessionStorage.setItem('userID', '{E1DD5988-4E98-403A-8BAA-23F0C1A3AE2C}');

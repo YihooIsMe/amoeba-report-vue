@@ -27,6 +27,7 @@
     <div v-show="tabIndex === 3">
       <SelectedVariableWage
         :variableWageData="scheduleTableData[3]"
+        :fixedSalaryData="scheduleTableData[2]"
         @variableWageSum="getComponentSum"
         ref="variableWage"
       ></SelectedVariableWage>
@@ -111,11 +112,13 @@ export default {
     firstLoadingRequest() {
       const OrganizationID = this.$store.state.comData.commonData.OrganizeId;
       const MonthlyPlanID = this.$store.state.comData.commonData.MPID; // TODO:如果是201812月那么就要变成201901月；后续完善；
-      const years = news.getQueryVariable('monthFromWhichBtn') === 1 ? this.getQueryVariable('monthViewEditorYear') : new Date().getFullYear();
+      // const years = news.getQueryVariable('monthFromWhichBtn') === 1 ? this.getQueryVariable('monthViewEditorYear') : new Date().getFullYear();
+      const years = news.injectYearAndMonth().Years;
+      let month = news.injectYearAndMonth().Month;
       // TODO:测试阶段,以1月为测试数据;
       // let month = news.getQueryVariable('monthFromWhichBtn') === 1 ? this.getQueryVariable('monthViewEditorMonth') : new Date().getMonth() + 2;
       // TODO:后续改回来
-      let month = news.getQueryVariable('monthFromWhichBtn') === 1 ? this.getQueryVariable('monthViewEditorMonth') : 1;
+      // let month = news.getQueryVariable('monthFromWhichBtn') === 1 ? this.getQueryVariable('monthViewEditorMonth') : 1;
       if (month < 10) {
         month = '0' + month;
       }
@@ -154,6 +157,8 @@ export default {
       });
     },
     getScheduleSubmissionData() {
+      const Years = news.injectYearAndMonth().Years;
+      const Month = news.injectYearAndMonth().Month;
       this.scheduleSubmitData.ScheduleSubject.forEach((item) => {
         const sObj = {};
         // 如果没有草稿,也就是第一次提交的时候,不用传ID;
@@ -163,11 +168,8 @@ export default {
         sObj.MonthlyPlanID = this.$store.state.comData.commonData.MPID;
         sObj.OrganizeId = this.$store.state.comData.commonData.OrganizeId;
         sObj.CostCode = this.$store.state.comData.commonData.Pr0139;
-        sObj.Years = new Date().getFullYear();
-        // TODO:后续改回来
-        // sObj.Month = new Date().getMonth() + 2;
-        // TODO:上一行代码改回来;
-        sObj.Month = 1;
+        sObj.Years = Years;
+        sObj.Month = Month;
         sObj.City = this.$store.state.comData.commonData.City;
         sObj.ScheduleSubjectID = item.ScheduleSubjectID;
         if (item.className.indexOf('A') !== -1) {

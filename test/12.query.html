@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>
+<script>
+
+   function getQueryVariable(variable) {
+        const query = window.location.search.substring(1);
+        const vars = query.split('&');
+        for (let i = 0; i < vars.length; i += 1) {
+            const pair = vars[i].split('=');
+            if (pair[0] === variable) {
+                return pair[1];
+            }
+        }
+        return false;
+    }
+    console.log(typeof getQueryVariable('monthFromWhichBtn'));
+    console.log(getQueryVariable('monthFromWhichBtn'));
+</script>
