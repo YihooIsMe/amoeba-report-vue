@@ -190,6 +190,7 @@ export default {
         })
         .catch((errMsg) => {
           console.log(errMsg);
+          this.firstLoading.close();
           news.ElErrorMessage(errMsg);
         });
     },
@@ -248,6 +249,9 @@ export default {
   },
   mounted() {
     this.annualSummaryFirstRequest();
+    console.log(process.env.NODE_ENV);
+    console.log(process.env.VUE_APP_SECRET);
+    console.log(process.env);
   },
 };
 

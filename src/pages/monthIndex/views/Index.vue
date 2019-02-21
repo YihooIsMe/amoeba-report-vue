@@ -218,86 +218,89 @@ export default {
       return '';
     },
     setAllSubmissionData() {
-      this.allSubmissionData = {};
-      const storeCommonData = this.$store.state.comData.commonData;
-      this.allSubmissionData.Years = this.getQueryAddYear();
-      // TODO:NOTE3正式环境更改;
-      if (this.monthFromWhichBtn === '0') {
-        if (this.isFixedMonth === '0') {
+      MessageBox.confirm('此操作后所有的数据将锁定，无法再修改，若数据只是暂时保存，请点击保存草稿！', '提示', {
+        confirmButtonText: '继续提交数据',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        this.allSubmissionData = {};
+        const storeCommonData = this.$store.state.comData.commonData;
+        this.allSubmissionData.Years = this.getQueryAddYear();
+        // TODO:NOTE3正式环境更改;
+        if (this.monthFromWhichBtn === '0') {
+          if (this.isFixedMonth === '0') {
+            this.allSubmissionData.Month = this.getQueryAddMonth();
+          }
+          if (this.isFixedMonth === '1') {
+            this.allSubmissionData.month = 2;
+          }
+        }
+        if (this.monthFromWhichBtn === '1') {
           this.allSubmissionData.Month = this.getQueryAddMonth();
         }
-        if (this.isFixedMonth === '1') {
-          this.allSubmissionData.month = 2;
+        this.allSubmissionData.MonthlyPlanID = storeCommonData.MPID;
+        this.allSubmissionData.CostCode = storeCommonData.Pr0139;
+        this.allSubmissionData.OrganizeId = storeCommonData.OrganizeId;
+        this.allSubmissionData.ParentId = storeCommonData.ParentId;
+        this.allSubmissionData.Company = storeCommonData.Company;
+        this.allSubmissionData.District = storeCommonData.District;
+        this.allSubmissionData.department = storeCommonData.DepartmentAttribute;
+        this.allSubmissionData.City = storeCommonData.City;
+        this.allSubmissionData.Review = this.review;// 保存草稿为0；数据提交为1；
+        this.allSubmissionData.CreateByUser = storeCommonData.userID;
+        this.allSubmissionData.F_RealName = storeCommonData.F_RealName;
+        this.allSubmissionData.OrganizeName = storeCommonData.UnitName;
+        this.allSubmissionData.Pr0111 = storeCommonData.Pr0111;
+        this.allSubmissionData.Amoeba_MonthlyPlandetails = this.$store.state.mainForm.mainFormData;
+        const AdjustmentList = this.$store.state.districtSchedule.signingFeeAdjustmentData.concat(this.$store.state.districtSchedule.businessAdjustmentData);
+        switch (true) {
+          case this.identity === 'store':
+            this.allSubmissionData.MonthSigningGoldYD = this.$store.state.operatingForm.operatingFormData;
+            this.allSubmissionData.MonthPerformanceYD = this.$store.state.operatingForm.performanceFormData;
+            this.allSubmissionData.Amoeba_MonthlySSDetail = this.$store.state.scheduleForm.scheduleFormData;
+            break;
+          case this.identity === 'district':
+            this.allSubmissionData.Amoeba_MonthAreaFBDetail = this.$store.state.districtSchedule.MonthAreaFB;
+            this.allSubmissionData.Amoeba_AdjustmentList = AdjustmentList;
+            break;
+          default:
+            this.allSubmissionData.MonthSigningGoldYD = [];
+            this.allSubmissionData.MonthPerformanceYD = [];
+            this.allSubmissionData.Amoeba_MonthlySSDetail = [];
+            break;
         }
-      }
-      if (this.monthFromWhichBtn === '1') {
-        this.allSubmissionData.Month = this.getQueryAddMonth();
-      }
-      this.allSubmissionData.MonthlyPlanID = storeCommonData.MPID;
-      this.allSubmissionData.CostCode = storeCommonData.Pr0139;
-      this.allSubmissionData.OrganizeId = storeCommonData.OrganizeId;
-      this.allSubmissionData.ParentId = storeCommonData.ParentId;
-      this.allSubmissionData.Company = storeCommonData.Company;
-      this.allSubmissionData.District = storeCommonData.District;
-      this.allSubmissionData.department = storeCommonData.DepartmentAttribute;
-      this.allSubmissionData.City = storeCommonData.City;
-      this.allSubmissionData.Review = this.review;// 保存草稿为0；数据提交为1；
-      this.allSubmissionData.CreateByUser = storeCommonData.userID;
-      this.allSubmissionData.F_RealName = storeCommonData.F_RealName;
-      this.allSubmissionData.OrganizeName = storeCommonData.UnitName;
-      this.allSubmissionData.Pr0111 = storeCommonData.Pr0111;
-      this.allSubmissionData.Amoeba_MonthlyPlandetails = this.$store.state.mainForm.mainFormData;
-      const AdjustmentList = this.$store.state.districtSchedule.signingFeeAdjustmentData.concat(this.$store.state.districtSchedule.businessAdjustmentData);
-      switch (true) {
-        case this.identity === 'store':
-          this.allSubmissionData.MonthSigningGoldYD = this.$store.state.operatingForm.operatingFormData;
-          this.allSubmissionData.MonthPerformanceYD = this.$store.state.operatingForm.performanceFormData;
-          this.allSubmissionData.Amoeba_MonthlySSDetail = this.$store.state.scheduleForm.scheduleFormData;
-          break;
-        case this.identity === 'district':
-          this.allSubmissionData.Amoeba_MonthAreaFBDetail = this.$store.state.districtSchedule.MonthAreaFB;
-          this.allSubmissionData.Amoeba_AdjustmentList = AdjustmentList;
-          break;
-        default:
-          this.allSubmissionData.MonthSigningGoldYD = [];
-          this.allSubmissionData.MonthPerformanceYD = [];
-          this.allSubmissionData.Amoeba_MonthlySSDetail = [];
-          break;
-      }
-      // if (this.isBehind) {
-      //   this.allSubmissionData.MonthSigningGoldYD = [];
-      //   this.allSubmissionData.MonthPerformanceYD = [];
-      //   this.allSubmissionData.Amoeba_MonthlySSDetail = [];
-      // } else {
-      //   this.allSubmissionData.MonthSigningGoldYD = this.$store.state.operatingForm.operatingFormData;
-      //   this.allSubmissionData.MonthPerformanceYD = this.$store.state.operatingForm.performanceFormData;
-      //   this.allSubmissionData.Amoeba_MonthlySSDetail = this.$store.state.scheduleForm.scheduleFormData;
-      // }
-      this.allSubmissionData.Amoeba_TaskForm = this.$store.state.missionList.missionListData;
-      console.log(this.allSubmissionData);
-      this.$api.monthMainAndScheduleSub(this.allSubmissionData)
-        .then((res) => {
-          console.log(res);
-          this.loadingCover.close();
-          let type;
-          if (res.data.isSuccess === false) {
-            type = 'error';
-          } else {
-            type = 'success';
-          }
-          Message({
-            message: res.data.errorMessage,
-            type,
+        this.allSubmissionData.Amoeba_TaskForm = this.$store.state.missionList.missionListData;
+        console.log(this.allSubmissionData);
+        this.$api.monthMainAndScheduleSub(this.allSubmissionData)
+          .then((res) => {
+            console.log(res);
+            this.loadingCover.close();
+            let type;
+            if (res.data.isSuccess === false) {
+              type = 'error';
+            } else {
+              type = 'success';
+            }
+            Message({
+              message: res.data.errorMessage,
+              type,
+            });
+            if (type === 'success') {
+              window.location.reload();
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            this.loadingCover.close();
+            news.ElErrorMessage(err);
           });
-          if (type === 'success') {
-            window.location.reload();
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          this.loadingCover.close();
-          news.ElErrorMessage(err);
+      }).catch(() => {
+        Message({
+          message: '已经取消数据提交',
+          type: 'info',
         });
+        this.loadingCover.close();
+      });
     },
     monthJudgeInputDisabled() {
       // ReviewStatus = '' 未填写
@@ -307,19 +310,24 @@ export default {
       // ReviewStatus = '3' 驳回
       // monthFromWhichBtn = '0' 表示是新增的；
       // monthFromWhichBtn = '１' 表示是查询编辑的；
+      // showReviewAndReject审核或者驳回权限；
+      // reachMatchAdjustment达成匹配调整;
+      // showDraftAndSubmit保存草稿或者提交;
+      // inputDisabled输入框是否可输入;
       if (this.monthFromWhichBtn === '0') {
         this.showReviewAndReject = false;
-        this.reachMatchAdjustment = this.ReviewStatus === '2' && (new Date().getMonth() + 1) === (Number(this.monthViewEditorMonth) + 1);
+        // note:若当前月为2月,做3月的预定,那么只有等到3月本人才能执行达成匹配调整的这个操作;
+        this.reachMatchAdjustment = false;
         this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
         this.inputDisabled = this.ReviewStatus === '1' || this.ReviewStatus === '2';
-      } else if (this.monthUserID !== this.monthCreateByUser) {
+      } else if (this.monthFromWhichBtn === '1' && this.monthUserID !== this.monthCreateByUser) {
         this.reachMatchAdjustment = false;
         this.showDraftAndSubmit = false;
         this.inputDisabled = true;
-        // TODO:跨级不能审核,跨月份也不能审核
-        this.showReviewAndReject = this.ReviewStatus === '1' && Number(this.monthViewEditorMonth) === (new Date().getMonth() + 1) && this.monthUserID === this.SupervisorID;
-      } else {
-        this.reachMatchAdjustment = this.ReviewStatus === '2' && (new Date().getMonth() + 1) === (Number(this.monthViewEditorMonth) + 1);
+        // note:跨级不能审核,只有直属上级才能审核,跨月份也不能审核，若2月份做3月份的数据，那么就只有2月份能审核；
+        this.showReviewAndReject = this.ReviewStatus === '1' && Number(this.monthViewEditorMonth) === (new Date().getMonth() + 2) && this.monthUserID === this.SupervisorID;
+      } else if (this.monthFromWhichBtn === '1' && this.monthUserID === this.monthCreateByUser) {
+        this.reachMatchAdjustment = this.ReviewStatus === '2' && (new Date().getMonth() + 1) === Number(this.monthViewEditorMonth);
         this.showReviewAndReject = false;
         this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
         this.inputDisabled = !(this.ReviewStatus !== '1' && this.ReviewStatus !== '2');

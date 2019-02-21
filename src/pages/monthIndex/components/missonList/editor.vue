@@ -66,6 +66,7 @@ export default {
         editorImgZoom.clickEvent();
       };
       this.editor.create();
+      this.editor.$textElem.attr('contenteditable', !this.$store.state.comData.inputDisabled);
     },
     init() {
       Vue.set(this.editorData, 'weekIndex', this.weekIndex);
@@ -93,7 +94,6 @@ export default {
       this.$store.commit(useMethod, this.editorData);
     },
   },
-
   watch: {
     editorContent(newVal) {
       this.editor.txt.html(newVal);

@@ -40,7 +40,7 @@
               <el-row :gutter="20">
                 <el-col :span="11">
                   <el-form-item prop="objectNum" class="objectNum" ref="objectNumForm">
-                    <el-input v-model="performanceAddForm.objectNum" ref="objectNum" placeholder="请输入物件编号" size="small" :clearable="true"></el-input>
+                    <el-input v-model="performanceAddForm.objectNum" @blur="getQueryInfo" ref="objectNum" placeholder="请输入物件编号" size="small" :clearable="true"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="2">
@@ -66,7 +66,7 @@
               <el-row :gutter="20">
                 <el-col :span="11">
                   <el-form-item prop="searchCustomer" class="searchCustomer" ref="searchCustomerForm">
-                    <el-input v-model.number="performanceAddForm.searchCustomer" ref="searchCustomer" placeholder="请输入客户手机号" size="small" :clearable="true"></el-input>
+                    <el-input v-model.number="performanceAddForm.searchCustomer" @blur="getQueryInfo" ref="searchCustomer" placeholder="请输入客户手机号" size="small" :clearable="true"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="2">
@@ -102,7 +102,7 @@
           <el-form-item label="达成可能性" prop="completedPercent">
             <el-row :gutter="20">
               <el-col :span="11">
-                <el-input size="small" v-model.number="performanceAddForm.completedPercent"></el-input>
+                <el-input size="small" v-model="performanceAddForm.completedPercent"></el-input>
               </el-col>
               <el-col :span="11">%</el-col>
             </el-row>
@@ -136,6 +136,14 @@ export default {
   name: 'performanceAdd',
   props: ['getStoreBrokerData', 'dialogPerformance'],
   data() {
+    const checkCompletedPercent = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入达成可能性'));
+      } else if (!/^(\d{1,2}|100)$/.test(value)) {
+        callback(new Error('请输入0-100的整数'));
+      }
+      callback();
+    };
     return {
       copyDialogPerformance: this.dialogPerformance,
       performanceAddForm: {
@@ -170,8 +178,9 @@ export default {
           { required: true, message: '请选择目前情况', trigger: 'change' },
         ],
         completedPercent: [
-          { required: true, message: '请输入达成可能性', trigger: 'blur' },
-          { type: 'number', message: '请输入数字', trigger: 'blur' },
+          { validator: checkCompletedPercent, trigger: 'blur' },
+          // { required: true, message: '请输入达成可能性', trigger: 'blur' },
+          // { type: 'number', message: '请输入数字', trigger: 'blur' },
         ],
         recoveryPerformance: [
           { required: true, message: '请输入本月收回业绩', trigger: 'blur' },
@@ -246,12 +255,12 @@ export default {
       }
       if (this.performanceAddForm.customerType === 1 && this.performanceAddForm.objectNum === '') {
         this.messageInfo('请输入物件编号');
-        this.$refs.objectNum.focus();
+        // this.$refs.objectNum.focus();
         return false;
       }
       if (this.performanceAddForm.customerType === 2 && this.performanceAddForm.searchCustomer === '') {
         this.messageInfo('请输入客户手机号');
-        this.$refs.searchCustomer.focus();
+        // this.$refs.searchCustomer.focus();
         return false;
       }
       const queryParams = {};
@@ -267,7 +276,9 @@ export default {
           if (this.performanceAddForm.customerType === 1) {
             if (JSON.parse(res.data).length === 0) {
               this.messageInfo('查询无结果,请确认物件编号正确');
-              this.$refs.objectNum.focus();
+              // this.$refs.objectNum.focus();
+              this.performanceAddForm.customer = '';
+              this.performanceAddForm.caseName = '';
               return false;
             }
             this.performanceAddForm.customer = JSON.parse(res.data)[0].Name + ' ' + JSON.parse(res.data)[0].PhoneNumber;
@@ -276,7 +287,8 @@ export default {
           } else {
             if (JSON.parse(res.data).length === 0) {
               this.messageInfo('查询无结果,请确认手机号码正确');
-              this.$refs.searchCustomer.focus();
+              // this.$refs.searchCustomer.focus();
+              this.performanceAddForm.searchCustomerName = '';
               return false;
             }
             this.performanceAddForm.searchCustomerName = JSON.parse(res.data)[0].Name;

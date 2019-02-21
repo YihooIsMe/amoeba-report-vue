@@ -39,7 +39,7 @@
             <el-row :gutter="20">
               <el-col :span="11">
                 <el-form-item prop="objectNum" class="objectNum" ref="objectNumForm">
-                  <el-input ref="objectNum" v-model="AddForm.objectNum" placeholder="请输入物件编号" size="small" :clearable="true"></el-input>
+                  <el-input ref="objectNum" v-model="AddForm.objectNum" @blur="getQueryInfo" placeholder="请输入物件编号" size="small" :clearable="true"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="2">
@@ -65,7 +65,7 @@
             <el-row :gutter="20">
               <el-col :span="11">
                 <el-form-item prop="searchCustomer" class="searchCustomer" ref="searchCustomerForm">
-                  <el-input v-model.number="AddForm.searchCustomer" ref="searchCustomer" placeholder="请输入客户手机号" size="small" :clearable="true"></el-input>
+                  <el-input v-model.number="AddForm.searchCustomer" ref="searchCustomer" @blur="getQueryInfo" placeholder="请输入客户手机号" size="small" :clearable="true"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="2">
@@ -131,7 +131,7 @@
         <el-form-item label="折让中人签约金" prop="discountAmount">
           <el-row :gutter="20">
             <el-col :span="11">
-              <el-input v-model.number="AddForm.discountAmount" size="small" :clearable="true"></el-input>
+              <el-input v-model="AddForm.discountAmount" size="small" :clearable="true"></el-input>
             </el-col>
             <el-col :span="11">元</el-col>
           </el-row>
@@ -180,6 +180,24 @@ export default {
     getStoreBrokerData: Array,
   },
   data() {
+    const checkDiscountAmount = (rule, value, callback) => {
+      if (value !== '') {
+        console.log(value);
+        if (!/^[0-9]+([.]{1}[0-9]+){0,1}$/.test(value)) {
+          callback(new Error('请输入有效数字'));
+        }
+        callback();
+      }
+      callback();
+    };
+    const checkCompletedPercent = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入达成可能性'));
+      } else if (!/^(\d{1,2}|100)$/.test(value)) {
+        callback(new Error('请输入0-100的整数'));
+      }
+      callback();
+    };
     return {
       copyDialogTableVisible: this.dialogTableVisible,
       brokerLabel: '',
@@ -227,18 +245,20 @@ export default {
           { required: true, message: '请选择目前情况', trigger: 'change' },
         ],
         completedPercent: [
-          { required: true, message: '请输入达成可能性', trigger: 'blur' },
+          // { required: true, message: '请输入达成可能性', trigger: 'blur' },
+          { validator: checkCompletedPercent, trigger: 'blur' },
         ],
         fullCommissionSign: [
           { required: true, message: '请输入全佣签约金', trigger: 'blur' },
           { type: 'number', message: '全佣签约金必须为数字值', trigger: 'blur' },
         ],
         discountType: [
-          { required: true, message: '请选择折让中人类型', trigger: 'change' },
+          // { required: true, message: '请选择折让中人类型', trigger: 'change' },
         ],
         discountAmount: [
           // { required: true, message: '请输入折让中人金额', trigger: 'blur' },
-          { type: 'number', message: '折让中人金额必须为数字值', trigger: 'blur' },
+          // { type: 'number', message: '折让中人金额必须为数字值', trigger: 'blur' },
+          { validator: checkDiscountAmount, trigger: 'blur' },
         ],
         objectNum: [
           { required: true, message: '请输入物件编号' },
@@ -308,12 +328,12 @@ export default {
       }
       if (this.AddForm.customerType === 1 && this.AddForm.objectNum === '') {
         this.messageInfo('请输入物件编号');
-        this.$refs.objectNum.focus();
+        // this.$refs.objectNum.focus();
         return false;
       }
       if (this.AddForm.customerType === 2 && this.AddForm.searchCustomer === '') {
         this.messageInfo('请输入客户手机号');
-        this.$refs.searchCustomer.focus();
+        // this.$refs.searchCustomer.focus();
         return false;
       }
       const queryParams = {};
@@ -331,7 +351,9 @@ export default {
           if (this.AddForm.customerType === 1) {
             if (JSON.parse(res.data).length === 0) {
               this.messageInfo('查询无结果,请确认物件编号正确');
-              this.$refs.objectNum.focus();
+              // this.$refs.objectNum.focus();
+              this.AddForm.customer = '';
+              this.AddForm.caseName = '';
               return false;
             }
             this.AddForm.customer = JSON.parse(res.data)[0].Name + ' ' + JSON.parse(res.data)[0].PhoneNumber;
@@ -340,7 +362,8 @@ export default {
           } else {
             if (JSON.parse(res.data).length === 0) {
               this.messageInfo('查询无结果,请确认手机号码正确');
-              this.$refs.searchCustomer.focus();
+              // this.$refs.searchCustomer.focus();
+              this.AddForm.searchCustomerName = '';
               return false;
             }
             this.AddForm.searchCustomerName = JSON.parse(res.data)[0].Name;

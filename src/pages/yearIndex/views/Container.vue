@@ -125,7 +125,6 @@ import ManagementAlert from '@/components/managementAlert.vue';
 import api from '@/http/index';
 import news from '@/assets/js/notification';
 
-
 Vue.component(MessageBox.name, MessageBox);
 Vue.use(api);
 
@@ -274,12 +273,6 @@ export default {
       return '';
     },
     oneToTwelveSum() {
-      // const currentLine = document.querySelectorAll('table.KMTable1.commonTable tr.' + className + ' input');
-      // let baseNum = 0;
-      // for (let i = 1; i < 13; i += 1) {
-      //   baseNum = cal.remSep(currentLine[i].value) + baseNum;
-      // }
-      // currentLine[13].value = baseNum.toLocaleString();
       // 全部行自动计算;
       this.tableSource.forEach((el) => {
         const currentLine = document.querySelectorAll('table.KMTable1.commonTable tr.' + el.className + ' input');
@@ -323,7 +316,8 @@ export default {
             } else {
               console.log('数据已经提交成功!');
             }
-            this.readFromDraftBoxRequest();
+            window.location.reload();
+            // this.readFromDraftBoxRequest();
           }
         },
       });
@@ -342,7 +336,6 @@ export default {
 
           if ((sumData === 0 || sumData === 0.0 || sumData === 0.00) && (allInputEl[0].value === '0' || allInputEl[0].value === '0.0' || allInputEl[0].value === '0.00' || allInputEl[0].value === '')) {
             this.currentLineZero = true;
-            // document.querySelector('table.KMTable1.commonTable tr.' + item.className).style.display = 'none';
             document.querySelector('table.KMTable1.commonTable tr.' + item.className).classList.add('hide-zero');
           } else {
             this.currentLineZero = false;
@@ -364,6 +357,7 @@ export default {
         paramsArgs = {
           userID: this.userID,
           IsYM: this.IsYM,
+          // TODO:year改成活的;
           // Year: this.years,
           Year: this.fixedYear,
         };
@@ -389,7 +383,7 @@ export default {
           this.City = this.responseData.City;
           Vue.set(this.pullAllData, 'OrganizeId', this.OrganizeId);
           Vue.set(this.pullAllData, 'City', this.responseData.City);
-          // TODO
+          // TODO:note正式环境改回来;
           // Vue.set(this.pullAllData, 'years', this.years); // 目前years暂无传参；
           Vue.set(this.pullAllData, 'years', this.fixedYear); // 目前years暂无传参；
           Vue.set(this.pullAllData, 'MPID', this.responseData.MPID); // MPID暂无传参；
@@ -427,11 +421,6 @@ export default {
           news.ElErrorMessage(error);
         });
     },
-
-    setDZValue(index) {
-      Vue.set(this.pullAllData, 'DZ', index); // 0表示保存草稿  1表示提交审核
-    },
-
     beforeUpload(file) {
       console.log('beforeUpload');
       console.log(file.type);
@@ -479,52 +468,65 @@ export default {
     },
 
     dataSubmissionRequest(DZIndex) {
-      this.firstLoadingCover('数据正在提交中，请稍后');
-      const getSubmitData = this.tableSource;// LIST下的86个数据
-      const submitListsArr = [];
-      console.log(getSubmitData);
-      for (let i = 0; i < getSubmitData.length; i += 1) {
-        const submitObj = {};
-        submitObj.SubjectID = getSubmitData[i].SubjectID;
-        submitObj.MPID = this.responseData.MPID;
-        submitObj.OrganizeId = this.OrganizeId;
-        // TODO:
-        // submitObj.years = this.years;
-        submitObj.years = this.fixedYear;
-        if (this.draft === 1) {
-          submitObj.ID = this.DraftData[i].ID;
-        }
-        const dataClassName = getSubmitData[i].className;
-        const allInput = document.querySelectorAll('table.commonTable .' + dataClassName + ' input');
-        for (let j = 0; j < 13; j += 1) {
-          if (dataClassName === 'F4' || dataClassName === 'G2' || dataClassName === 'H1') {
-            submitObj[this.months[j]] = cal.remPercent(allInput[(j + 1)].value);
-          } else {
-            submitObj[this.months[j]] = cal.remSep(allInput[(j + 1)].value);
+      MessageBox.confirm('此操作后所有的数据将锁定，无法再修改，若数据只是暂时保存，请点击保存草稿！', '提示', {
+        confirmButtonText: '继续提交数据',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        this.firstLoadingCover('数据正在提交中，请稍后');
+        const getSubmitData = this.tableSource;// LIST下的86个数据
+        const submitListsArr = [];
+        console.log(getSubmitData);
+        for (let i = 0; i < getSubmitData.length; i += 1) {
+          const submitObj = {};
+          submitObj.SubjectID = getSubmitData[i].SubjectID;
+          submitObj.MPID = this.responseData.MPID;
+          submitObj.OrganizeId = this.OrganizeId;
+          // TODO:正式环境更改为下面的;
+          // submitObj.years = this.years;
+          submitObj.years = this.fixedYear;
+          if (this.draft === 1) {
+            submitObj.ID = this.DraftData[i].ID;
           }
+          const dataClassName = getSubmitData[i].className;
+          const allInput = document.querySelectorAll('table.commonTable .' + dataClassName + ' input');
+          for (let j = 0; j < 13; j += 1) {
+            if (dataClassName === 'F4' || dataClassName === 'G2' || dataClassName === 'H1') {
+              submitObj[this.months[j]] = cal.remPercent(allInput[(j + 1)].value);
+            } else {
+              submitObj[this.months[j]] = cal.remSep(allInput[(j + 1)].value);
+            }
+          }
+          submitListsArr.push(submitObj);
         }
-        submitListsArr.push(submitObj);
-      }
-      this.setDZValue(DZIndex);
-      Vue.set(this.pullAllData, 'list', submitListsArr);
-      console.log(this.pullAllData);
-      this.$api.yearDataSubmission(this.pullAllData)
-        .then((res) => {
-          console.log(res);
-          this.firstLoading.close();
-          this.getAfterSubmissionAlertInfo(res.data.errorMessage, DZIndex);
-        })
-        .catch((error) => {
-          console.log(error);
-          news.ElErrorMessage(error);
+        Vue.set(this.pullAllData, 'DZ', DZIndex); // 0表示保存草稿  1表示提交审核
+        Vue.set(this.pullAllData, 'list', submitListsArr);
+        console.log(this.pullAllData);
+        this.$api.yearDataSubmission(this.pullAllData)
+          .then((res) => {
+            console.log(res);
+            this.firstLoading.close();
+            this.getAfterSubmissionAlertInfo(res.data.errorMessage, DZIndex);
+          })
+          .catch((error) => {
+            console.log(error);
+            this.firstLoading.close();
+            news.ElErrorMessage(error);
+          });
+      }).catch(() => {
+        Message({
+          message: '已经取消数据提交',
+          type: 'info',
         });
+        this.loadingCover.close();
+      });
     },
 
     readFromDraftBoxRequest() {
       this.firstLoadingCover('正在读取草稿箱数据，请稍后...');
       this.$api.yearLoadingData({
         Pr0139: this.Pr0139,
-        // TODO:
+        // TODO: note目前年度是写死的2019年;
         // years: this.years,
         years: this.fixedYear,
       }).then((response) => {
@@ -670,14 +672,14 @@ export default {
         this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
         this.deleteBtnDisabled = this.ReviewStatus === '1' || this.ReviewStatus === '2';
         this.inputDisabled = this.ReviewStatus === '1' || this.ReviewStatus === '2';
-      } else if (this.userID !== this.CreateByUser) {
+      } else if (this.fromWhichBtn === '1' && this.userID !== this.CreateByUser) {
         this.deleteBtnDisabled = true;
         this.showDraftAndSubmit = false;
         this.inputDisabled = true;
         // TODO:跨级不能进行审核或者驳回,下面的权限判断为正确逻辑
         // this.showReviewAndReject = this.ReviewStatus === '1' && Number(this.viewEditorYear) === (new Date().getFullYear() + 1) && this.userID === this.SupervisorID;
         this.showReviewAndReject = true;
-      } else {
+      } else if (this.fromWhichBtn === '1' && this.userID === this.CreateByUser) {
         this.showReviewAndReject = false;
         this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
         this.deleteBtnDisabled = !(this.ReviewStatus !== '1' && this.ReviewStatus !== '2');

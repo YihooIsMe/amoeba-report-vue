@@ -27,6 +27,7 @@
             <th>MP</th>
             <th>MP比</th>
             <th>累计MP</th>
+            <th>累计实际</th>
           </tr>
           </thead>
           <tbody>
@@ -34,7 +35,7 @@
               :key="i"
               :class="getForClassName(item.className)">
             <td>{{item.Name}}</td>
-            <td v-for="n in 8" :key="n">
+            <td v-for="n in 9" :key="n">
               <input type="text"
                      :readonly="isReadOnly(item, n)"
                      v-on="n === 2 && item.ReadOnly === 0 && !isReadOnly(item, n) ? { focus : ($event) => inputFocus(item.className, $event), blur : ($event) => addSep($event)} : {}"
@@ -154,6 +155,7 @@ export default {
         elInput[5].value = el.AnnualReservation;
         elInput[6].value = el.MPRatio;
         elInput[7].value = el.GrandTotalMP;
+        elInput[8].value = el.GrandTotalActualMP;
         if (draft === 1) {
           elInput[1].value = el.MonthData;
         }
@@ -174,7 +176,7 @@ export default {
         this.mainFormTableSource.forEach((item) => {
           const allInputEl = document.querySelectorAll('table.mainForm tr.' + item.className + ' input');
           let sumData = 0;
-          for (let i = 1; i < 8; i += 1) {
+          for (let i = 1; i < 9; i += 1) {
             sumData = Number(allInputEl[i].value) + sumData;
           }
           if ((sumData === 0 || sumData === 0.0 || sumData === 0.00) && (allInputEl[0].value === '0' || allInputEl[0].value === '0.0' || allInputEl[0].value === '0.00' || allInputEl[0].value === '')) {
@@ -453,7 +455,7 @@ export default {
       display: none;
     }
     th{
-      width: 11.1%;
+      width: 10% !important;
     }
     td{
       height:30px;
