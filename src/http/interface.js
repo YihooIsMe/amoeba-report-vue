@@ -6,6 +6,12 @@ export const yearClearAllData = params => axios({
   params,
 });
 
+export const searchUserID = params => axios({
+  url: '/User',
+  method: 'get',
+  params,
+});
+
 export const monthScheduleTable = params => axios({
   url: '/MonthlyPlan',
   method: 'get',
@@ -74,7 +80,14 @@ export const monthMissionList = params => axios({
   params,
 });
 
+export const summaryData = params => axios({
+  url: '/SummaryData',
+  method: 'POST',
+  data: params,
+});
+
 export default {
+  searchUserID,
   monthScheduleTable,
   queryAndAddedUserInfo,
   queryAndAddedQuery,
@@ -87,4 +100,5 @@ export default {
   monthQueryAndAdd,
   monthTransactionCase,
   monthMissionList,
+  summaryData,
 };

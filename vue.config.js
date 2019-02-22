@@ -44,10 +44,16 @@ module.exports = {
       filename: 'annualDataSummary.html',
       title: '年度汇总表',
     },
+    monthlyDataSummary: {
+      entry: 'src/pages/monthlyDataSummary/main.js',
+      template: 'public/index.html',
+      filename: 'monthlyDataSummary.html',
+      title: '月度汇总表',
+    },
   },
   devServer: {
     port: 85,
-    index: 'annualDataSummary.html',
+    index: 'monthlyDataSummary.html',
   },
   // configureWebpack: {
   //   optimization: {

@@ -3,11 +3,11 @@
       <table class="ownershipFeeTable" v-if="ownershipFeeData.length>0" border="1">
         <thead>
         <tr>
-          <th>类别</th>
-          <th>计价</th>
+          <th style="width: 151px;">类别</th>
+          <th style="width: 151px;">计价</th>
           <th>说明</th>
-          <th>人数/件数/人次/金额</th>
-          <th>总计</th>
+          <th style="width: 151px;">人数/件数/人次/金额</th>
+          <th style="width: 151px;">总计</th>
         </tr>
         </thead>
         <tbody>
@@ -78,5 +78,21 @@ export default {
 </script>
 
 <style lang="less" scoped>
-
+  div.ownershipFee{
+    padding:0 10%;
+  }
+  table.ownershipFeeTable{
+    width: 100%;
+  }
+table.ownershipFeeTable tr{
+  td{
+    width: 16.2% !important;
+    * {
+      width: 100%;
+    }
+  }
+  td:nth-child(3){
+    width: 35% !important;
+  }
+}
 </style>

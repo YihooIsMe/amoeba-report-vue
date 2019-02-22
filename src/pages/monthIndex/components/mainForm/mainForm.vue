@@ -457,6 +457,9 @@ export default {
     th{
       width: 10% !important;
     }
+    th:nth-child(6){
+      width: 11% !important;
+    }
     td{
       height:30px;
       input{

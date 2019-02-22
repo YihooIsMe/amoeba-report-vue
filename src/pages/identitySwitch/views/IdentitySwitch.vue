@@ -2,6 +2,31 @@
 <div class="switch-btn">
   <h2>请选择进入的身份</h2>
   <div class="container-btn">
+    <div>
+      <el-input v-model="jobNumber" placeholder="请输入工号" clearable></el-input>
+      <el-button type="primary" @click="searchUserID" @keyup.enter="searchUserID">查询</el-button>
+    </div>
+    <el-dialog title="身份信息" :visible.sync="dialogFormVisible">
+      <el-form :model="form">
+        <el-form-item label="姓名" :label-width="formLabelWidth">
+          <el-input v-model="form.name" autocomplete="off" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="部门" :label-width="formLabelWidth">
+          <el-input v-model="form.department" autocomplete="off" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="选择查询界面" :label-width="formLabelWidth">
+          <el-radio-group v-model="form.selectQuery">
+            <el-radio label="year">年度查询页</el-radio>
+            <el-radio label="month">月度查询页</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-input type="hidden" v-model="form.userID" autocomplete="off" disabled></el-input>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
     <el-tabs type="border-card">
       <el-tab-pane label="年度身份选择">
         <el-button type="primary" class="index" @click="joinQuery('index', 'year')">瑞虹一店</el-button>
@@ -43,9 +68,40 @@
 </template>
 
 <script>
+import Vue from 'vue';
+import api from '@/http/index';
+
+Vue.use(api);
 export default {
   name: 'IdentitySwitch',
+  data() {
+    return {
+      jobNumber: '',
+      dialogFormVisible: false,
+      form: {
+        name: '',
+        department: '',
+        selectQuery: '',
+        userID: '',
+      },
+      formLabelWidth: '250px',
+    };
+  },
   methods: {
+    searchUserID() {
+      console.log({no: this.jobNumber});
+      this.$api.searchUserID({ no: this.jobNumber })
+        .then((res) => {
+          console.log(res.data);
+          this.form.name = res.data.F_RealName;
+          this.form.department = res.data.F_FullName;
+          this.form.userID = res.data.F_Id;
+          this.dialogFormVisible = true;
+        })
+        .catch((errMsg) => {
+          console.log(errMsg);
+        });
+    },
     joinQuery(index, page) {
       switch (true) {
         case index === 'index':
@@ -118,5 +174,7 @@ export default {
       margin-top: 20px;
     }
   }
-
+  .container-btn .el-input{
+    width: 200px;
+  }
 </style>

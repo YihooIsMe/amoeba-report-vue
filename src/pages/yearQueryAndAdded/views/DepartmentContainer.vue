@@ -62,7 +62,7 @@
             <td>{{item.F_RealName}}</td>
             <td>{{item.Status}}</td>
             <td>{{item.Time}}</td>
-            <td><el-button type="primary" icon="el-icon-edit" size="small" :disabled="item.MPID == '0'?true:false" @click="viewEditor(item)">查看编辑</el-button></td>
+            <td><el-button type="primary" icon="el-icon-edit" size="small" :disabled="(item.MPID == '0'?true:false) && (item.IsAccountingTable !== 0)" @click="viewEditor(item)">查看编辑</el-button></td>
           </tr>
           </tbody>
         </table>
@@ -354,7 +354,15 @@ export default {
     },
 
     viewEditor(item) {
-      window.location = 'yearIndex.html?CreateByUser=' + encodeURI(item.CreateByUser) + '&fromWhichBtn=1&viewEditorYear=' + this.copyYearSelected;
+      if (item.IsAccountingTable === 0) {
+        debugger;
+        console.log(item.F_FullName);
+        sessionStorage.setItem('yearStoreName', item.F_FullName);
+        debugger;
+        window.location = 'annualDataSummary.html?OrganizeId=' + this.OrganizeId + '&years=' + this.copyYearSelected + '&userID=' + this.userID;
+      } else if (item.IsAccountingTable === 1) {
+        window.location = 'yearIndex.html?CreateByUser=' + encodeURI(item.CreateByUser) + '&fromWhichBtn=1&viewEditorYear=' + this.copyYearSelected;
+      }
     },
     setLoading() {
       this.loading = this.$loading({

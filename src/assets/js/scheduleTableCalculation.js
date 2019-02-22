@@ -12,7 +12,7 @@ export default {
   // 秘书人数
   secretaryClass: ['FC10'],
   scheduleHandleInputNum(e) {
-    if (!/^[0-9]+([.]{1}[0-9]+){0,1}$/.test(e.target.value)) {
+    if (!/^[0-9]+([.]{1}[0-9]+){0,1}$/.test(e.target.value) && e.target.value !== '') {
       console.log(e);
       console.log(e.target);
       Message({

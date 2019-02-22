@@ -71,7 +71,7 @@
             <td>{{item.F_RealName}}</td>
             <td>{{item.Status}}</td>
             <td>{{item.Time}}</td>
-            <td><el-button type="primary" icon="el-icon-edit" size="small" :disabled="item.MPID == '0'?true:false" @click="viewEditor(item)">查看编辑</el-button></td>
+            <td><el-button type="primary" icon="el-icon-edit" size="small" :disabled="(item.MPID == '0'?true:false) && (item.IsAccountingTable !== 0)" @click="viewEditor(item)">查看编辑</el-button></td>
           </tr>
           </tbody>
         </table>
@@ -377,7 +377,12 @@ export default {
     },
 
     viewEditor(item) {
-      window.location = 'monthIndex.html?monthCreateByUser=' + encodeURI(item.CreateByUser) + '&monthFromWhichBtn=1&monthViewEditorYear=' + this.copyYearSelected + '&monthViewEditorMonth=' + this.copyMonthSelected;
+      if (item.IsAccountingTable === 0) {
+        sessionStorage.setItem('Name', item.F_FullName);
+        window.location = 'monthlyDataSummary.html?company=' + this.Pr0132 + '&OrganizeId=' + this.OrganizeId + '&years=' + this.copyYearSelected + '&Month=' + this.copyMonthSelected;
+      } else if (item.IsAccountingTable === 1) {
+        window.location = 'monthIndex.html?monthCreateByUser=' + encodeURI(item.CreateByUser) + '&monthFromWhichBtn=1&monthViewEditorYear=' + this.copyYearSelected + '&monthViewEditorMonth=' + this.copyMonthSelected;
+      }
     },
   },
   created() {

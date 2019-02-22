@@ -31,6 +31,7 @@
             v-if="showReviewAndReject"
             @click="reviewAndReject(3)"
           >驳回</el-button>
+          <!--TODO:月度导出-->
           <el-button type="warning" v-if="$store.state.comData.commonData.draft === 1">Excel导出</el-button>
           <el-button type="warning" plain @click="clearData" v-if="true">清空数据</el-button>
         </div>
@@ -325,7 +326,9 @@ export default {
         this.showDraftAndSubmit = false;
         this.inputDisabled = true;
         // note:跨级不能审核,只有直属上级才能审核,跨月份也不能审核，若2月份做3月份的数据，那么就只有2月份能审核；
-        this.showReviewAndReject = this.ReviewStatus === '1' && Number(this.monthViewEditorMonth) === (new Date().getMonth() + 2) && this.monthUserID === this.SupervisorID;
+        // TODO:权限先放开,后面正式环境更改
+        // this.showReviewAndReject = this.ReviewStatus === '1' && Number(this.monthViewEditorMonth) === (new Date().getMonth() + 2) && this.monthUserID === this.SupervisorID;
+        this.showReviewAndReject = true;
       } else if (this.monthFromWhichBtn === '1' && this.monthUserID === this.monthCreateByUser) {
         this.reachMatchAdjustment = this.ReviewStatus === '2' && (new Date().getMonth() + 1) === Number(this.monthViewEditorMonth);
         this.showReviewAndReject = false;

@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class="year-summary-container">
-      <h2>阿米巴年度汇总表</h2>
+      <h2>阿米巴{{years}}年年度汇总表</h2>
       <div class="submitBtn" v-if="submitBtnShow">
         <div class="top-left">
           <!-- TODO:fixedYear更改回来 -->
-          {{responseData.UnitName}}{{fixedYear}}年年度预定计划
+          {{`${yearStoreName}${years}年年度汇总表`}}
         </div>
         <div class="top-right">
           <el-button type="success"
@@ -41,7 +41,6 @@
             <thead>
             <tr>
               <th><i class="el-icon-arrow-down" @click="toggleSubject($event)" id="toggle-icon">科目</i></th>
-              <th>历史数据</th>
               <th  v-for="n in 12" :key="n">{{n}}月</th>
               <th>合计</th>
             </tr>
@@ -51,7 +50,6 @@
                  :key="i"
                  :class="getForClassName(item.className)">
               <td>{{item.Name}}</td>
-              <td><input type="text" readonly :value="item.Amount"></td>
               <td v-for="n in 12"
                   :key="n">
                 <!--执行顺序 onChange > onBlur-->
@@ -61,13 +59,14 @@
                 >
               </td>
               <td>
-                <input type="text" readonly>
+                <input type="text" readonly :value="item.Total">
               </td>
             </tr>
             </tbody>
           </table>
         </div>
       </div>
+      <div v-if="this.tableSource === null">暂无数据</div>
     </div>
     <iframe src="" frameborder="0" id="exportIframe" ref="exportIframe"></iframe>
   </div>
@@ -93,7 +92,7 @@ export default {
       IsYM: 0,
       /* TODO:地址要改成正式的环境 */
       exportUrl: 'http://10.100.250.153:99/api/DownLoad',
-      years: new Date().getFullYear() + 1,
+      years: '',
       fixedYear: 2019,
       submitBtnShow: false,
       draft: '',
@@ -128,7 +127,7 @@ export default {
         SigningRatio11: 0.1,
         SigningRatio12: 0.1,
       },
-      months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Total'],
+      months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
       pullAllData: {},
       isInputValEmpty: true,
       DraftData: [],
@@ -165,8 +164,11 @@ export default {
     toggleSubject(event) {
       cal.toggleSubject(event);
     },
+    dataSubmissionRequest() {
+
+    },
     firstLoadingCover(text) {
-      this.firstLoading = this.$loading({
+      return this.$loading({
         lock: true,
         text,
         spinner: 'el-icon-loading',
@@ -176,21 +178,31 @@ export default {
     },
     annualSummaryFirstRequest() {
       this.firstLoadingCover('Loading');
-      this.$api.queryAndAddedQuery({ OrganizeId: this.OrganizeId, years: 2019 })
+      this.OrganizeId = decodeURI(news.getQueryVariable('OrganizeId'));
+      this.years = decodeURI(news.getQueryVariable('years'));
+      this.userID = decodeURI(news.getQueryVariable('userID'));
+      const params = {
+        OrganizeId: this.OrganizeId,
+        years: this.years,
+      };
+      console.log(params);
+      this.$api.queryAndAddedQuery(params)
         .then((msg) => {
           console.log(JSON.parse(msg.data));
           this.responseData = JSON.parse(msg.data);
           this.tableSource = JSON.parse(msg.data).list;
-          this.injectTableSourceData();
-          for (let i = 0; i < 8; i += 1) {
-            this.tableDataInject.push(this['tableDataSource' + i]);
+          if (this.tableSource !== null) {
+            this.injectTableSourceData();
+            for (let i = 0; i < 8; i += 1) {
+              this.tableDataInject.push(this['tableDataSource' + i]);
+            }
+            this.submitBtnShow = true;
           }
-          this.submitBtnShow = true;
-          this.firstLoading.close();
+          this.firstLoadingCover('Loading').close();
         })
         .catch((errMsg) => {
           console.log(errMsg);
-          this.firstLoading.close();
+          this.firstLoadingCover('Loading').close();
           news.ElErrorMessage(errMsg);
         });
     },
@@ -204,7 +216,6 @@ export default {
         ReadOnly: data.ReadOnly,
         Name: data.Name,
         className: data.className,
-        Amount: data.Amount,
         January: data.January,
         February: data.February,
         March: data.March,
@@ -247,10 +258,14 @@ export default {
       this.$refs.exportIframe.setAttribute('src', this.exportUrl + '?MPID=' + this.ReviewOrRejectMPID);
     },
   },
+  computed: {
+    yearStoreName() {
+      return sessionStorage.getItem('yearStoreName').slice(0, -3);
+    },
+  },
   mounted() {
     this.annualSummaryFirstRequest();
     console.log(process.env.NODE_ENV);
-    console.log(process.env.VUE_APP_SECRET);
     console.log(process.env);
   },
 };
