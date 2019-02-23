@@ -47,7 +47,7 @@
         <div class="button-container">
           <el-button type="primary" @click="auditTableQueryRequest">查询</el-button>
           <el-button type="success" @click="linkToIndex(0)">新增</el-button>
-          <el-button type="warning" @click="linkToIndex(1)">新增2月</el-button>
+          <el-button type="warning" @click="linkToIndex(1)" v-if="showTestBtn">新增2月</el-button>
         </div>
       </div>
       <div v-if="queryTableAllData.length>0">
@@ -102,8 +102,6 @@ export default {
   name: 'QueryContainer',
   data() {
     return {
-      // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}',
-      // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}',
       userID: '',
       organizationListData: [],
       threeAreas: [
@@ -136,6 +134,7 @@ export default {
       fourthSelectStoreSelected: '',
       loadingCover: '',
       totalCount: '',
+      showTestBtn: true,
     };
   },
   methods: {
@@ -386,11 +385,14 @@ export default {
     },
   },
   created() {
-    // TODO:以下方便本地使用
-    this.userID = sessionStorage.getItem('userID');
-    // TODO:以下是测试环境使用;
-    // this.userID = decodeURI(this.getQueryVariable('UserID'));
-    sessionStorage.setItem('userID', this.userID);
+    this.showTestBtn = process.env.VUE_APP_NAME !== 'production';
+    if (process.env.NODE_ENV === 'development') {
+      this.userID = sessionStorage.getItem('userID');
+    }
+    if (process.env.NODE_ENV === 'production') {
+      this.userID = decodeURI(this.getQueryVariable('UserID'));
+      sessionStorage.setItem('userID', this.userID);
+    }
     this.getUserRequest(0);
   },
 };

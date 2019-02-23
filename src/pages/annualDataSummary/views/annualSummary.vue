@@ -8,19 +8,19 @@
           {{`${yearStoreName}${years}年年度汇总表`}}
         </div>
         <div class="top-right">
-          <el-button type="success"
-                     @click="dataSubmissionRequest(1)"
+          <el-button type="primary"
+                     @click="dataSubmissionAndReview('1')"
                      v-if="showDraftAndSubmit"
           >数据提交</el-button>
           <el-button type="success"
                      icon="el-icon-success"
                      v-if="showReviewAndReject"
-                     @click="ReviewOrReject(2)"
+                     @click="dataSubmissionAndReview('2')"
           >审核通过</el-button>
           <el-button type="danger"
                      icon="el-icon-error"
                      v-if="showReviewAndReject"
-                     @click="ReviewOrReject(3)"
+                     @click="dataSubmissionAndReview('3')"
           >驳回</el-button>
           <el-button type="warning"
                      @click="hideSubjectWithZero"
@@ -55,11 +55,11 @@
                 <!--执行顺序 onChange > onBlur-->
                 <input type="text"
                        :readonly="true"
-                       :value="item[months[n-1]]"
+                       :value="addSep(item, n)"
                 >
               </td>
               <td>
-                <input type="text" readonly :value="item.Total">
+                <input type="text" readonly :value="totalAddSep(item)">
               </td>
             </tr>
             </tbody>
@@ -74,6 +74,7 @@
 
 <script>
 import Vue from 'vue';
+import { Message } from 'element-ui';
 import api from '@/http/index';
 import cal from '@/assets/js/comCalculation';
 import news from '@/assets/js/notification';
@@ -162,27 +163,43 @@ export default {
     getForClassName(el) {
       return el;
     },
+    addSep(item, n) {
+      if (item.className === 'F4' || item.className === 'G2') {
+        return cal.addPercent(item[this.months[n - 1]]);
+      }
+      return (item[this.months[n - 1]]).toLocaleString();
+    },
+    totalAddSep(el) {
+      if (el.className === 'F4' || el.className === 'G2') {
+        return cal.addPercent(el.Total);
+      }
+      return (el.Total).toLocaleString();
+    },
     toggleSubject(event) {
       cal.toggleSubject(event);
     },
-    dataSubmissionRequest() {
-      console.log({
-        userID: this.userID,
-        SupervisorID: this.SupervisorID,
-        years: this.years,
-        Review: '1',
-      });
+    dataSubmissionAndReview(index) {
+      if (index === '1') {
+        this.firstLoadingCover('数据正在提交，请稍候...');
+      }
       this.$api.summaryData({
         userID: this.userID,
         SupervisorID: this.SupervisorID,
         years: this.years,
-        Review: '1',
+        Review: index,
       })
         .then((res) => {
           console.log(res);
+          this.firstLoadingCover().close();
+          Message({
+            message: res.data.message,
+            type: res.data.result === true ? 'success' : 'error',
+          });
         })
         .catch((errMsg) => {
           console.log(errMsg);
+          this.firstLoadingCover().close();
+          news.ElErrorMessage(errMsg);
         });
     },
     firstLoadingCover(text) {
@@ -218,6 +235,7 @@ export default {
             }
             this.submitBtnShow = true;
           }
+          this.authorityJudgment();
           this.firstLoadingCover('Loading').close();
         })
         .catch((errMsg) => {
@@ -276,6 +294,11 @@ export default {
     exportAllData() {
       console.log(this.exportUrl + '?MPID=' + this.ReviewOrRejectMPID);
       this.$refs.exportIframe.setAttribute('src', this.exportUrl + '?MPID=' + this.ReviewOrRejectMPID);
+    },
+    authorityJudgment() {
+      console.log(this.userID);
+      console.log(this.SupervisorID);
+      this.showReviewAndReject = this.userID === this.SupervisorID;
     },
   },
   computed: {

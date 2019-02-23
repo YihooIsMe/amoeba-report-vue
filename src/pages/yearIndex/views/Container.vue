@@ -5,7 +5,7 @@
       <div class="submitBtn" v-if="submitBtnShow">
         <div class="top-left">
           <!-- TODO:fixedYear更改回来 -->
-          {{responseData.UnitName}}{{fixedYear}}年年度预定计划
+          {{responseData.UnitName}}{{years}}年年度预定计划
         </div>
         <div class="top-right">
           <el-button type="primary"
@@ -141,8 +141,7 @@ export default {
       OrganizeId: '',
       /* TODO:地址要改成正式的环境 */
       exportUrl: 'http://10.100.250.153:99/api/DownLoad',
-      years: new Date().getFullYear() + 1,
-      fixedYear: 2019,
+      years: '',
       submitBtnShow: false,
       draft: '',
       Pr0139: '',
@@ -357,9 +356,7 @@ export default {
         paramsArgs = {
           userID: this.userID,
           IsYM: this.IsYM,
-          // TODO:year改成活的;
-          // Year: this.years,
-          Year: this.fixedYear,
+          Year: this.years,
         };
       }
       if (this.fromWhichBtn === '1') {
@@ -383,9 +380,7 @@ export default {
           this.City = this.responseData.City;
           Vue.set(this.pullAllData, 'OrganizeId', this.OrganizeId);
           Vue.set(this.pullAllData, 'City', this.responseData.City);
-          // TODO:note正式环境改回来;
-          // Vue.set(this.pullAllData, 'years', this.years); // 目前years暂无传参；
-          Vue.set(this.pullAllData, 'years', this.fixedYear); // 目前years暂无传参；
+          Vue.set(this.pullAllData, 'years', this.years); // 目前years暂无传参；
           Vue.set(this.pullAllData, 'MPID', this.responseData.MPID); // MPID暂无传参；
           Vue.set(this.pullAllData, 'ParentId', this.responseData.ParentId);
           Vue.set(this.pullAllData, 'JobAttribute', this.responseData.JobAttribute);
@@ -482,9 +477,7 @@ export default {
           submitObj.SubjectID = getSubmitData[i].SubjectID;
           submitObj.MPID = this.responseData.MPID;
           submitObj.OrganizeId = this.OrganizeId;
-          // TODO:正式环境更改为下面的;
-          // submitObj.years = this.years;
-          submitObj.years = this.fixedYear;
+          submitObj.years = this.years;
           if (this.draft === 1) {
             submitObj.ID = this.DraftData[i].ID;
           }
@@ -526,9 +519,7 @@ export default {
       this.firstLoadingCover('正在读取草稿箱数据，请稍后...');
       this.$api.yearLoadingData({
         Pr0139: this.Pr0139,
-        // TODO: note目前年度是写死的2019年;
-        // years: this.years,
-        years: this.fixedYear,
+        years: this.years,
       }).then((response) => {
         this.firstLoading.close();
         this.DraftData = JSON.parse(response.data);
@@ -677,8 +668,11 @@ export default {
         this.showDraftAndSubmit = false;
         this.inputDisabled = true;
         // TODO:跨级不能进行审核或者驳回,下面的权限判断为正确逻辑
-        // this.showReviewAndReject = this.ReviewStatus === '1' && Number(this.viewEditorYear) === (new Date().getFullYear() + 1) && this.userID === this.SupervisorID;
-        this.showReviewAndReject = true;
+        if (process.env.VUE_APP_ISOPENAUTHORITY === '0') {
+          this.showReviewAndReject = this.ReviewStatus === '1' && Number(this.viewEditorYear) === (new Date().getFullYear() + 1) && this.userID === this.SupervisorID;
+        } else if (process.env.VUE_APP_ISOPENAUTHORITY === '1') {
+          this.showReviewAndReject = this.ReviewStatus === '1' && this.userID === this.SupervisorID;
+        }
       } else if (this.fromWhichBtn === '1' && this.userID === this.CreateByUser) {
         this.showReviewAndReject = false;
         this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
@@ -758,6 +752,13 @@ export default {
     },
   },
   mounted() {
+    console.log(process.env);
+    if (process.env.VUE_APP_ISFIXEDYEAR === '1') {
+      this.years = Number(process.env.VUE_APP_SCHEDULEDYEAR);
+    }
+    if (process.env.VUE_APP_ISFIXEDYEAR === '0') {
+      this.years = new Date().getFullYear() + 1;
+    }
     this.getBaseInfo();
     this.firstLoadingRequest();
   },

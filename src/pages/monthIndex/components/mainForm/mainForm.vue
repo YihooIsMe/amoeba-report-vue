@@ -276,11 +276,6 @@ export default {
         obj.CostCode = this.$store.state.comData.commonData.Pr0139;
         obj.Years = Years;
         obj.Month = Month;
-        // obj.Years = new Date().getFullYear();
-        // TODO:这里后续改回来;
-        // obj.Month = new Date().getMonth() + 2;
-        // TODO:上一行代码;
-        // obj.Month = 1;
         obj.SubjectID = item.SubjectID;
         if (item.className === 'F4' || item.className === 'G2' || item.className === 'H1') {
           obj.EstimatedAmount = cal.remPercent(document.querySelector('.mainFormPanel .' + item.className + '>td:nth-child(3)>input').value);
@@ -393,10 +388,6 @@ export default {
     },
     sumOwnershipFee(newVal) {
       this.watchCommonEvent('F2', newVal);
-      // document.querySelector('.mainForm>tbody>tr.F2>td:nth-child(3)>input').value = Number(newVal).toLocaleString();
-      // cal.whereUse('monthIndex');// TODO:每次进行计算需要进行是否为年度或者月度计算；因为服务管理费ABCDE等级不一样；
-      // this.currentMonthAutomaticCalculation(3);
-      // this.calculatePredeterminedRatio();// TODO:联动收入，归属费用年度计划表中并没有，月度计划新增的，确定计算逻辑的时候要特别注意；
     },
     sumCarSticker(newVal) {
       this.watchCommonEvent('B10', newVal);

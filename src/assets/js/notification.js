@@ -25,8 +25,8 @@ export default {
     // 从新增按钮过来的；
     if (this.getQueryVariable('monthFromWhichBtn') === '0') {
       if (this.getQueryVariable('isFixedMonth') === '1') {
-        Years = 2019;
-        Month = 2;
+        Years = new Date().getFullYear();
+        Month = process.env.VUE_APP_SCHEDULEDMONTH;
       }
       if (this.getQueryVariable('isFixedMonth') === '0') {
         if (new Date().getMonth() + 2 === 13) {

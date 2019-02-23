@@ -6,14 +6,20 @@
         {{`${storeName}${years}年${Month}月汇总表`}}
       </div>
       <div class="top-right">
+        <el-button type="primary"
+                   @click="dataSubmissionAndReview('1')"
+                   v-if="true"
+        >数据提交</el-button>
         <el-button
           type="success"
           icon="el-icon-success"
+          @click="dataSubmissionAndReview('2')"
           v-if="true"
         >审核通过</el-button>
         <el-button
           type="danger"
           icon="el-icon-error"
+          @click="dataSubmissionAndReview('3')"
           v-if="true"
         >驳回</el-button>
         <el-button
@@ -62,7 +68,7 @@
 
 <script>
 import Vue from 'vue';
-import { MessageBox, Loading } from 'element-ui';
+import { MessageBox, Loading, Message } from 'element-ui';
 import cal from '@/assets/js/comCalculation';
 import news from '@/assets/js/notification';
 import api from '@/http/index';
@@ -75,6 +81,7 @@ export default {
   name: 'monthlySummary',
   data() {
     return {
+      userID: '',
       // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 瑞虹一店;
       // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 咨询部;
       tableDataSource0: [], // Type类型为0的数据;
@@ -123,7 +130,7 @@ export default {
     },
     loadingCover() {
       return this.$loading({
-        lock: true,
+        lock: false,
         text: 'Loading....',
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)',
@@ -131,6 +138,7 @@ export default {
     },
     monthlySummaryRequest() {
       console.log(this);
+      this.userID = sessionStorage.getItem('userID');
       this.years = decodeURI(news.getQueryVariable('years'));
       this.Month = decodeURI(news.getQueryVariable('Month'));
       const params = {
@@ -141,6 +149,7 @@ export default {
       };
       console.log(params);
       this.$api.queryAndAddedQuery(params).then((response) => {
+        this.SupervisorID = JSON.parse(response.data).SupervisorID;
         console.log(JSON.parse(response.data));
         this.tableDataList = JSON.parse(response.data).list;
         if (this.tableDataList !== null) {
@@ -172,6 +181,29 @@ export default {
         GrandTotalActualMP: data.GrandTotalActualMP,
       };
       tableDataSource.push(obj);
+    },
+    dataSubmissionAndReview(index) {
+      this.loadingCover();
+      this.$api.summaryData({
+        userID: this.userID,
+        SupervisorID: this.SupervisorID,
+        years: this.years,
+        month: this.Month,
+        Review: index,
+      })
+        .then((res) => {
+          console.log(res);
+          this.loadingCover().close();
+          Message({
+            message: res.data.message,
+            type: res.data.result === true ? 'success' : 'error',
+          });
+        })
+        .catch((errMsg) => {
+          console.log(errMsg);
+          this.loadingCover().close();
+          news.ElErrorMessage(errMsg);
+        });
     },
   },
   computed: {

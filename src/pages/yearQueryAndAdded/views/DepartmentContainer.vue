@@ -355,10 +355,8 @@ export default {
 
     viewEditor(item) {
       if (item.IsAccountingTable === 0) {
-        debugger;
         console.log(item.F_FullName);
         sessionStorage.setItem('yearStoreName', item.F_FullName);
-        debugger;
         window.location = 'annualDataSummary.html?OrganizeId=' + this.OrganizeId + '&years=' + this.copyYearSelected + '&userID=' + this.userID;
       } else if (item.IsAccountingTable === 1) {
         window.location = 'yearIndex.html?CreateByUser=' + encodeURI(item.CreateByUser) + '&fromWhichBtn=1&viewEditorYear=' + this.copyYearSelected;
@@ -373,12 +371,14 @@ export default {
     },
   },
   created() {
+    console.log(process.env);
     this.setLoading();
-    // TODO:本地环境需要改回来
-    this.userID = sessionStorage.getItem('userID');
-    // TOdo:下面的是测试环境;
-    // this.userID = decodeURI(this.getQueryVariable('UserID'));
-    sessionStorage.setItem('userID', this.userID);
+    if (process.env.NODE_ENV === 'development') {
+      this.userID = sessionStorage.getItem('userID');
+    } else if (process.env.NODE_ENV === 'production') {
+      this.userID = decodeURI(this.getQueryVariable('UserID'));
+      sessionStorage.setItem('userID', this.userID);
+    }
     this.getUserRequest(0);
   },
 };

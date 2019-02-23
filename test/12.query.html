@@ -16,6 +16,7 @@
 </html>
 <script>
 
+    const num = 12000;
    function getQueryVariable(variable) {
         const query = window.location.search.substring(1);
         const vars = query.split('&');
@@ -29,4 +30,5 @@
     }
     console.log(typeof getQueryVariable('monthFromWhichBtn'));
     console.log(getQueryVariable('monthFromWhichBtn'));
+    console.log(num.toLocaleString());
 </script>

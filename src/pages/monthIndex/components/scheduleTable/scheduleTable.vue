@@ -111,14 +111,9 @@ export default {
     },
     firstLoadingRequest() {
       const OrganizationID = this.$store.state.comData.commonData.OrganizeId;
-      const MonthlyPlanID = this.$store.state.comData.commonData.MPID; // TODO:如果是201812月那么就要变成201901月；后续完善；
-      // const years = news.getQueryVariable('monthFromWhichBtn') === 1 ? this.getQueryVariable('monthViewEditorYear') : new Date().getFullYear();
+      const MonthlyPlanID = this.$store.state.comData.commonData.MPID;
       const years = news.injectYearAndMonth().Years;
       let month = news.injectYearAndMonth().Month;
-      // TODO:测试阶段,以1月为测试数据;
-      // let month = news.getQueryVariable('monthFromWhichBtn') === 1 ? this.getQueryVariable('monthViewEditorMonth') : new Date().getMonth() + 2;
-      // TODO:后续改回来
-      // let month = news.getQueryVariable('monthFromWhichBtn') === 1 ? this.getQueryVariable('monthViewEditorMonth') : 1;
       if (month < 10) {
         month = '0' + month;
       }

@@ -102,14 +102,9 @@ export default {
     },
     districtRequest() {
       const OrganizationID = this.$store.state.comData.commonData.OrganizeId;
-      const MonthlyPlanID = this.$store.state.comData.commonData.MPID; // TODO:如果是201812月那么就要变成201901月；后续完善；
-      // const years = news.getQueryVariable('monthFromWhichBtn') === 1 ? this.getQueryVariable('monthViewEditorYear') : new Date().getFullYear();
+      const MonthlyPlanID = this.$store.state.comData.commonData.MPID;
       const years = news.injectYearAndMonth().Years;
       let month = news.injectYearAndMonth().Month;
-      // TODO:测试阶段,以1月为测试数据;
-      // let month = news.getQueryVariable('monthFromWhichBtn') === 1 ? this.getQueryVariable('monthViewEditorMonth') : new Date().getMonth() + 2;
-      // TODO:后续改回来
-      // let month = news.getQueryVariable('monthFromWhichBtn') === 1 ? this.getQueryVariable('monthViewEditorMonth') : 1;
       if (month < 10) {
         month = '0' + month;
       }
@@ -154,15 +149,6 @@ export default {
         });
         this.withholdingBonus = JSON.parse(res.data).MonthAreaYTJJ;
         this.sumWithholdingBonus = Math.round(this.sumWithholdingBonusArr.reduce((total, num) => total + num, 0));
-        // TODO:?
-        // this.scheduleSubmitData = JSON.parse(res.data);
-        // JSON.parse(res.data).ScheduleSubject.forEach((item) => {
-        //   this.scheduleTableData[item.Type].push(item);
-        // });
-        // this.$store.commit('setOperatingForm', JSON.parse(res.data).MonthSigningGoldYD);
-        // this.$store.commit('setPerformanceForm', JSON.parse(res.data).MonthPerformanceYD);
-        // this.$store.commit('setMissionListData', JSON.parse(res.data).Amoeba_TaskForm);
-        // this.$store.commit('setCompleted', true);
       }).catch((err) => {
         console.log(err);
         news.ElErrorMessage(err);

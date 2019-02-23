@@ -233,7 +233,7 @@ export default {
             this.allSubmissionData.Month = this.getQueryAddMonth();
           }
           if (this.isFixedMonth === '1') {
-            this.allSubmissionData.month = 2;
+            this.allSubmissionData.month = process.env.VUE_APP_SCHEDULEDMONTH;
           }
         }
         if (this.monthFromWhichBtn === '1') {
@@ -364,21 +364,21 @@ export default {
     },
     indexFirstLoadingRequest() {
       let paramsArgs;
-      // TODO:NOTE2正式环境修改;
       if (this.monthFromWhichBtn === '0' && this.isFixedMonth === '0') {
         paramsArgs = {
           userID: this.monthUserID,
           IsYM: 1,
-          Year: new Date().getFullYear(),
-          Month: new Date().getMonth() + 2,
+          Year: this.getQueryAddYear(),
+          Month: this.getQueryAddMonth(),
         };
       }
       if (this.monthFromWhichBtn === '0' && this.isFixedMonth === '1') {
+        console.log(process.env.VUE_APP_SCHEDULEDMONTH);
         paramsArgs = {
           userID: this.monthUserID,
           IsYM: 1,
           Year: new Date().getFullYear(),
-          Month: 2,
+          Month: process.env.VUE_APP_SCHEDULEDMONTH,
         };
       }
       if (this.monthFromWhichBtn === '1') {
@@ -442,7 +442,6 @@ export default {
       }
       comDataObj.identity = this.identity;
       this.$store.commit('setCommonData', comDataObj);
-      // TODO:这个暂时隐藏,后续打开
       this.$nextTick(() => {
         this.$refs.mainForm.mainFormFirstLoading();
         switch (true) {
@@ -457,19 +456,17 @@ export default {
         }
         this.$refs.missionList.missionListLoading();
       });
-      // TODO:这个暂时隐藏,后续打开
     },
 
   },
   computed: {
     storeYearMonth() {
-      // TODO:NOTE1正式环境需要修改;
       if (this.monthFromWhichBtn === '0') {
         if (this.isFixedMonth === '0') {
           return this.UnitName + ' ' + new Date().getFullYear() + '年' + (new Date().getMonth() + 2) + '月';
         }
         if (this.isFixedMonth === '1') {
-          return this.UnitName + ' ' + new Date().getFullYear() + '年02月';
+          return this.UnitName + ' ' + new Date().getFullYear() + '年' + process.env.VUE_APP_SCHEDULEDMONTH + '月';
         }
       }
       if (this.monthFromWhichBtn === '1') {
@@ -483,14 +480,12 @@ export default {
     this.indexFirstLoadingRequest();
   },
   created() {
-    // TODO:start先隐藏后续打开
     this.loadingCover = this.$loading({
       lock: true,
       text: 'Loading...',
       spinner: 'el-icon-loading',
       background: 'rgba(0, 0, 0, 0.7)',
     });
-    // TODO:end;
   },
 };
 </script>
