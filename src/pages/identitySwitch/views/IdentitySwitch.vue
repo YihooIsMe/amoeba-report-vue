@@ -3,8 +3,8 @@
   <h2>请选择进入的身份</h2>
   <div class="container-btn">
     <div>
-      <el-input v-model="jobNumber" placeholder="请输入工号" clearable></el-input>
-      <el-button type="primary" @click="searchUserID" @keyup.enter="searchUserID">查询</el-button>
+      <el-input v-model="jobNumber" placeholder="请输入工号" clearable v-on:keyup.enter.native="searchUserID"></el-input>
+      <el-button type="primary" @click="searchUserID">查询</el-button>
     </div>
     <el-dialog title="身份信息" :visible.sync="dialogFormVisible">
       <el-form :model="form">
@@ -24,7 +24,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="searchSure">确 定</el-button>
       </div>
     </el-dialog>
     <el-tabs type="border-card">
@@ -69,6 +69,7 @@
 
 <script>
 import Vue from 'vue';
+import { Message } from 'element-ui';
 import api from '@/http/index';
 
 Vue.use(api);
@@ -81,26 +82,54 @@ export default {
       form: {
         name: '',
         department: '',
-        selectQuery: '',
+        selectQuery: 'year',
         userID: '',
       },
       formLabelWidth: '250px',
     };
   },
   methods: {
+    loadingCover() {
+      return this.$loading({
+        lock: true,
+        text: 'loading...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)',
+      });
+    },
     searchUserID() {
-      console.log({no: this.jobNumber});
+      this.loadingCover();
+      console.log({ no: this.jobNumber });
       this.$api.searchUserID({ no: this.jobNumber })
         .then((res) => {
           console.log(res.data);
           this.form.name = res.data.F_RealName;
           this.form.department = res.data.F_FullName;
           this.form.userID = res.data.F_Id;
+          this.loadingCover().close();
           this.dialogFormVisible = true;
         })
         .catch((errMsg) => {
           console.log(errMsg);
+          this.form.userID = '';
+          this.loadingCover().close();
+          Message({
+            message: '错误:请确认输入的工号是正确的!',
+            type: 'error',
+            duration: 5000,
+          });
         });
+    },
+    searchSure() {
+      this.dialogFormVisible = false;
+      if (this.form.userID !== '') {
+        sessionStorage.setItem('userID', this.form.userID);
+        if (this.form.selectQuery === 'year') {
+          window.location.href = 'yearQueryAndAdded.html';
+        } else if (this.form.selectQuery === 'month') {
+          window.location.href = 'monthQueryAndAdded.html';
+        }
+      }
     },
     joinQuery(index, page) {
       switch (true) {

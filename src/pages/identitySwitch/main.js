@@ -9,6 +9,7 @@ import {
   FormItem,
   Radio,
   RadioGroup,
+  Loading,
 } from 'element-ui';
 import App from './App.vue';
 
@@ -23,6 +24,7 @@ Vue.use(FormItem);
 Vue.use(Form);
 Vue.use(RadioGroup);
 Vue.use(Radio);
+Vue.use(Loading);
 
 new Vue({
   render: h => h(App),

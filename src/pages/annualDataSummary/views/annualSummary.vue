@@ -134,7 +134,7 @@ export default {
       inputDisabled: false,
       ReviewOrRejectMPID: '',
       showReviewAndReject: false,
-      showDraftAndSubmit: false,
+      showDraftAndSubmit: true,
       deleteBtnDisabled: '',
       currentLineZero: '',
       dialogExcelImport: false,
@@ -144,6 +144,7 @@ export default {
       CreateByUser: '',
       viewEditorYear: '',
       ReviewStatus: '',
+      Review: '',
       SupervisorID: '',
       OrganizeId: '{F4C190B7-6397-470F-B50D-40F3CDBF663B}',
     };
@@ -165,7 +166,24 @@ export default {
       cal.toggleSubject(event);
     },
     dataSubmissionRequest() {
-
+      console.log({
+        userID: this.userID,
+        SupervisorID: this.SupervisorID,
+        years: this.years,
+        Review: '1',
+      });
+      this.$api.summaryData({
+        userID: this.userID,
+        SupervisorID: this.SupervisorID,
+        years: this.years,
+        Review: '1',
+      })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((errMsg) => {
+          console.log(errMsg);
+        });
     },
     firstLoadingCover(text) {
       return this.$loading({
@@ -190,6 +208,8 @@ export default {
         .then((msg) => {
           console.log(JSON.parse(msg.data));
           this.responseData = JSON.parse(msg.data);
+          this.SupervisorID = JSON.parse(msg.data).SupervisorID;
+          this.Review = JSON.parse(msg.data).Review;
           this.tableSource = JSON.parse(msg.data).list;
           if (this.tableSource !== null) {
             this.injectTableSourceData();
