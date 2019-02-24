@@ -157,13 +157,13 @@ export default {
       if (item.className === 'F4' || item.className === 'G2') {
         return cal.addPercent(item[this.months[n - 1]]);
       }
-      return (item[this.months[n - 1]]).toLocaleString();
+      return Math.round(item[this.months[n - 1]]).toLocaleString();
     },
     totalAddSep(el) {
       if (el.className === 'F4' || el.className === 'G2') {
         return cal.addPercent(el.Total);
       }
-      return (el.Total).toLocaleString();
+      return Math.round(el.Total).toLocaleString();
     },
     toggleSubject(event) {
       cal.toggleSubject(event);

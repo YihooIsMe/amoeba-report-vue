@@ -255,9 +255,12 @@ export default {
     elSelector(name) {
       return document.querySelectorAll('table.KMTable1.commonTable tr.' + name + ' input');
     },
-    calProfitLoss(firstClassName, secondClassName) {
+    calProfitLoss(firstClassName, secondClassName, transPer) {
       if (cal.remSep(this.elSelector(secondClassName)[13].value) !== 0) {
-        return cal.addPercent(cal.remSep(this.elSelector(firstClassName)[13].value) / cal.remSep(this.elSelector(secondClassName)[13].value));
+        if (transPer) {
+          return cal.addPercent(cal.remSep(this.elSelector(firstClassName)[13].value) / cal.remSep(this.elSelector(secondClassName)[13].value));
+        }
+        return Math.round(cal.remSep(this.elSelector(firstClassName)[13].value) / cal.remSep(this.elSelector(secondClassName)[13].value));
       }
       return '';
     },
@@ -269,13 +272,13 @@ export default {
         if (el.className === 'F4' || el.className === 'G2' || el.className === 'H1') {
           switch (true) {
             case el.className === 'F4':
-              this.elSelector('F4')[13].value = this.calProfitLoss('F3', 'A6');
+              this.elSelector('F4')[13].value = this.calProfitLoss('F3', 'A6', true);
               break;
             case el.className === 'G2':
-              this.elSelector('G2')[13].value = this.calProfitLoss('G1', 'G0');
+              this.elSelector('G2')[13].value = this.calProfitLoss('G1', 'G0', true);
               break;
             case el.className === 'H1':
-              this.elSelector('H1')[13].value = this.calProfitLoss('F3', 'H0');
+              this.elSelector('H1')[13].value = this.calProfitLoss('F3', 'H0', false);
               break;
             default:
           }
@@ -452,57 +455,64 @@ export default {
         });
     },
 
-    dataSubmissionRequest(DZIndex) {
-      MessageBox.confirm('此操作后所有的数据将锁定，无法再修改，若数据只是暂时保存，请点击保存草稿！', '提示', {
-        confirmButtonText: '继续提交数据',
-        cancelButtonText: '取消',
-        type: 'warning',
-      }).then(() => {
-        this.firstLoadingCover('数据正在提交中，请稍后');
-        const getSubmitData = this.tableSource;// LIST下的86个数据
-        const submitListsArr = [];
-        console.log(getSubmitData);
-        for (let i = 0; i < getSubmitData.length; i += 1) {
-          const submitObj = {};
-          submitObj.SubjectID = getSubmitData[i].SubjectID;
-          submitObj.MPID = this.responseData.MPID;
-          submitObj.OrganizeId = this.OrganizeId;
-          submitObj.years = this.years;
-          if (this.draft === 1) {
-            submitObj.ID = this.DraftData[i].ID;
-          }
-          const dataClassName = getSubmitData[i].className;
-          const allInput = document.querySelectorAll('table.commonTable .' + dataClassName + ' input');
-          for (let j = 0; j < 13; j += 1) {
-            if (dataClassName === 'F4' || dataClassName === 'G2' || dataClassName === 'H1') {
-              submitObj[this.months[j]] = cal.remPercent(allInput[(j + 1)].value);
-            } else {
-              submitObj[this.months[j]] = cal.remSep(allInput[(j + 1)].value);
-            }
-          }
-          submitListsArr.push(submitObj);
+    commonSubmissionData(DZIndex) {
+      this.firstLoadingCover('数据正在提交中，请稍后');
+      const getSubmitData = this.tableSource;// LIST下的86个数据
+      const submitListsArr = [];
+      console.log(getSubmitData);
+      for (let i = 0; i < getSubmitData.length; i += 1) {
+        const submitObj = {};
+        submitObj.SubjectID = getSubmitData[i].SubjectID;
+        submitObj.MPID = this.responseData.MPID;
+        submitObj.OrganizeId = this.OrganizeId;
+        submitObj.years = this.years;
+        if (this.draft === 1) {
+          submitObj.ID = this.DraftData[i].ID;
         }
-        Vue.set(this.pullAllData, 'DZ', DZIndex); // 0表示保存草稿  1表示提交审核
-        Vue.set(this.pullAllData, 'list', submitListsArr);
-        console.log(this.pullAllData);
-        this.$api.yearDataSubmission(this.pullAllData)
-          .then((res) => {
-            console.log(res);
-            this.firstLoading.close();
-            this.getAfterSubmissionAlertInfo(res.data.errorMessage, DZIndex);
-          })
-          .catch((error) => {
-            console.log(error);
-            this.firstLoading.close();
-            news.ElErrorMessage(error);
-          });
-      }).catch(() => {
-        Message({
-          message: '已经取消数据提交',
-          type: 'info',
+        const dataClassName = getSubmitData[i].className;
+        const allInput = document.querySelectorAll('table.commonTable .' + dataClassName + ' input');
+        for (let j = 0; j < 13; j += 1) {
+          if (dataClassName === 'F4' || dataClassName === 'G2' || dataClassName === 'H1') {
+            submitObj[this.months[j]] = cal.remPercent(allInput[(j + 1)].value);
+          } else {
+            submitObj[this.months[j]] = cal.remSep(allInput[(j + 1)].value);
+          }
+        }
+        submitListsArr.push(submitObj);
+      }
+      Vue.set(this.pullAllData, 'DZ', DZIndex); // 0表示保存草稿  1表示提交审核
+      Vue.set(this.pullAllData, 'list', submitListsArr);
+      console.log(this.pullAllData);
+      this.$api.yearDataSubmission(this.pullAllData)
+        .then((res) => {
+          console.log(res);
+          this.firstLoading.close();
+          this.getAfterSubmissionAlertInfo(res.data.errorMessage, DZIndex);
+        })
+        .catch((error) => {
+          console.log(error);
+          this.firstLoading.close();
+          news.ElErrorMessage(error);
         });
-        this.loadingCover.close();
-      });
+    },
+    dataSubmissionRequest(DZIndex) {
+      if (DZIndex === 0) {
+        this.commonSubmissionData(DZIndex);
+      } else if (DZIndex === 1) {
+        MessageBox.confirm('此操作后所有的数据将锁定，无法再修改，若数据只是暂时保存，请点击保存草稿！', '提示', {
+          confirmButtonText: '继续提交数据',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }).then(() => {
+          this.commonSubmissionData(DZIndex);
+        }).catch(() => {
+          Message({
+            message: '已经取消数据提交',
+            type: 'info',
+          });
+          this.loadingCover.close();
+        });
+      }
     },
 
     readFromDraftBoxRequest() {

@@ -173,9 +173,9 @@ export default {
           sObj.Amount = Number(document.querySelector('.schedulePanel .' + item.className + '>td:nth-child(3)>input').value);
         }
         if (item.IsRead === 0) {
-          sObj.Valuation = Number(document.querySelector('.schedulePanel .' + item.className + '>td:nth-child(2)>input').value)
+          sObj.InputValuation = Number(document.querySelector('.schedulePanel .' + item.className + '>td:nth-child(2)>input').value)
         } else {
-          sObj.Valuation = null;
+          sObj.InputValuation = null;
         }
         this.Amoeba_MonthlySSDetail.push(sObj);
       });

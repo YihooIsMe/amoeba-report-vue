@@ -419,7 +419,7 @@ export default {
   tableEightCalculation(index) {
     /* 单位时间损益 */
     if (this.tableEight(index).UnitTimeProfitAndLoss && Number(this.tableEight(index).AttendanceTime.value) !== 0) {
-      this.tableEight(index).UnitTimeProfitAndLoss.value = (this.remSep(this.tableSix(index).SigningFeeProfitAndLoss.value) / this.remSep(this.tableEight(index).AttendanceTime.value)).toLocaleString();
+      this.tableEight(index).UnitTimeProfitAndLoss.value = Math.round(this.remSep(this.tableSix(index).SigningFeeProfitAndLoss.value) / this.remSep(this.tableEight(index).AttendanceTime.value)).toLocaleString();
     }
   },
   // 去处千分位符号；
