@@ -1,11 +1,5 @@
 import axios from './api';
 
-export const yearClearAllData = params => axios({
-  url: '/TEST',
-  method: 'get',
-  params,
-});
-
 export const searchUserID = params => axios({
   url: '/User',
   method: 'get',
@@ -91,7 +85,6 @@ export default {
   monthScheduleTable,
   queryAndAddedUserInfo,
   queryAndAddedQuery,
-  yearClearAllData,
   yearLoadingData,
   yearDataSubmission,
   yearUploadFile,

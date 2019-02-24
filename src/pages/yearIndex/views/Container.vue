@@ -39,7 +39,6 @@
                      @click="exportAllData"
                      v-if="draft===1"
           >导出</el-button>
-          <el-button type="danger" @click="clearData" v-if="true">清空数据</el-button>
         </div>
       </div>
       <div v-for="(tableData, index) in tableDataInject"
@@ -196,15 +195,6 @@ export default {
     };
   },
   methods: {
-    clearData() {
-      this.$api.yearClearAllData({ i: 0 })
-        .then(() => {
-          window.location.reload();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
     getQueryVariable(variable) {
       const query = window.location.search.substring(1);
       const vars = query.split('&');
@@ -675,7 +665,12 @@ export default {
         }
       } else if (this.fromWhichBtn === '1' && this.userID === this.CreateByUser) {
         this.showReviewAndReject = false;
-        this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
+        if (process.env.VUE_APP_ISOPENAUTHORITY === '0') {
+          this.showDraftAndSubmit = (this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3') && Number(this.viewEditorYear) === (new Date().getFullYear() + 1);
+        }
+        if (process.env.VUE_APP_ISOPENAUTHORITY === '1') {
+          this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
+        }
         this.deleteBtnDisabled = !(this.ReviewStatus !== '1' && this.ReviewStatus !== '2');
         this.inputDisabled = !(this.ReviewStatus !== '1' && this.ReviewStatus !== '2');
       }

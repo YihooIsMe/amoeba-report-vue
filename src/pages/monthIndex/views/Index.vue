@@ -32,8 +32,7 @@
             @click="reviewAndReject(3)"
           >驳回</el-button>
           <!--TODO:月度导出-->
-          <el-button type="warning" v-if="$store.state.comData.commonData.draft === 1">Excel导出</el-button>
-          <el-button type="warning" plain @click="clearData" v-if="true">清空数据</el-button>
+          <el-button type="warning" @click="exportMonthData" v-if="$store.state.comData.commonData.draft === 1">Excel导出</el-button>
         </div>
       </div>
       <el-tabs type="border-card" class="tab-container" :value="selectTabPane" @tab-click="tabClick">
@@ -94,6 +93,7 @@
         </template>
       </el-tabs>
     </div>
+    <iframe src="" frameborder="0" id="exportIframe" ref="exportIframe"></iframe>
   </div>
 </template>
 
@@ -127,6 +127,7 @@ export default {
       submitBtnShow: true,
       UnitName: '',
       review: 0,
+      exportUrl: 'http://10.100.250.153:99/api/MonthDownLoad',
       allSubmissionData: {},
       loadingCover: '',
       showReviewAndReject: false,
@@ -146,15 +147,6 @@ export default {
     };
   },
   methods: {
-    clearData() {
-      this.$api.yearClearAllData({ i: 1 })
-        .then(() => {
-          window.location.reload();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
     closeLoading() {
       this.loadingCover.close();
     },
@@ -327,10 +319,17 @@ export default {
         this.inputDisabled = true;
         // note:跨级不能审核,只有直属上级才能审核,跨月份也不能审核，若2月份做3月份的数据，那么就只有2月份能审核；
         // TODO:权限先放开,后面正式环境更改
-        // this.showReviewAndReject = this.ReviewStatus === '1' && Number(this.monthViewEditorMonth) === (new Date().getMonth() + 2) && this.monthUserID === this.SupervisorID;
-        this.showReviewAndReject = true;
+        if (process.env.VUE_APP_ISOPENAUTHORITY === '0') {
+          this.showReviewAndReject = this.ReviewStatus === '1' && Number(this.monthViewEditorMonth) === (new Date().getMonth() + 2) && this.monthUserID === this.SupervisorID && Number(this.monthViewEditorYear) === (new Date().getFullYear());
+        } else if (process.env.VUE_APP_ISOPENAUTHORITY === '1') {
+          this.showReviewAndReject = this.ReviewStatus === '1' && this.monthUserID === this.SupervisorID;
+        }
       } else if (this.monthFromWhichBtn === '1' && this.monthUserID === this.monthCreateByUser) {
-        this.reachMatchAdjustment = this.ReviewStatus === '2' && (new Date().getMonth() + 1) === Number(this.monthViewEditorMonth);
+        if (process.env.VUE_APP_ISOPENAUTHORITY === '0') {
+          this.reachMatchAdjustment = this.ReviewStatus === '2' && (new Date().getMonth() + 1) === Number(this.monthViewEditorMonth);
+        } else if (process.env.VUE_APP_ISOPENAUTHORITY === '1') {
+          this.reachMatchAdjustment = this.ReviewStatus === '2';
+        }
         this.showReviewAndReject = false;
         this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
         this.inputDisabled = !(this.ReviewStatus !== '1' && this.ReviewStatus !== '2');
@@ -457,7 +456,20 @@ export default {
         this.$refs.missionList.missionListLoading();
       });
     },
-
+    exportMonthData() {
+      const Year = news.injectYearAndMonth().Years;
+      let Month = news.injectYearAndMonth().Month;
+      if (Month < 10) {
+        Month = '0' + Month;
+      }
+      const City = this.responseData.City;
+      const Pr0111 = this.responseData.Pr0111;
+      const Pr0139 = this.responseData.Pr0139;
+      const Company = this.responseData.Company;
+      const MPID = this.responseData.MPID;
+      const Organization = this.responseData.Organization;
+      this.$refs.exportIframe.setAttribute('src', this.exportUrl + '?City=' + City + '&Pr0111=' + Pr0111 + '&Pr0139=' + Pr0139 + '&Company=' + Company + '&MPID=' + MPID + '&Organization=' + Organization + '&Year=' + Year + '&Month=' + Month);
+    },
   },
   computed: {
     storeYearMonth() {

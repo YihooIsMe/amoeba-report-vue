@@ -8,26 +8,26 @@
       <div class="top-right">
         <el-button type="primary"
                    @click="dataSubmissionAndReview('1')"
-                   v-if="true"
+                   v-if="showDraftAndSubmit"
         >数据提交</el-button>
         <el-button
           type="success"
           icon="el-icon-success"
           @click="dataSubmissionAndReview('2')"
-          v-if="true"
+          v-if="showReviewAndReject"
         >审核通过</el-button>
         <el-button
           type="danger"
           icon="el-icon-error"
           @click="dataSubmissionAndReview('3')"
-          v-if="true"
+          v-if="showReviewAndReject"
         >驳回</el-button>
         <el-button
           type="primary"
           plain
           @click="hideSubjectWithZero"
         >{{hideZero}}</el-button>
-        <el-button type="warning" v-if="true">Excel导出</el-button>
+        <el-button type="warning" v-if="true" @click="monthlySummaryData">Excel导出</el-button>
       </div>
     </div>
     <div v-for="(tableData, index) in tableDataInject"
@@ -63,6 +63,7 @@
         </table>
       </div>
     </div>
+    <iframe src="" frameborder="0" id="exportIframe" ref="exportIframe"></iframe>
   </div>
 </template>
 
@@ -84,6 +85,7 @@ export default {
       userID: '',
       // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 瑞虹一店;
       // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 咨询部;
+      exportUrl: 'http://10.100.250.153:99/api/MonthSummaryDownLoad',
       tableDataSource0: [], // Type类型为0的数据;
       tableDataSource1: [], // Type类型为1的数据;
       tableDataSource2: [], // Type类型为2的数据;
@@ -98,6 +100,12 @@ export default {
       hideZero: '隐藏整行为0的数据',
       years: '',
       Month: '',
+      OrganizeId: '',
+      company: '',
+      Review: '',
+      CreateByUser: '',
+      showDraftAndSubmit: '',
+      showReviewAndReject: '',
     };
   },
   methods: {
@@ -141,6 +149,7 @@ export default {
       this.userID = sessionStorage.getItem('userID');
       this.years = decodeURI(news.getQueryVariable('years'));
       this.Month = decodeURI(news.getQueryVariable('Month'));
+      this.CreateByUser = decodeURI(news.getQueryVariable('CreateByUser'));
       const params = {
         OrganizeId: decodeURI(news.getQueryVariable('OrganizeId')),
         years: this.years,
@@ -150,6 +159,10 @@ export default {
       console.log(params);
       this.$api.queryAndAddedQuery(params).then((response) => {
         this.SupervisorID = JSON.parse(response.data).SupervisorID;
+        this.OrganizeId = JSON.parse(response.data).OrganizeId;
+        this.company = JSON.parse(response.data).Company;
+        this.Review = JSON.parse(response.data).Review;
+        this.IsComplete = JSON.parse(response.data).IsComplete;
         console.log(JSON.parse(response.data));
         this.tableDataList = JSON.parse(response.data).list;
         if (this.tableDataList !== null) {
@@ -160,6 +173,7 @@ export default {
             this.tableDataInject.push(this['tableDataSource' + i]);
           }
         }
+        this.monthAuthorityJudge();
         this.loadingCover().close();
       }).catch((errMsg) => {
         console.log(errMsg);
@@ -204,6 +218,26 @@ export default {
           this.loadingCover().close();
           news.ElErrorMessage(errMsg);
         });
+    },
+    monthlySummaryData() {
+      const params = {
+        OrganizeId: this.OrganizeId,
+        company: this.company,
+        years: this.years,
+        Month: this.Month,
+      };
+      console.log(params);
+      this.$refs.exportIframe.setAttribute('src', this.exportUrl + '?OrganizeId=' + params.OrganizeId + '&company=' + params.company + '&years=' + params.years + '&Month=' + params.Month);
+    },
+    monthAuthorityJudge() {
+      if (process.env.VUE_APP_ISOPENAUTHORITY === '0') {
+        this.showReviewAndReject = this.Review === '1' && this.userID === this.SupervisorID && Number(this.Month) === (new Date().getMonth() + 2) && Number(this.years) === (new Date().getFullYear());
+        this.showDraftAndSubmit = (this.Review === '0' || this.Review === '3') && this.IsComplete === true && this.userID === this.CreateByUser && Number(this.Month) === (new Date().getMonth() + 2) && Number(this.years) === (new Date().getFullYear());
+      }
+      if (process.env.VUE_APP_ISOPENAUTHORITY === '1') {
+        this.showReviewAndReject = this.Review === '1' && this.userID === this.SupervisorID;
+        this.showDraftAndSubmit = (this.Review === '0' || this.Review === '3') && this.IsComplete === true && this.userID === this.CreateByUser;
+      }
     },
   },
   computed: {

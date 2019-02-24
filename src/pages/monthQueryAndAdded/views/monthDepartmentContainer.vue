@@ -47,7 +47,7 @@
         <div class="button-container">
           <el-button type="primary" @click="auditTableQueryRequest">查询</el-button>
           <el-button type="success" @click="linkToIndex(0)">新增</el-button>
-          <el-button type="warning" @click="linkToIndex(1)" v-if="showTestBtn">新增2月</el-button>
+          <el-button type="warning" @click="linkToIndex(1)" v-if="showTestBtn">新增{{scheduledMonth}}月</el-button>
         </div>
       </div>
       <div v-if="queryTableAllData.length>0">
@@ -378,10 +378,15 @@ export default {
     viewEditor(item) {
       if (item.IsAccountingTable === 0) {
         sessionStorage.setItem('Name', item.F_FullName);
-        window.location = 'monthlyDataSummary.html?company=' + this.Pr0132 + '&OrganizeId=' + this.OrganizeId + '&years=' + this.copyYearSelected + '&Month=' + this.copyMonthSelected;
+        window.location = 'monthlyDataSummary.html?company=' + this.Pr0132 + '&OrganizeId=' + this.OrganizeId + '&years=' + this.copyYearSelected + '&Month=' + this.copyMonthSelected + '&CreateByUser=' + item.CreateByUser;
       } else if (item.IsAccountingTable === 1) {
         window.location = 'monthIndex.html?monthCreateByUser=' + encodeURI(item.CreateByUser) + '&monthFromWhichBtn=1&monthViewEditorYear=' + this.copyYearSelected + '&monthViewEditorMonth=' + this.copyMonthSelected;
       }
+    },
+  },
+  computed: {
+    scheduledMonth() {
+      return process.env.VUE_APP_SCHEDULEDMONTH;
     },
   },
   created() {

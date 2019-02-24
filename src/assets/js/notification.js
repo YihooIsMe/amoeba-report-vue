@@ -26,7 +26,7 @@ export default {
     if (this.getQueryVariable('monthFromWhichBtn') === '0') {
       if (this.getQueryVariable('isFixedMonth') === '1') {
         Years = new Date().getFullYear();
-        Month = process.env.VUE_APP_SCHEDULEDMONTH;
+        Month = Number(process.env.VUE_APP_SCHEDULEDMONTH);
       }
       if (this.getQueryVariable('isFixedMonth') === '0') {
         if (new Date().getMonth() + 2 === 13) {
@@ -40,8 +40,8 @@ export default {
     }
     // 从查询按钮过来的数据；
     if (this.getQueryVariable('monthFromWhichBtn') === '1') {
-      Years = this.getQueryVariable('monthViewEditorYear');
-      Month = this.getQueryVariable('monthViewEditorMonth');
+      Years = Number(this.getQueryVariable('monthViewEditorYear'));
+      Month = Number(this.getQueryVariable('monthViewEditorMonth'));
     }
     return { Years, Month };
   },

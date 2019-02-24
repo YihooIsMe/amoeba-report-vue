@@ -172,6 +172,11 @@ export default {
         } else {
           sObj.Amount = Number(document.querySelector('.schedulePanel .' + item.className + '>td:nth-child(3)>input').value);
         }
+        if (item.IsRead === 0) {
+          sObj.Valuation = Number(document.querySelector('.schedulePanel .' + item.className + '>td:nth-child(2)>input').value)
+        } else {
+          sObj.Valuation = null;
+        }
         this.Amoeba_MonthlySSDetail.push(sObj);
       });
       this.$store.commit('setScheduleFormData', this.Amoeba_MonthlySSDetail);

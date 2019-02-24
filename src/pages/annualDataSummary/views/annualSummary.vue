@@ -28,9 +28,8 @@
           <el-button type="success"
                      plain
                      @click="exportAllData"
-                     v-if="draft===1"
+                     v-if="true"
           >导出</el-button>
-          <el-button type="danger" @click="clearData" v-if="true">清空数据</el-button>
         </div>
       </div>
       <div v-for="(tableData, index) in tableDataInject"
@@ -92,7 +91,7 @@ export default {
       // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 权限小
       IsYM: 0,
       /* TODO:地址要改成正式的环境 */
-      exportUrl: 'http://10.100.250.153:99/api/DownLoad',
+      exportUrl: 'http://10.100.250.153:99/api/AnnualSummaryExport',
       years: '',
       fixedYear: 2019,
       submitBtnShow: false,
@@ -147,19 +146,10 @@ export default {
       ReviewStatus: '',
       Review: '',
       SupervisorID: '',
-      OrganizeId: '{F4C190B7-6397-470F-B50D-40F3CDBF663B}',
+      OrganizeId: '',
     };
   },
   methods: {
-    clearData() {
-      this.$api.yearClearAllData({ i: 0 })
-        .then(() => {
-          window.location.reload();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
     getForClassName(el) {
       return el;
     },
@@ -215,7 +205,8 @@ export default {
       this.firstLoadingCover('Loading');
       this.OrganizeId = decodeURI(news.getQueryVariable('OrganizeId'));
       this.years = decodeURI(news.getQueryVariable('years'));
-      this.userID = decodeURI(news.getQueryVariable('userID'));
+      this.CreateByUser = decodeURI(news.getQueryVariable('CreateByUser'));
+      this.userID = decodeURI(sessionStorage.getItem('userID'));
       const params = {
         OrganizeId: this.OrganizeId,
         years: this.years,
@@ -227,6 +218,7 @@ export default {
           this.responseData = JSON.parse(msg.data);
           this.SupervisorID = JSON.parse(msg.data).SupervisorID;
           this.Review = JSON.parse(msg.data).Review;
+          this.IsComplete = JSON.parse(msg.data).IsComplete;
           this.tableSource = JSON.parse(msg.data).list;
           if (this.tableSource !== null) {
             this.injectTableSourceData();
@@ -293,12 +285,20 @@ export default {
     },
     exportAllData() {
       console.log(this.exportUrl + '?MPID=' + this.ReviewOrRejectMPID);
-      this.$refs.exportIframe.setAttribute('src', this.exportUrl + '?MPID=' + this.ReviewOrRejectMPID);
+      this.$refs.exportIframe.setAttribute('src', this.exportUrl + '?OrganizeId=' + this.OrganizeId);
     },
     authorityJudgment() {
       console.log(this.userID);
       console.log(this.SupervisorID);
-      this.showReviewAndReject = this.userID === this.SupervisorID;
+      // TODO:确认上下级是否是同一个userID;
+      if (process.env.VUE_APP_ISOPENAUTHORITY === '0') {
+        this.showDraftAndSubmit = this.userID === this.CreateByUser && this.IsComplete === true && (this.Review === '0' || this.Review === '3') && Number(this.years) === (new Date().getFullYear() + 1);
+        this.showReviewAndReject = this.userID === this.SupervisorID && this.Review === '1' && Number(this.years) === (new Date().getFullYear() + 1);
+      }
+      if (process.env.VUE_APP_ISOPENAUTHORITY === '1') {
+        this.showDraftAndSubmit = this.userID === this.CreateByUser && this.IsComplete === true && (this.Review === '0' || this.Review === '3');
+        this.showReviewAndReject = this.userID === this.SupervisorID && this.Review === '1';
+      }
     },
   },
   computed: {
