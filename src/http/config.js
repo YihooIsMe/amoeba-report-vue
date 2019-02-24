@@ -1,6 +1,6 @@
 export default {
   // 基础url前缀
-  baseURL: 'http://10.100.250.153:99/api',
+  baseURL: process.env.VUE_APP_APIRELEASEADDRESS,
   // 参数
   data: {},
   // 设置超时时间

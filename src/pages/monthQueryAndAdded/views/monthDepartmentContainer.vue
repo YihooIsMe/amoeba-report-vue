@@ -1,6 +1,6 @@
 <template>
     <div class="month-query-container">
-      <h1>核算表系统月度计划</h1>
+      <h2>核算表系统月度计划</h2>
       <div class="department">
       <ul class="department-list">
         <li>部门:</li>
@@ -405,7 +405,7 @@ export default {
 
 <style lang="less" scoped>
 .month-query-container{
-  h1{
+  h2{
     text-align: center;
   }
 }

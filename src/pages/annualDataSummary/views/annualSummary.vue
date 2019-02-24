@@ -85,20 +85,14 @@ export default {
   name: 'annualSummary',
   data() {
     return {
-      isReadOnly: '',
       userID: '',
       // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 权限大
       // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 权限小
-      IsYM: 0,
       /* TODO:地址要改成正式的环境 */
-      exportUrl: 'http://10.100.250.153:99/api/AnnualSummaryExport',
+      exportUrl: process.env.VUE_APP_APIRELEASEADDRESS + '/AnnualSummaryExport',
       years: '',
-      fixedYear: 2019,
       submitBtnShow: false,
       draft: '',
-      Pr0139: '',
-      Pr0111: '',
-      City: '',
       tableSource: [],
       responseData: {},
       tableDataSource0: [], // Type类型为0的数据;
@@ -110,40 +104,11 @@ export default {
       tableDataSource6: [], // Type类型为6的数据;
       tableDataSource7: [], // Type类型为7的数据;
       tableDataInject: [],
-      isAlertShow: false,
-      alertIndex: null,
-      applyWhere: 'yearIndex',
-      SigningRatio: {
-        SigningRatio1: 0.1,
-        SigningRatio2: 0.1,
-        SigningRatio3: 0.1,
-        SigningRatio4: 0.1,
-        SigningRatio5: 0.1,
-        SigningRatio6: 0.1,
-        SigningRatio7: 0.1,
-        SigningRatio8: 0.1,
-        SigningRatio9: 0.1,
-        SigningRatio10: 0.1,
-        SigningRatio11: 0.1,
-        SigningRatio12: 0.1,
-      },
       months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-      pullAllData: {},
-      isInputValEmpty: true,
-      DraftData: [],
-      inputDisabled: false,
-      ReviewOrRejectMPID: '',
       showReviewAndReject: false,
       showDraftAndSubmit: true,
-      deleteBtnDisabled: '',
-      currentLineZero: '',
-      dialogExcelImport: false,
       hideZero: '隐藏整行为0的数据',
-      firstLoading: '',
-      fromWhichBtn: '',
       CreateByUser: '',
-      viewEditorYear: '',
-      ReviewStatus: '',
       Review: '',
       SupervisorID: '',
       OrganizeId: '',
@@ -284,7 +249,6 @@ export default {
       }
     },
     exportAllData() {
-      console.log(this.exportUrl + '?MPID=' + this.ReviewOrRejectMPID);
       this.$refs.exportIframe.setAttribute('src', this.exportUrl + '?OrganizeId=' + this.OrganizeId);
     },
     authorityJudgment() {

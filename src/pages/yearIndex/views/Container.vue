@@ -139,7 +139,7 @@ export default {
       IsYM: 0,
       OrganizeId: '',
       /* TODO:地址要改成正式的环境 */
-      exportUrl: 'http://10.100.250.153:99/api/DownLoad',
+      exportUrl: process.env.VUE_APP_APIRELEASEADDRESS + '/DownLoad',
       years: '',
       submitBtnShow: false,
       draft: '',

@@ -35,7 +35,7 @@
           <el-button type="warning" @click="exportMonthData" v-if="$store.state.comData.commonData.draft === 1">Excel导出</el-button>
         </div>
       </div>
-      <el-tabs type="border-card" class="tab-container" :value="selectTabPane" @tab-click="tabClick">
+      <el-tabs type="border-card" class="tab-container" :value="selectTabPane">
         <template v-if="identity === 'store'">
           <el-tab-pane label="主表单" name="mainForm">
             <MainForm
@@ -127,7 +127,7 @@ export default {
       submitBtnShow: true,
       UnitName: '',
       review: 0,
-      exportUrl: 'http://10.100.250.153:99/api/MonthDownLoad',
+      exportUrl: process.env.VUE_APP_APIRELEASEADDRESS + '/MonthDownLoad',
       allSubmissionData: {},
       loadingCover: '',
       showReviewAndReject: false,
@@ -149,9 +149,6 @@ export default {
   methods: {
     closeLoading() {
       this.loadingCover.close();
-    },
-    tabClick(el) {
-      this.$store.commit('setSelectTabPane', el.name);
     },
     getBaseInfo() {
       this.isFixedMonth = news.getQueryVariable('isFixedMonth');

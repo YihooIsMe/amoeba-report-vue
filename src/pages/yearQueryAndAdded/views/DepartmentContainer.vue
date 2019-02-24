@@ -66,7 +66,6 @@
           </tr>
           </tbody>
         </table>
-        <!-- TODO:pagination分页器 -->
         <template v-if="totalCount>10">
           <el-pagination
             class="year-pagination"

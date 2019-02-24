@@ -1,7 +1,7 @@
 <template>
   <div class="monthly-summary-container">
     <h2>月度汇总表</h2>
-    <div class="monthly-summary-btn">
+    <div class="monthly-summary-btn" v-if="IsShowBtn">
       <div class="top-left">
         {{`${storeName}${years}年${Month}月汇总表`}}
       </div>
@@ -85,7 +85,7 @@ export default {
       userID: '',
       // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 瑞虹一店;
       // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 咨询部;
-      exportUrl: 'http://10.100.250.153:99/api/MonthSummaryDownLoad',
+      exportUrl: process.env.VUE_APP_APIRELEASEADDRESS + '/MonthSummaryDownLoad',
       tableDataSource0: [], // Type类型为0的数据;
       tableDataSource1: [], // Type类型为1的数据;
       tableDataSource2: [], // Type类型为2的数据;
@@ -106,6 +106,7 @@ export default {
       CreateByUser: '',
       showDraftAndSubmit: '',
       showReviewAndReject: '',
+      IsShowBtn: false,
     };
   },
   methods: {
@@ -172,6 +173,7 @@ export default {
           for (let i = 0; i < 8; i += 1) {
             this.tableDataInject.push(this['tableDataSource' + i]);
           }
+          this.IsShowBtn = true;
         }
         this.monthAuthorityJudge();
         this.loadingCover().close();
