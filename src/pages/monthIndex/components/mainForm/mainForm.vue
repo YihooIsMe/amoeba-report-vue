@@ -148,16 +148,27 @@ export default {
     dataInjection(data, draft) {
       data.forEach((el) => {
         const elInput = document.querySelectorAll('table.commonTable tr.' + el.className + ' input');
-        elInput[0].value = el.Amount;
-        elInput[2].value = el.TheMonthAmount;
-        elInput[3].value = el.PredeterminedRatio;
-        elInput[4].value = el.Difference;
-        elInput[5].value = el.AnnualReservation;
-        elInput[6].value = el.MPRatio;
-        elInput[7].value = el.GrandTotalMP;
-        elInput[8].value = el.GrandTotalActualMP;
-        if (draft === 1) {
-          elInput[1].value = el.MonthData;
+        // F4,G2
+        if (el.className === 'F4' || el.className === 'G2') {
+          elInput[0].value = cal.addPercent(el.Amount);
+          elInput[2].value = cal.addPercent(el.TheMonthAmount);
+          elInput[4].value = Number(el.Difference).toLocaleString();
+          elInput[5].value = Number(el.AnnualReservation).toLocaleString();
+          elInput[6].value = el.MPRatio;
+          elInput[7].value = Number(el.GrandTotalMP).toLocaleString();
+          elInput[8].value = Number(el.GrandTotalActualMP).toLocaleString();
+        } else {
+          elInput[0].value = Number(el.Amount).toLocaleString();
+          elInput[2].value = Number(el.TheMonthAmount).toLocaleString();
+          elInput[3].value = el.PredeterminedRatio;
+          elInput[4].value = Number(el.Difference).toLocaleString();
+          elInput[5].value = Number(el.AnnualReservation).toLocaleString();
+          elInput[6].value = el.MPRatio;
+          elInput[7].value = Number(el.GrandTotalMP).toLocaleString();
+          elInput[8].value = Number(el.GrandTotalActualMP).toLocaleString();
+          if (draft === 1) {
+            elInput[1].value = Number(el.MonthData).toLocaleString();
+          }
         }
       });
       // 处于非门店的时候,数据加载完成后需要计算一遍,门店能自动计算是因为监听到数据改动
@@ -219,8 +230,15 @@ export default {
     calculatePredeterminedRatio() {
       this.mainFormTableSource.forEach((el) => {
         // TODO:为什么cal.allInputEl(el)[1].value === 'NaN'会有这种情况出现； && cal.allInputEl(el)[1].value !== 'NaN'
-        if (cal.allInputEl(el)[1].value !== '' && cal.allInputEl(el)[1].value !== '0' && cal.allInputEl(el)[1].value !== '0.0' && cal.allInputEl(el)[1].value !== '0.00') {
-          cal.allInputEl(el)[3].value = (cal.remSep(cal.allInputEl(el)[2].value) / cal.remSep(cal.allInputEl(el)[1].value)).toLocaleString();
+        if (cal.allInputEl(el)[1].value !== '' && cal.allInputEl(el)[1].value !== '0' && cal.allInputEl(el)[1].value !== '0%') {
+          if (el.className === 'F4' || el.className === 'G2') {
+            cal.allInputEl(el)[3].value = cal.addPercent((cal.remPercent(cal.allInputEl(el)[2].value) / cal.remPercent(cal.allInputEl(el)[1].value)).toFixed(2));
+          } else {
+            if (el.className === 'B13') {
+              console.log(cal.allInputEl(el)[1].value);
+            }
+            cal.allInputEl(el)[3].value = cal.addPercent((cal.remSep(cal.allInputEl(el)[2].value) / cal.remSep(cal.allInputEl(el)[1].value)).toFixed(2));
+          }
         }
       });
       this.$emit('closeLoading');
@@ -394,6 +412,7 @@ export default {
     },
     sumFixedSalary(newVal) {
       this.watchCommonEvent('B1', newVal);
+      // TODO:此时应当还要计算社会保险金和公积金
     },
     sumLinkageIncome(newVal) {
       this.watchCommonEvent('A2', newVal);

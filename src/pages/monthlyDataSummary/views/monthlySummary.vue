@@ -63,6 +63,7 @@
         </table>
       </div>
     </div>
+    <div v-if="tableDataList === null" style="text-align: center;font-weight: bold">暂无数据</div>
     <iframe src="" frameborder="0" id="exportIframe" ref="exportIframe"></iframe>
   </div>
 </template>
@@ -146,7 +147,6 @@ export default {
       });
     },
     monthlySummaryRequest() {
-      console.log(this);
       this.userID = sessionStorage.getItem('userID');
       this.years = decodeURI(news.getQueryVariable('years'));
       this.Month = decodeURI(news.getQueryVariable('Month'));
@@ -200,25 +200,48 @@ export default {
     },
     dataSubmissionAndReview(index) {
       this.loadingCover();
-      this.$api.summaryData({
-        userID: this.userID,
-        SupervisorID: this.SupervisorID,
-        years: this.years,
-        month: this.Month,
-        Review: index,
-      })
-        .then((res) => {
-          console.log(res);
-          this.loadingCover().close();
-          Message({
-            message: res.data.message,
-            type: res.data.result === true ? 'success' : 'error',
-          });
+      let selectedIndex;
+      if (index === '1') {
+        selectedIndex = '数据提交';
+      }
+      if (index === '2') {
+        selectedIndex = '审核';
+      }
+      if (index === '3') {
+        selectedIndex = '驳回';
+      }
+      MessageBox.confirm('您确认进行' + selectedIndex + '操作,是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        this.$api.summaryData({
+          userID: this.userID,
+          SupervisorID: this.SupervisorID,
+          years: this.years,
+          month: this.Month,
+          Review: index,
         })
-        .catch((errMsg) => {
-          console.log(errMsg);
-          this.loadingCover().close();
-          news.ElErrorMessage(errMsg);
+          .then((res) => {
+            console.log(res);
+            this.loadingCover().close();
+            Message({
+              message: res.data.message,
+              type: res.data.result === true ? 'success' : 'error',
+            });
+          })
+          .catch((errMsg) => {
+            console.log(errMsg);
+            this.loadingCover().close();
+            news.ElErrorMessage(errMsg);
+          });
+      })
+        .catch(() => {
+          Message({
+            message: '已经取消操作',
+            type: 'info',
+            duration: 1000,
+          });
         });
     },
     monthlySummaryData() {
@@ -232,9 +255,11 @@ export default {
       this.$refs.exportIframe.setAttribute('src', this.exportUrl + '?OrganizeId=' + params.OrganizeId + '&company=' + params.company + '&years=' + params.years + '&Month=' + params.Month);
     },
     monthAuthorityJudge() {
+      const year = news.yearAndMonthChange().year;
+      const month = news.yearAndMonthChange().month;
       if (process.env.VUE_APP_ISOPENAUTHORITY === '0') {
-        this.showReviewAndReject = this.Review === '1' && this.userID === this.SupervisorID && Number(this.Month) === (new Date().getMonth() + 2) && Number(this.years) === (new Date().getFullYear());
-        this.showDraftAndSubmit = (this.Review === '0' || this.Review === '3') && this.IsComplete === true && this.userID === this.CreateByUser && Number(this.Month) === (new Date().getMonth() + 2) && Number(this.years) === (new Date().getFullYear());
+        this.showReviewAndReject = this.Review === '1' && this.userID === this.SupervisorID && Number(this.Month) === month && Number(this.years) === year;
+        this.showDraftAndSubmit = (this.Review === '0' || this.Review === '3') && this.IsComplete === true && this.userID === this.CreateByUser && Number(this.Month) === month && Number(this.years) === year;
       }
       if (process.env.VUE_APP_ISOPENAUTHORITY === '1') {
         this.showReviewAndReject = this.Review === '1' && this.userID === this.SupervisorID;
@@ -356,5 +381,10 @@ export default {
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border-radius: 3px;
+  }
+</style>
+<style>
+  iframe{
+    height:0;
   }
 </style>

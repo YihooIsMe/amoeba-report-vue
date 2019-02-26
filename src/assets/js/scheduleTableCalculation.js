@@ -13,8 +13,6 @@ export default {
   secretaryClass: ['FC10'],
   scheduleHandleInputNum(e) {
     if (!/^[0-9]+([.]{1}[0-9]+){0,1}$/.test(e.target.value) && e.target.value !== '') {
-      console.log(e);
-      console.log(e.target);
       Message({
         message: '请输入有效数字!',
         duration: 1000,

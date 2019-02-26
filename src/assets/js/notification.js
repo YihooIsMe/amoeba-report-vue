@@ -45,4 +45,16 @@ export default {
     }
     return { Years, Month };
   },
+  yearAndMonthChange() {
+    let year;
+    let month;
+    if (new Date().getMonth() + 2 === 13) {
+      year = new Date().getFullYear() + 1;
+      month = 1;
+    } else {
+      year = new Date().getFullYear();
+      month = new Date().getMonth() + 2;
+    }
+    return { year, month };
+  },
 };

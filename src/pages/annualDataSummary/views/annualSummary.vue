@@ -49,23 +49,19 @@
                  :key="i"
                  :class="getForClassName(item.className)">
               <td>{{item.Name}}</td>
-              <td v-for="n in 12"
+              <td v-for="n in 13"
                   :key="n">
                 <!--执行顺序 onChange > onBlur-->
                 <input type="text"
                        :readonly="true"
-                       :value="addSep(item, n)"
                 >
-              </td>
-              <td>
-                <input type="text" readonly :value="totalAddSep(item)">
               </td>
             </tr>
             </tbody>
           </table>
         </div>
       </div>
-      <div v-if="this.tableSource === null">暂无数据</div>
+      <div v-if="this.tableSource === null" style="text-align: center;font-weight: bold;">暂无数据</div>
     </div>
     <iframe src="" frameborder="0" id="exportIframe" ref="exportIframe"></iframe>
   </div>
@@ -73,12 +69,13 @@
 
 <script>
 import Vue from 'vue';
-import { Message } from 'element-ui';
+import { MessageBox, Message } from 'element-ui';
 import api from '@/http/index';
 import cal from '@/assets/js/comCalculation';
 import news from '@/assets/js/notification';
 import '@/assets/css/statisticalReport.css';
 
+Vue.component(MessageBox.name, MessageBox);
 Vue.use(api);
 
 export default {
@@ -104,7 +101,7 @@ export default {
       tableDataSource6: [], // Type类型为6的数据;
       tableDataSource7: [], // Type类型为7的数据;
       tableDataInject: [],
-      months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+      months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Total'],
       showReviewAndReject: false,
       showDraftAndSubmit: true,
       hideZero: '隐藏整行为0的数据',
@@ -118,44 +115,55 @@ export default {
     getForClassName(el) {
       return el;
     },
-    addSep(item, n) {
-      if (item.className === 'F4' || item.className === 'G2') {
-        return cal.addPercent(item[this.months[n - 1]]);
-      }
-      return Math.round(item[this.months[n - 1]]).toLocaleString();
-    },
-    totalAddSep(el) {
-      if (el.className === 'F4' || el.className === 'G2') {
-        return cal.addPercent(el.Total);
-      }
-      return Math.round(el.Total).toLocaleString();
-    },
     toggleSubject(event) {
       cal.toggleSubject(event);
     },
     dataSubmissionAndReview(index) {
+      // 1数据提交
+      // 2审核通过
+      // 3驳回
+      this.firstLoadingCover('Loading...');
+      let selectedIndex;
       if (index === '1') {
-        this.firstLoadingCover('数据正在提交，请稍候...');
+        selectedIndex = '数据提交';
       }
-      this.$api.summaryData({
-        userID: this.userID,
-        SupervisorID: this.SupervisorID,
-        years: this.years,
-        Review: index,
-      })
-        .then((res) => {
-          console.log(res);
-          this.firstLoadingCover().close();
-          Message({
-            message: res.data.message,
-            type: res.data.result === true ? 'success' : 'error',
-          });
+      if (index === '2') {
+        selectedIndex = '审核';
+      }
+      if (index === '3') {
+        selectedIndex = '驳回';
+      }
+      MessageBox.confirm('您确认进行' + selectedIndex + '操作,是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        this.$api.summaryData({
+          userID: this.userID,
+          SupervisorID: this.SupervisorID,
+          years: this.years,
+          Review: index,
         })
-        .catch((errMsg) => {
-          console.log(errMsg);
-          this.firstLoadingCover().close();
-          news.ElErrorMessage(errMsg);
+          .then((res) => {
+            console.log(res);
+            this.firstLoadingCover().close();
+            Message({
+              message: res.data.message,
+              type: res.data.result === true ? 'success' : 'error',
+            });
+          })
+          .catch((errMsg) => {
+            console.log(errMsg);
+            this.firstLoadingCover().close();
+            news.ElErrorMessage(errMsg);
+          });
+      }).catch(() => {
+        Message({
+          message: '已经取消操作',
+          type: 'info',
+          duration: 1000,
         });
+      });
     },
     firstLoadingCover(text) {
       return this.$loading({
@@ -191,6 +199,9 @@ export default {
               this.tableDataInject.push(this['tableDataSource' + i]);
             }
             this.submitBtnShow = true;
+            setTimeout(() => {
+              this.injectTableReadonlyData(this.tableSource);
+            }, 10);
           }
           this.authorityJudgment();
           this.firstLoadingCover('Loading').close();
@@ -200,6 +211,23 @@ export default {
           this.firstLoadingCover('Loading').close();
           news.ElErrorMessage(errMsg);
         });
+    },
+    injectTableReadonlyData(data) {
+      console.log(data);
+      data.forEach((item) => {
+        const allInputEl = document.querySelectorAll('div.year-summary-container tr.' + item.className + '>td>input');
+        for (let i = 0; i < 13; i += 1) {
+          if (item.className === 'F4') {
+            allInputEl[i].value = cal.addPercent(cal.remSep(document.querySelectorAll('div.year-summary-container tr.F3>td>input')[i].value) / cal.remSep(document.querySelectorAll('div.year-summary-container tr.A6>td>input')[i].value));
+          } else if (item.className === 'G2') {
+            allInputEl[i].value = cal.addPercent(cal.remSep(document.querySelectorAll('div.year-summary-container tr.G1>td>input')[i].value) / cal.remSep(document.querySelectorAll('div.year-summary-container tr.G0>td>input')[i].value));
+          } else if (item.className === 'H1') {
+            allInputEl[i].value = Math.round(cal.remSep(document.querySelectorAll('div.year-summary-container tr.F3>td>input')[i].value) / cal.remSep(document.querySelectorAll('div.year-summary-container tr.H0>td>input')[i].value));
+          } else {
+            allInputEl[i].value = item[this.months[i]].toLocaleString();
+          }
+        }
+      });
     },
     injectTableSourceData() {
       this.tableSource.forEach((item) => {

@@ -60,7 +60,7 @@
                  :key="i"
                  :class="getForClassName(item.className)">
               <td>{{item.Name}}</td>
-              <td><input type="text" readonly :value="item.Amount"></td>
+              <td><input type="text" readonly :value="historyData(item)"></td>
               <td v-for="n in 12"
                   :key="n">
                 <!--执行顺序 onChange > onBlur-->
@@ -205,6 +205,12 @@ export default {
         }
       }
       return false;
+    },
+    historyData(el) {
+      if (el.className === 'F4' || el.className === 'G2') {
+        return cal.addPercent(el.Amount);
+      }
+      return Number(el.Amount).toLocaleString();
     },
     getBaseInfo() {
       this.userID = decodeURI(sessionStorage.getItem('userID'));
@@ -677,38 +683,56 @@ export default {
         this.showReviewAndReject = false;
         if (process.env.VUE_APP_ISOPENAUTHORITY === '0') {
           this.showDraftAndSubmit = (this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3') && Number(this.viewEditorYear) === (new Date().getFullYear() + 1);
+          this.deleteBtnDisabled = (!(this.ReviewStatus !== '1' && this.ReviewStatus !== '2')) && Number(this.viewEditorYear) === (new Date().getFullYear() + 1);
+          this.inputDisabled = (!(this.ReviewStatus !== '1' && this.ReviewStatus !== '2')) && Number(this.viewEditorYear) === (new Date().getFullYear() + 1);
         }
         if (process.env.VUE_APP_ISOPENAUTHORITY === '1') {
           this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
+          this.deleteBtnDisabled = !(this.ReviewStatus !== '1' && this.ReviewStatus !== '2');
+          this.inputDisabled = !(this.ReviewStatus !== '1' && this.ReviewStatus !== '2');
         }
-        this.deleteBtnDisabled = !(this.ReviewStatus !== '1' && this.ReviewStatus !== '2');
-        this.inputDisabled = !(this.ReviewStatus !== '1' && this.ReviewStatus !== '2');
       }
     },
 
     ReviewOrReject(index) {
-      this.$api.queryAndAddedQuery({
-        MPID: this.ReviewOrRejectMPID,
-        status: index,
-        User: this.userID,
-        IsYM: 0, // 0是年,1是月;
-      }).then((res) => {
-        console.log(res);
-        let content;
-        if (index === 2) {
-          content = '您已经审核通过!';
-        } else {
-          content = '您已经驳回了！';
-        }
-        MessageBox.alert(content, '提示', {
-          confirmButtonText: '确定',
-          callback(action) {
-            console.log(action);
-          },
+      let selectedIndex;
+      let message;
+      if (index === 2) {
+        selectedIndex = '审核';
+        message = '您已经审核通过!';
+      }
+      if (index === 3) {
+        selectedIndex = '驳回';
+        message = '您已经驳回了';
+      }
+      MessageBox.confirm('您确认进行' + selectedIndex + '操作,是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        this.$api.queryAndAddedQuery({
+          MPID: this.ReviewOrRejectMPID,
+          status: index,
+          User: this.userID,
+          IsYM: 0, // 0是年,1是月;
+        }).then((res) => {
+          console.log(res);
+          Message({
+            message,
+            type: 'info',
+            duration: 1000,
+          });
+          window.location.reload();
+        }).catch((errMsg) => {
+          console.log(errMsg);
+          news.ElErrorMessage(errMsg);
         });
-      }).catch((errMsg) => {
-        console.log(errMsg);
-        news.ElErrorMessage(errMsg);
+      }).catch(() => {
+        Message({
+          message: '已经取消操作',
+          type: 'info',
+          duration: 1000,
+        });
       });
     },
 

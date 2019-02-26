@@ -31,7 +31,6 @@
             v-if="showReviewAndReject"
             @click="reviewAndReject(3)"
           >驳回</el-button>
-          <!--TODO:月度导出-->
           <el-button type="warning" @click="exportMonthData" v-if="$store.state.comData.commonData.draft === 1">Excel导出</el-button>
         </div>
       </div>
@@ -183,45 +182,23 @@ export default {
       this.$refs.missionList.editorSubmission();
       this.setAllSubmissionData(index);
     },
-    getQueryAddYear() {
-      if (this.monthFromWhichBtn === '1') {
-        return this.monthViewEditorYear;
-      }
-      if (this.monthFromWhichBtn === '0') {
-        if (new Date().getMonth() + 2 === 13) {
-          return new Date().getFullYear() + 1;
-        }
-        return new Date().getFullYear();
-      }
-      return '';
-    },
-    getQueryAddMonth() {
-      if (this.monthFromWhichBtn === '1') {
-        return this.monthViewEditorMonth;
-      }
-      if (this.monthFromWhichBtn === '0') {
-        if (new Date().getMonth() + 2 === 13) {
-          return 1;
-        }
-        return new Date().getMonth() + 2;
-      }
-      return '';
-    },
     commonSubmissionData() {
       this.allSubmissionData = {};
       const storeCommonData = this.$store.state.comData.commonData;
-      this.allSubmissionData.Years = this.getQueryAddYear();
       // TODO:NOTE3正式环境更改;
       if (this.monthFromWhichBtn === '0') {
         if (this.isFixedMonth === '0') {
-          this.allSubmissionData.Month = this.getQueryAddMonth();
+          this.allSubmissionData.Years = news.yearAndMonthChange().year;
+          this.allSubmissionData.Month = news.yearAndMonthChange().month;
         }
         if (this.isFixedMonth === '1') {
+          this.allSubmissionData.Years = new Date().getFullYear();
           this.allSubmissionData.month = process.env.VUE_APP_SCHEDULEDMONTH;
         }
       }
       if (this.monthFromWhichBtn === '1') {
-        this.allSubmissionData.Month = this.getQueryAddMonth();
+        this.allSubmissionData.Years = this.monthViewEditorYear;
+        this.allSubmissionData.Month = this.monthViewEditorMonth;
       }
       this.allSubmissionData.MonthlyPlanID = storeCommonData.MPID;
       this.allSubmissionData.CostCode = storeCommonData.Pr0139;
@@ -311,6 +288,8 @@ export default {
       // reachMatchAdjustment达成匹配调整;
       // showDraftAndSubmit保存草稿或者提交;
       // inputDisabled输入框是否可输入;
+      const year = news.yearAndMonthChange().year;
+      const month = news.yearAndMonthChange().month;
       if (this.monthFromWhichBtn === '0') {
         this.showReviewAndReject = false;
         // note:若当前月为2月,做3月的预定,那么只有等到3月本人才能执行达成匹配调整的这个操作;
@@ -324,45 +303,63 @@ export default {
         // note:跨级不能审核,只有直属上级才能审核,跨月份也不能审核，若2月份做3月份的数据，那么就只有2月份能审核；
         // TODO:权限先放开,后面正式环境更改
         if (process.env.VUE_APP_ISOPENAUTHORITY === '0') {
-          this.showReviewAndReject = this.ReviewStatus === '1' && Number(this.monthViewEditorMonth) === (new Date().getMonth() + 2) && this.monthUserID === this.SupervisorID && Number(this.monthViewEditorYear) === (new Date().getFullYear());
+          this.showReviewAndReject = this.ReviewStatus === '1' && Number(this.monthViewEditorMonth) === month && this.monthUserID === this.SupervisorID && Number(this.monthViewEditorYear) === year;
         } else if (process.env.VUE_APP_ISOPENAUTHORITY === '1') {
           this.showReviewAndReject = this.ReviewStatus === '1' && this.monthUserID === this.SupervisorID;
         }
       } else if (this.monthFromWhichBtn === '1' && this.monthUserID === this.monthCreateByUser) {
         if (process.env.VUE_APP_ISOPENAUTHORITY === '0') {
           this.reachMatchAdjustment = this.ReviewStatus === '2' && (new Date().getMonth() + 1) === Number(this.monthViewEditorMonth);
+          this.showDraftAndSubmit = (this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3') && Number(this.monthViewEditorYear) === year && Number(this.monthViewEditorMonth) === month;
+          this.inputDisabled = this.ReviewStatus === '1' || this.ReviewStatus === '2' || Number(this.monthViewEditorYear) !== year || Number(this.monthViewEditorMonth) !== month;
         } else if (process.env.VUE_APP_ISOPENAUTHORITY === '1') {
           this.reachMatchAdjustment = this.ReviewStatus === '2';
+          this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
+          this.inputDisabled = this.ReviewStatus === '1' || this.ReviewStatus === '2';
         }
         this.showReviewAndReject = false;
-        this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
-        this.inputDisabled = !(this.ReviewStatus !== '1' && this.ReviewStatus !== '2');
       }
       this.$store.commit('setInputDisabled', this.inputDisabled);
       this.$store.commit('setShowDraftAndSubmit', this.showDraftAndSubmit);
     },
     reviewAndReject(index) {
-      this.$api.queryAndAddedQuery({
-        MPID: this.$store.state.comData.commonData.MPID,
-        status: index,
-        User: this.monthUserID,
-        IsYM: 1,
+      let selectedIndex;
+      let message;
+      if (index === 2) {
+        selectedIndex = '审核';
+        message = '您已经审核通过!';
+      }
+      if (index === 3) {
+        selectedIndex = '驳回';
+        message = '您已经驳回了';
+      }
+      MessageBox.confirm('您确认进行' + selectedIndex + '操作,是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
       }).then(() => {
-        let content;
-        if (index === 2) {
-          content = '您已经审核通过!';
-        } else {
-          content = '您已经驳回了！';
-        }
-        MessageBox.alert(content, '提示', {
-          confirmButtonText: '确定',
-          callback(action) {
-            console.log(action);
-          },
+        this.$api.queryAndAddedQuery({
+          MPID: this.$store.state.comData.commonData.MPID,
+          status: index,
+          User: this.monthUserID,
+          IsYM: 1,
+        }).then(() => {
+          Message({
+            message,
+            type: 'info',
+            duration: 1000,
+          });
+          window.location.reload();
+        }).catch((errMsg) => {
+          console.log(errMsg);
+          news.ElErrorMessage(errMsg);
         });
-      }).catch((errMsg) => {
-        console.log(errMsg);
-        news.ElErrorMessage(errMsg);
+      }).catch(() => {
+        Message({
+          message: '已经取消操作',
+          type: 'info',
+          duration: 1000,
+        });
       });
     },
     indexFirstLoadingRequest() {
@@ -371,8 +368,8 @@ export default {
         paramsArgs = {
           userID: this.monthUserID,
           IsYM: 1,
-          Year: this.getQueryAddYear(),
-          Month: this.getQueryAddMonth(),
+          Year: news.yearAndMonthChange().year,
+          Month: news.yearAndMonthChange().month,
         };
       }
       if (this.monthFromWhichBtn === '0' && this.isFixedMonth === '1') {
@@ -477,9 +474,11 @@ export default {
   },
   computed: {
     storeYearMonth() {
+      const year = news.yearAndMonthChange().year;
+      const month = news.yearAndMonthChange().month;
       if (this.monthFromWhichBtn === '0') {
         if (this.isFixedMonth === '0') {
-          return this.UnitName + ' ' + new Date().getFullYear() + '年' + (new Date().getMonth() + 2) + '月';
+          return this.UnitName + ' ' + year + '年' + month + '月';
         }
         if (this.isFixedMonth === '1') {
           return this.UnitName + ' ' + new Date().getFullYear() + '年' + process.env.VUE_APP_SCHEDULEDMONTH + '月';
@@ -541,5 +540,8 @@ export default {
     th{
       width: 11% !important;
     }
+  }
+  iframe{
+    height: 0;
   }
 </style>
