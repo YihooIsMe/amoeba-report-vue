@@ -53,7 +53,21 @@ module.exports = {
   },
   devServer: {
     port: 85,
-    index: 'monthlyDataSummary.html',
+    index: 'identitySwitch.html',
+  },
+  configureWebpack: (config) => {
+    if (process.env.VUE_APP_NAME === 'production') {
+      config.optimization.minimizer.push(
+        new UglifyJsPlugin({
+          uglifyOptions: {
+            compress: {
+              drop_console: true,
+              pure_funcs: ['console.log'],
+            },
+          },
+        }),
+      );
+    }
   },
   // configureWebpack: {
   //   optimization: {

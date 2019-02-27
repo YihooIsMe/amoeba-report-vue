@@ -178,7 +178,7 @@ export default {
       pullAllData: {},
       isInputValEmpty: true,
       DraftData: [],
-      inputDisabled: false,
+      inputDisabled: true,
       ReviewOrRejectMPID: '',
       showReviewAndReject: false,
       showDraftAndSubmit: false,
@@ -412,6 +412,7 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+          this.firstLoading.close();
           news.ElErrorMessage(error);
         });
     },

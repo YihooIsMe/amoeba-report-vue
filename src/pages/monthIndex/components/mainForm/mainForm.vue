@@ -22,7 +22,7 @@
             <!--TODO:新增情况下,若当前月为2月,预定为3月,1月实际出来那就是1月,1月实际不出来就是12月-->
             <th>{{scheduledMonth}}月预定</th>
             <th>{{scheduledMonth}}月实际</th>
-            <th>预定比(%)</th>
+            <th>预定比</th>
             <th>{{scheduledMonth}}月预定实际差异</th>
             <th>MP</th>
             <th>MP比</th>
@@ -148,15 +148,15 @@ export default {
     dataInjection(data, draft) {
       data.forEach((el) => {
         const elInput = document.querySelectorAll('table.commonTable tr.' + el.className + ' input');
-        // F4,G2
+        // F4,G2行都是百分数;
         if (el.className === 'F4' || el.className === 'G2') {
           elInput[0].value = cal.addPercent(el.Amount);
           elInput[2].value = cal.addPercent(el.TheMonthAmount);
-          elInput[4].value = Number(el.Difference).toLocaleString();
-          elInput[5].value = Number(el.AnnualReservation).toLocaleString();
+          elInput[4].value = cal.addPercent(el.Difference);
+          elInput[5].value = cal.addPercent(el.AnnualReservation);
           elInput[6].value = el.MPRatio;
-          elInput[7].value = Number(el.GrandTotalMP).toLocaleString();
-          elInput[8].value = Number(el.GrandTotalActualMP).toLocaleString();
+          elInput[7].value = cal.addPercent(el.GrandTotalMP);
+          elInput[8].value = cal.addPercent(el.GrandTotalActualMP);
         } else {
           elInput[0].value = Number(el.Amount).toLocaleString();
           elInput[2].value = Number(el.TheMonthAmount).toLocaleString();
