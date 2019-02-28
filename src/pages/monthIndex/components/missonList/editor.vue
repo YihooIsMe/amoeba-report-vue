@@ -54,7 +54,7 @@ export default {
         '#00B51D',
       ];
       this.editor.customConfig.zIndex = 100;
-      this.editor.customConfig.onchangeTimeout = 500;
+      // this.editor.customConfig.onchangeTimeout = 500;
       this.editor.customConfig.onchange = (html) => {
         Vue.set(this.editorData, 'weekIndex', this.weekIndex);
         Vue.set(this.editorData, 'editorIndex', this.editorIndex);

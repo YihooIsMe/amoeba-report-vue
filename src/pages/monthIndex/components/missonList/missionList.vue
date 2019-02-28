@@ -91,12 +91,12 @@ export default {
         editorObj.PreordainID = PreordainID;
         editorObj.Week_ = i + 1;
         editorObj.Identity_ = this.isStore ? 'store' : 'district';
-        editorObj.First = this.missionListData[this.weekData[i]].first;
-        editorObj.Second = this.missionListData[this.weekData[i]].second;
-        editorObj.Third = this.missionListData[this.weekData[i]].third;
-        editorObj.Fourth = this.missionListData[this.weekData[i]].fourth;
-        editorObj.Fifth = this.missionListData[this.weekData[i]].fifth;
-        editorObj.Sixth = this.missionListData[this.weekData[i]].sixth;
+        editorObj.First = this.$store.state.missionList[this.weekData[i]].first;
+        editorObj.Second = this.$store.state.missionList[this.weekData[i]].second;
+        editorObj.Third = this.$store.state.missionList[this.weekData[i]].third;
+        editorObj.Fourth = this.$store.state.missionList[this.weekData[i]].fourth;
+        editorObj.Fifth = this.$store.state.missionList[this.weekData[i]].fifth;
+        editorObj.Sixth = this.$store.state.missionList[this.weekData[i]].sixth;
         this.Amoeba_TaskForm.push(editorObj);
         debugger;
       }
@@ -124,6 +124,94 @@ export default {
         .catch((errMsg) => {
           console.log(errMsg);
         });
+    },
+  },
+  computed: {
+    storeFirstWeekData() {
+      return this.$store.state.missionList.firstWeekData;
+    },
+    storeSecondWeekData() {
+      return this.$store.state.missionList.secondWeekData;
+    },
+    storeThirdWeekData() {
+      return this.$store.state.missionList.thirdWeekData;
+    },
+    storeFourthWeekData() {
+      return this.$store.state.missionList.fourthWeekData;
+    },
+  },
+  watch: {
+    'storeFirstWeekData.first': function (val) {
+      console.log(val);
+    },
+    'storeFirstWeekData.second': function (val) {
+      console.log(val);
+    },
+    'storeFirstWeekData.third': function (val) {
+      console.log(val);
+    },
+    'storeFirstWeekData.fourth': function (val) {
+      console.log(val);
+    },
+    'storeFirstWeekData.fifth': function (val) {
+      console.log(val);
+    },
+    'storeFirstWeekData.sixth': function (val) {
+      console.log(val);
+    },
+    'storeSecondWeekData.first': function (val) {
+      console.log(val);
+    },
+    'storeSecondWeekData.second': function (val) {
+      console.log(val);
+    },
+    'storeSecondWeekData.third': function (val) {
+      console.log(val);
+    },
+    'storeSecondWeekData.fourth': function (val) {
+      console.log(val);
+    },
+    'storeSecondWeekData.fifth': function (val) {
+      console.log(val);
+    },
+    'storeSecondWeekData.sixth': function (val) {
+      console.log(val);
+    },
+    'storeThirdWeekData.first': function (val) {
+      console.log(val);
+    },
+    'storeThirdWeekData.second': function (val) {
+      console.log(val);
+    },
+    'storeThirdWeekData.third': function (val) {
+      console.log(val);
+    },
+    'storeThirdWeekData.fourth': function (val) {
+      console.log(val);
+    },
+    'storeThirdWeekData.fifth': function (val) {
+      console.log(val);
+    },
+    'storeThirdWeekData.sixth': function (val) {
+      console.log(val);
+    },
+    'storeFourthWeekData.first': function (val) {
+      console.log(val);
+    },
+    'storeFourthWeekData.second': function (val) {
+      console.log(val);
+    },
+    'storeFourthWeekData.third': function (val) {
+      console.log(val);
+    },
+    'storeFourthWeekData.fourth': function (val) {
+      console.log(val);
+    },
+    'storeFourthWeekData.fifth': function (val) {
+      console.log(val);
+    },
+    'storeFourthWeekData.sixth': function (val) {
+      console.log(val);
     },
   },
 };
