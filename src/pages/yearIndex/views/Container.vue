@@ -4,7 +4,6 @@
       <h2>阿米巴报表核算系统</h2>
       <div class="submitBtn" v-if="submitBtnShow">
         <div class="top-left">
-          <!-- TODO:fixedYear更改回来 -->
           {{responseData.UnitName}}{{years}}年年度预定计划
         </div>
         <div class="top-right">
@@ -315,7 +314,6 @@ export default {
               console.log('数据已经提交成功!');
             }
             window.location.reload();
-            // this.readFromDraftBoxRequest();
           }
         },
       });
