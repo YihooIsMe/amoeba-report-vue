@@ -167,7 +167,7 @@ export default {
     },
     firstLoadingCover(text) {
       return this.$loading({
-        lock: true,
+        lock: false,
         text,
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)',
