@@ -136,9 +136,9 @@ export default {
       userID: '',
       // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 权限大
       // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 权限小
+      // 0代表年,1代表月;
       IsYM: 0,
       OrganizeId: '',
-      /* TODO:地址要改成正式的环境 */
       exportUrl: process.env.VUE_APP_APIRELEASEADDRESS + '/DownLoad',
       years: '',
       submitBtnShow: false,
@@ -379,8 +379,8 @@ export default {
           this.City = this.responseData.City;
           Vue.set(this.pullAllData, 'OrganizeId', this.OrganizeId);
           Vue.set(this.pullAllData, 'City', this.responseData.City);
-          Vue.set(this.pullAllData, 'years', this.years); // 目前years暂无传参；
-          Vue.set(this.pullAllData, 'MPID', this.responseData.MPID); // MPID暂无传参；
+          Vue.set(this.pullAllData, 'years', this.years);
+          Vue.set(this.pullAllData, 'MPID', this.responseData.MPID);
           Vue.set(this.pullAllData, 'ParentId', this.responseData.ParentId);
           Vue.set(this.pullAllData, 'JobAttribute', this.responseData.JobAttribute);
           Vue.set(this.pullAllData, 'userID', this.responseData.userID);
@@ -441,7 +441,6 @@ export default {
       form.append('File', fileObj);
       form.append('userID', this.userID);
       console.log(JSON.stringify(form));
-      // let formTwo = JSON.stringify(form);这个一直都处于关闭状态;
       this.$api.yearUploadFile(form)
         .then((res) => {
           console.log(res);
@@ -715,7 +714,7 @@ export default {
           MPID: this.ReviewOrRejectMPID,
           status: index,
           User: this.userID,
-          IsYM: 0, // 0是年,1是月;
+          IsYM: 0,
         }).then((res) => {
           console.log(res);
           Message({

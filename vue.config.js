@@ -8,13 +8,13 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 module.exports = {
   // baseUrl: './',
   pages: {
-    index: {
+    yearIndex: {
       entry: 'src/pages/yearIndex/main.js',
       template: 'public/index.html',
       filename: 'yearIndex.html',
       title: '阿米巴统计报表',
     },
-    queryAndAdded: {
+    yearQueryAndAdded: {
       entry: 'src/pages/yearQueryAndAdded/main.js',
       template: 'public/index.html',
       filename: 'yearQueryAndAdded.html',
