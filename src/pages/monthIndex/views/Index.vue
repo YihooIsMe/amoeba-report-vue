@@ -233,7 +233,6 @@ export default {
       }
       this.allSubmissionData.Amoeba_TaskForm = this.$store.state.missionList.missionListData;
       console.log(this.allSubmissionData);
-      debugger;
       this.$api.monthMainAndScheduleSub(this.allSubmissionData)
         .then((res) => {
           console.log(res);
@@ -249,7 +248,8 @@ export default {
             type,
           });
           if (type === 'success') {
-            // window.location.reload();
+            // TODO:去掉注释;
+            window.location.reload();
           }
         })
         .catch((err) => {

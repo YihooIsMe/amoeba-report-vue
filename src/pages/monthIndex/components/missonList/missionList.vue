@@ -98,7 +98,6 @@ export default {
         editorObj.Fifth = this.$store.state.missionList[this.weekData[i]].fifth;
         editorObj.Sixth = this.$store.state.missionList[this.weekData[i]].sixth;
         this.Amoeba_TaskForm.push(editorObj);
-        debugger;
       }
       this.$store.commit('setMissionListData', this.Amoeba_TaskForm);
     },
@@ -126,6 +125,7 @@ export default {
         });
     },
   },
+  // note:下面的computed和watch非常重要,不加上会导致填写富文本数据不刷新;
   computed: {
     storeFirstWeekData() {
       return this.$store.state.missionList.firstWeekData;
@@ -141,77 +141,53 @@ export default {
     },
   },
   watch: {
-    'storeFirstWeekData.first': function (val) {
-      console.log(val);
+    'storeFirstWeekData.first': function () {
     },
-    'storeFirstWeekData.second': function (val) {
-      console.log(val);
+    'storeFirstWeekData.second': function () {
     },
-    'storeFirstWeekData.third': function (val) {
-      console.log(val);
+    'storeFirstWeekData.third': function () {
     },
-    'storeFirstWeekData.fourth': function (val) {
-      console.log(val);
+    'storeFirstWeekData.fourth': function () {
     },
-    'storeFirstWeekData.fifth': function (val) {
-      console.log(val);
+    'storeFirstWeekData.fifth': function () {
     },
-    'storeFirstWeekData.sixth': function (val) {
-      console.log(val);
+    'storeFirstWeekData.sixth': function () {
     },
-    'storeSecondWeekData.first': function (val) {
-      console.log(val);
+    'storeSecondWeekData.first': function () {
     },
-    'storeSecondWeekData.second': function (val) {
-      console.log(val);
+    'storeSecondWeekData.second': function () {
     },
-    'storeSecondWeekData.third': function (val) {
-      console.log(val);
+    'storeSecondWeekData.third': function () {
     },
-    'storeSecondWeekData.fourth': function (val) {
-      console.log(val);
+    'storeSecondWeekData.fourth': function () {
     },
-    'storeSecondWeekData.fifth': function (val) {
-      console.log(val);
+    'storeSecondWeekData.fifth': function () {
     },
-    'storeSecondWeekData.sixth': function (val) {
-      console.log(val);
+    'storeSecondWeekData.sixth': function () {
     },
-    'storeThirdWeekData.first': function (val) {
-      console.log(val);
+    'storeThirdWeekData.first': function () {
     },
-    'storeThirdWeekData.second': function (val) {
-      console.log(val);
+    'storeThirdWeekData.second': function () {
     },
-    'storeThirdWeekData.third': function (val) {
-      console.log(val);
+    'storeThirdWeekData.third': function () {
     },
-    'storeThirdWeekData.fourth': function (val) {
-      console.log(val);
+    'storeThirdWeekData.fourth': function () {
     },
-    'storeThirdWeekData.fifth': function (val) {
-      console.log(val);
+    'storeThirdWeekData.fifth': function () {
     },
-    'storeThirdWeekData.sixth': function (val) {
-      console.log(val);
+    'storeThirdWeekData.sixth': function () {
     },
-    'storeFourthWeekData.first': function (val) {
-      console.log(val);
+    'storeFourthWeekData.first': function () {
     },
-    'storeFourthWeekData.second': function (val) {
-      console.log(val);
+    'storeFourthWeekData.second': function () {
     },
-    'storeFourthWeekData.third': function (val) {
-      console.log(val);
+    'storeFourthWeekData.third': function () {
     },
-    'storeFourthWeekData.fourth': function (val) {
-      console.log(val);
+    'storeFourthWeekData.fourth': function () {
     },
-    'storeFourthWeekData.fifth': function (val) {
-      console.log(val);
+    'storeFourthWeekData.fifth': function () {
     },
-    'storeFourthWeekData.sixth': function (val) {
-      console.log(val);
+    'storeFourthWeekData.sixth': function () {
     },
   },
 };
