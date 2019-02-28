@@ -1,4 +1,5 @@
 import Vue from 'vue';
+
 import {
   Button,
   Tabs,
@@ -16,8 +17,9 @@ import '@/assets/css/statisticalReport.css';
 import App from './App.vue';
 import store from './store/index';
 
-
+Vue.config.devtools = true;
 Vue.config.productionTip = false;
+
 Vue.use(Button);
 Vue.use(Tabs);
 Vue.use(TabPane);

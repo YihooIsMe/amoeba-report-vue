@@ -429,8 +429,9 @@ export default {
             arr.push(item.index);
           });
           this.selectIndexArrayPer = arr.sort(this.sortNumber);
+          console.log(this.selectIndexArrayPer);
           for (let i = this.selectIndexArrayPer.length - 1; i >= 0; i -= 1) {
-            this.addPerformanceArr.splice(this.selectIndexArrayPer[i], i);
+            this.addPerformanceArr.splice(this.selectIndexArrayPer[i], 1);
           }
         }
       }

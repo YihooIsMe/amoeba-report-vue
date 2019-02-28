@@ -98,6 +98,7 @@ export default {
         editorObj.Fifth = this.missionListData[this.weekData[i]].fifth;
         editorObj.Sixth = this.missionListData[this.weekData[i]].sixth;
         this.Amoeba_TaskForm.push(editorObj);
+        debugger;
       }
       this.$store.commit('setMissionListData', this.Amoeba_TaskForm);
     },
