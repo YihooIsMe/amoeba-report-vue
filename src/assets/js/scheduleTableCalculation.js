@@ -90,7 +90,9 @@ export default {
 
   sumCalculate(className) {
     let sum = 0;
-    document.querySelectorAll(className + '>tbody>tr').forEach((item) => {
+    // note:NodeList进行forEach循环的时候，有的浏览器不支持，必须经过下面的处理；
+    const allEls = document.querySelectorAll(className + '>tbody>tr');
+    [].forEach.call(allEls, (item) => {
       if (item.getAttribute('class') === 'FC15') {
         sum = -Number(item.querySelector('td:last-child>input').value) + sum;
       } else {

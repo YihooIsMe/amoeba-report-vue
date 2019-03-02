@@ -249,7 +249,7 @@ export default {
           });
           if (type === 'success') {
             // TODO:去掉注释;
-            window.location.reload();
+            // window.location.reload();
           }
         })
         .catch((err) => {

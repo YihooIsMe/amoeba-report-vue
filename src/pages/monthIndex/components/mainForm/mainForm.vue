@@ -297,6 +297,8 @@ export default {
         obj.SubjectID = item.SubjectID;
         if (item.className === 'F4' || item.className === 'G2' || item.className === 'H1') {
           obj.EstimatedAmount = cal.remPercent(document.querySelector('.mainFormPanel .' + item.className + '>td:nth-child(3)>input').value);
+        } else if (item.className === 'F5') {
+          obj.EstimatedAmount = this.SigningRatio;
         } else {
           obj.EstimatedAmount = cal.remSep(document.querySelector('.mainFormPanel .' + item.className + '>td:nth-child(3)>input').value);
         }
