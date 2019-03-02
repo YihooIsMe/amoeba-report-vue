@@ -563,7 +563,7 @@ export default {
       this.MonthSigningGoldYD = [];
       this.addFormArr.forEach((el) => {
         const addFormObj = {};
-        if (el.customerType === '1') {
+        if (el.customerType === 1) {
           addFormObj.CaseName = el.objectNum;
           addFormObj.ObjectName = el.caseName;
           addFormObj.CustomerName = el.customerName;
@@ -599,7 +599,7 @@ export default {
       this.MonthPerformanceYD = [];
       this.addPerformanceArr.forEach((el) => {
         const addPerFormData = {};
-        if (el.customerType === '1') {
+        if (el.customerType === 1) {
           addPerFormData.CaseName = el.objectNum;
           addPerFormData.ObjectName = el.caseName;
           addPerFormData.CustomerName = el.customerName;

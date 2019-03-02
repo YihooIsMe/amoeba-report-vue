@@ -47,7 +47,7 @@ export default {
           this.selected = this.SigningRatio['SigningRatio' + (newVal - 2)];
           break;
         case this.applyWhere === 'monthIndex':
-          this.selected = this.SigningRatio['SigningRatio' + (newVal - 2)];
+          this.selected = this.SigningRatio;
           break;
         default:
       }

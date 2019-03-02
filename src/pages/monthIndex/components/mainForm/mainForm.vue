@@ -123,6 +123,7 @@ export default {
     getSigningRatio(val) {
       this.SigningRatio = val;
       this.isAlertShow = false;
+
       this.AutomaticCalculation(3, 'F1', '');
       // this.AutomaticCalculation(this.alertIndex, 'F1', '');
     },
@@ -130,6 +131,7 @@ export default {
       const currentEl = event.target;
       if (className === 'F1' && this.$store.state.comData.commonData.Pr0111 !== 'A2') {
         this.isAlertShow = true;
+        this.alertIndex = 3;
       } else if (currentEl.value !== '') {
         currentEl.value = cal.remSep(currentEl.value);
       }
@@ -157,6 +159,10 @@ export default {
           elInput[6].value = el.MPRatio;
           elInput[7].value = cal.addPercent(el.GrandTotalMP);
           elInput[8].value = cal.addPercent(el.GrandTotalActualMP);
+        } else if (el.className === 'F5') {
+          if (draft === 1) {
+            this.SigningRatio = Number(el.MonthData);
+          }
         } else {
           elInput[0].value = Number(el.Amount).toLocaleString();
           elInput[2].value = Number(el.TheMonthAmount).toLocaleString();
@@ -234,9 +240,6 @@ export default {
           if (el.className === 'F4' || el.className === 'G2') {
             cal.allInputEl(el)[3].value = cal.addPercent((cal.remPercent(cal.allInputEl(el)[2].value) / cal.remPercent(cal.allInputEl(el)[1].value)).toFixed(2));
           } else {
-            if (el.className === 'B13') {
-              console.log(cal.allInputEl(el)[1].value);
-            }
             cal.allInputEl(el)[3].value = cal.addPercent((cal.remSep(cal.allInputEl(el)[2].value) / cal.remSep(cal.allInputEl(el)[1].value)).toFixed(2));
           }
         }
@@ -342,6 +345,7 @@ export default {
       cal.whereUse('monthIndex');
       cal.getCity(this.$store.state.comData.commonData.City);
       cal.judgeDepartment(this.$store.state.comData.commonData.Pr0111);
+      cal.getVueSigningRatio(this.SigningRatio);
       this.currentMonthAutomaticCalculation(3);
       this.calculatePredeterminedRatio();
     },

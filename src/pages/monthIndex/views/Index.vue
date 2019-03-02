@@ -248,8 +248,9 @@ export default {
             type,
           });
           if (type === 'success') {
-            // TODO:去掉注释;
-            // window.location.reload();
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
           }
         })
         .catch((err) => {
@@ -374,7 +375,6 @@ export default {
         };
       }
       if (this.monthFromWhichBtn === '0' && this.isFixedMonth === '1') {
-        console.log(process.env.VUE_APP_SCHEDULEDMONTH);
         paramsArgs = {
           userID: this.monthUserID,
           IsYM: 1,
