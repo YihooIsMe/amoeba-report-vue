@@ -9,7 +9,7 @@
         </thead>
         <tbody>
         <tr>
-          <td>
+<!--          <td>
             <Editor
             :editorContent="weekData.first"
             :weekIndex="weekData.index"
@@ -22,6 +22,20 @@
               :weekIndex="weekData.index"
               editorIndex="second"
             ></Editor>
+          </td>-->
+          <td>
+            <ScheduleTextarea
+              :editorContent="weekData.first"
+              :weekIndex="weekData.index"
+              editorIndex="first"
+            ></ScheduleTextarea>
+          </td>
+          <td>
+            <ScheduleTextarea
+              :editorContent="weekData.second"
+              :weekIndex="weekData.index"
+              editorIndex="second"
+            ></ScheduleTextarea>
           </td>
         </tr>
         </tbody>
@@ -35,7 +49,7 @@
         </thead>
         <tbody>
         <tr>
-          <td>
+          <!--<td>
             <Editor
               :editorContent="weekData.third"
               :weekIndex="weekData.index"
@@ -48,6 +62,20 @@
               :weekIndex="weekData.index"
               editorIndex="fourth"
             ></Editor>
+          </td>-->
+          <td>
+            <ScheduleTextarea
+              :editorContent="weekData.third"
+              :weekIndex="weekData.index"
+              editorIndex="third"
+            ></ScheduleTextarea>
+          </td>
+          <td>
+            <ScheduleTextarea
+              :editorContent="weekData.fourth"
+              :weekIndex="weekData.index"
+              editorIndex="fourth"
+            ></ScheduleTextarea>
           </td>
         </tr>
         </tbody>
@@ -61,7 +89,7 @@
         </thead>
         <tbody>
         <tr>
-          <td>
+          <!--<td>
             <Editor
             :editorContent="weekData.fifth"
             editorIndex="fifth"
@@ -74,6 +102,20 @@
               :weekIndex="weekData.index"
               editorIndex="sixth"
             ></Editor>
+          </td>-->
+          <td>
+            <ScheduleTextarea
+              :editorContent="weekData.fifth"
+              editorIndex="fifth"
+              :weekIndex="weekData.index"
+            ></ScheduleTextarea>
+          </td>
+          <td>
+            <ScheduleTextarea
+              :editorContent="weekData.sixth"
+              :weekIndex="weekData.index"
+              editorIndex="sixth"
+            ></ScheduleTextarea>
           </td>
         </tr>
         </tbody>
@@ -82,12 +124,14 @@
 </template>
 
 <script>
-import Editor from './editor.vue';
+// import Editor from './editor.vue';
+import ScheduleTextarea from './scheduleTextarea.vue';
 
 export default {
   name: 'missionTextarea',
   props: ['weekData'],
-  components: { Editor },
+  // components: { Editor },
+  components: { ScheduleTextarea },
   data() {
     return {
       tableTh: '',
@@ -139,7 +183,7 @@ export default {
   table{
     td{
       padding: 0;
-      height:200px;
+      height:300px;
       box-sizing: border-box;
       textarea{
         margin-top: 1px;

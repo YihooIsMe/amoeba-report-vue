@@ -127,68 +127,68 @@ export default {
   },
   // note:下面的computed和watch非常重要,不加上会导致填写富文本数据不刷新;
   computed: {
-    storeFirstWeekData() {
-      return this.$store.state.missionList.firstWeekData;
-    },
-    storeSecondWeekData() {
-      return this.$store.state.missionList.secondWeekData;
-    },
-    storeThirdWeekData() {
-      return this.$store.state.missionList.thirdWeekData;
-    },
-    storeFourthWeekData() {
-      return this.$store.state.missionList.fourthWeekData;
-    },
+    // storeFirstWeekData() {
+    //   return this.$store.state.missionList.firstWeekData;
+    // },
+    // storeSecondWeekData() {
+    //   return this.$store.state.missionList.secondWeekData;
+    // },
+    // storeThirdWeekData() {
+    //   return this.$store.state.missionList.thirdWeekData;
+    // },
+    // storeFourthWeekData() {
+    //   return this.$store.state.missionList.fourthWeekData;
+    // },
   },
   watch: {
-    'storeFirstWeekData.first': function () {
-    },
-    'storeFirstWeekData.second': function () {
-    },
-    'storeFirstWeekData.third': function () {
-    },
-    'storeFirstWeekData.fourth': function () {
-    },
-    'storeFirstWeekData.fifth': function () {
-    },
-    'storeFirstWeekData.sixth': function () {
-    },
-    'storeSecondWeekData.first': function () {
-    },
-    'storeSecondWeekData.second': function () {
-    },
-    'storeSecondWeekData.third': function () {
-    },
-    'storeSecondWeekData.fourth': function () {
-    },
-    'storeSecondWeekData.fifth': function () {
-    },
-    'storeSecondWeekData.sixth': function () {
-    },
-    'storeThirdWeekData.first': function () {
-    },
-    'storeThirdWeekData.second': function () {
-    },
-    'storeThirdWeekData.third': function () {
-    },
-    'storeThirdWeekData.fourth': function () {
-    },
-    'storeThirdWeekData.fifth': function () {
-    },
-    'storeThirdWeekData.sixth': function () {
-    },
-    'storeFourthWeekData.first': function () {
-    },
-    'storeFourthWeekData.second': function () {
-    },
-    'storeFourthWeekData.third': function () {
-    },
-    'storeFourthWeekData.fourth': function () {
-    },
-    'storeFourthWeekData.fifth': function () {
-    },
-    'storeFourthWeekData.sixth': function () {
-    },
+    // 'storeFirstWeekData.first': function () {
+    // },
+    // 'storeFirstWeekData.second': function () {
+    // },
+    // 'storeFirstWeekData.third': function () {
+    // },
+    // 'storeFirstWeekData.fourth': function () {
+    // },
+    // 'storeFirstWeekData.fifth': function () {
+    // },
+    // 'storeFirstWeekData.sixth': function () {
+    // },
+    // 'storeSecondWeekData.first': function () {
+    // },
+    // 'storeSecondWeekData.second': function () {
+    // },
+    // 'storeSecondWeekData.third': function () {
+    // },
+    // 'storeSecondWeekData.fourth': function () {
+    // },
+    // 'storeSecondWeekData.fifth': function () {
+    // },
+    // 'storeSecondWeekData.sixth': function () {
+    // },
+    // 'storeThirdWeekData.first': function () {
+    // },
+    // 'storeThirdWeekData.second': function () {
+    // },
+    // 'storeThirdWeekData.third': function () {
+    // },
+    // 'storeThirdWeekData.fourth': function () {
+    // },
+    // 'storeThirdWeekData.fifth': function () {
+    // },
+    // 'storeThirdWeekData.sixth': function () {
+    // },
+    // 'storeFourthWeekData.first': function () {
+    // },
+    // 'storeFourthWeekData.second': function () {
+    // },
+    // 'storeFourthWeekData.third': function () {
+    // },
+    // 'storeFourthWeekData.fourth': function () {
+    // },
+    // 'storeFourthWeekData.fifth': function () {
+    // },
+    // 'storeFourthWeekData.sixth': function () {
+    // },
   },
 };
 </script>

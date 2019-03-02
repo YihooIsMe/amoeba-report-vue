@@ -3,7 +3,8 @@
     营业收入（白色为预定，灰色为实际）
     <div class="child-operating-income">
       <el-button type="primary" plain size="small" @click="dialogTableVisible = true" v-if="showDraftAndSubmit">新增</el-button>
-      <el-button type="success" plain size="small" @click="deleteSelected('operate')" v-if="showDraftAndSubmit">删除</el-button>
+      <!--<el-button type="success" plain size="small" @click="modify('operate')" v-if="showDraftAndSubmit">修改</el-button>-->
+      <el-button type="danger" plain size="small" @click="deleteSelected('operate')" v-if="showDraftAndSubmit">删除</el-button>
       <el-button type="warning" plain size="small" @click="matchAdjustment('operatingIncome')" v-if="reachMatchAdjustment">达成匹配调整</el-button>
       <el-table
         ref="multipleTable"
@@ -120,7 +121,8 @@
     <div class="performance-title">业绩收入（白色为预定，灰色为实际）</div>
     <div class="child-performance-income">
       <el-button type="primary" plain size="small" @click="dialogPerformance = true" v-if="showDraftAndSubmit">新增</el-button>
-      <el-button type="success" plain size="small" @click="deleteSelected('performance')" v-if="showDraftAndSubmit">删除</el-button>
+      <!--<el-button type="success" plain size="small" @click="dialogPerformance = true" v-if="showDraftAndSubmit">修改</el-button>-->
+      <el-button type="danger" plain size="small" @click="deleteSelected('performance')" v-if="showDraftAndSubmit">删除</el-button>
       <el-button type="warning" plain size="small" @click="matchAdjustment('performance')" v-if="reachMatchAdjustment">达成匹配调整</el-button>
       <el-table
         ref="multipleTable"
@@ -352,32 +354,33 @@ export default {
       return '';
     },
     handleSelectionChange(val) {
-      this.selectIndexArray = [];
-      console.log(val);
       this.multipleSelection = val;
-      const self = this;
-      val.map((el) => {
-        const selectRowIndex = self.getROwIndex(el);
-        if (selectRowIndex !== -1) {
-          self.selectIndexArray.push(selectRowIndex);
-        }
-        return '';
-      });
-      this.selectIndexArray = this.selectIndexArray.sort(this.sortNumber);
+      // this.selectIndexArray = [];
+      // console.log(val);
+      // const self = this;
+      // val.map((el) => {
+      //   const selectRowIndex = self.getROwIndex(el);
+      //   if (selectRowIndex !== -1) {
+      //     self.selectIndexArray.push(selectRowIndex);
+      //   }
+      //   return '';
+      // });
+      // this.selectIndexArray = this.selectIndexArray.sort(this.sortNumber);
     },
     handleSelectionChangePer(val) {
-      this.selectIndexArrayPer = [];
-      console.log(val);
       this.multipleSelectionPer = val;
-      const self = this;
-      val.map((el) => {
-        const selectRowIndexPer = self.getROwIndexPer(el);
-        if (selectRowIndexPer !== -1) {
-          self.selectIndexArrayPer.push(selectRowIndexPer);
-        }
-        return '';
-      });
-      this.selectIndexArrayPer = this.selectIndexArrayPer.sort(this.sortNumber);
+      // this.selectIndexArrayPer = [];
+      // console.log(val);
+      // this.multipleSelectionPer = val;
+      // const self = this;
+      // val.map((el) => {
+      //   const selectRowIndexPer = self.getROwIndexPer(el);
+      //   if (selectRowIndexPer !== -1) {
+      //     self.selectIndexArrayPer.push(selectRowIndexPer);
+      //   }
+      //   return '';
+      // });
+      // this.selectIndexArrayPer = this.selectIndexArrayPer.sort(this.sortNumber);
     },
     sortNumber(a, b) {
       return a - b;
@@ -385,6 +388,22 @@ export default {
     tableRowClassName({ row, rowIndex }) {
       row.index = rowIndex;
     },
+    // modify(change) {
+    //   if (change === 'operate') {
+    //     if (this.multipleSelection.length === 1) {
+    //       console.log(this.addFormArr[this.multipleSelection[0].index]);
+    //     } else {
+    //       Message({
+    //         message: '您仅能选择一条信息进行修改!',
+    //         type: 'error',
+    //         duration: 2000,
+    //       });
+    //     }
+    //   }
+    //   if (change === 'performance') {
+    //
+    //   }
+    // },
     deleteSelected(sel) {
       if (sel === 'operate') {
         if (this.multipleSelection.length === this.addFormArr.length) {
