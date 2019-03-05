@@ -37,6 +37,10 @@ export default {
           Month = new Date().getMonth() + 2;
         }
       }
+      if (this.getQueryVariable('isFixedMonth') === '2') {
+        Years = new Date().getFullYear();
+        Month = new Date().getMonth() + 1;
+      }
     }
     // 从查询按钮过来的数据；
     if (this.getQueryVariable('monthFromWhichBtn') === '1') {

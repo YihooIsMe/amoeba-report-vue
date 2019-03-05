@@ -142,6 +142,9 @@ export default {
       // monthFromWhichBtn = '0' 代表从新增按钮过来的
       // monthFromWhichBtn = '1' 代表从查看编辑过来的
       isFixedMonth: '', // 此数据只为了方便测试数据所用
+      // isFixedMonth = '0' 表示当前月+1
+      // isFixedMonth = '1' 表示环境变量固定死的查询月份VUE_APP_SCHEDULEDMONTH
+      // isFixedMonth = '2' 表示当前月
       historicalMonth: '', // 历史数据月份
     };
   },
@@ -194,6 +197,10 @@ export default {
         if (this.isFixedMonth === '1') {
           this.allSubmissionData.Years = new Date().getFullYear();
           this.allSubmissionData.month = process.env.VUE_APP_SCHEDULEDMONTH;
+        }
+        if (this.isFixedMonth === '2') {
+          this.allSubmissionData.Years = new Date().getFullYear();
+          this.allSubmissionData.month = new Date().getMonth() + 1;
         }
       }
       if (this.monthFromWhichBtn === '1') {
@@ -382,6 +389,14 @@ export default {
           Month: process.env.VUE_APP_SCHEDULEDMONTH,
         };
       }
+      if (this.monthFromWhichBtn === '0' && this.isFixedMonth === '2') {
+        paramsArgs = {
+          userID: this.monthUserID,
+          IsYM: 1,
+          Year: new Date().getFullYear(),
+          Month: new Date().getMonth() + 1,
+        };
+      }
       if (this.monthFromWhichBtn === '1') {
         paramsArgs = {
           userID: this.monthCreateByUser,
@@ -483,6 +498,9 @@ export default {
         }
         if (this.isFixedMonth === '1') {
           return this.UnitName + ' ' + new Date().getFullYear() + '年' + process.env.VUE_APP_SCHEDULEDMONTH + '月';
+        }
+        if (this.isFixedMonth === '2') {
+          return this.UnitName + ' ' + new Date().getFullYear() + '年' + (new Date().getMonth() + 1) + '月';
         }
       }
       if (this.monthFromWhichBtn === '1') {

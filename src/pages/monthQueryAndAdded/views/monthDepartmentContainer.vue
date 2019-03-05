@@ -46,11 +46,12 @@
         </ul>
         <div class="button-container">
           <el-button type="primary" @click="auditTableQueryRequest">查询</el-button>
-          <el-button type="success" @click="linkToIndex(0)">新增</el-button>
+          <el-button type="success" @click="linkToIndex(0)">新增下月</el-button>
+          <el-button type="success" plain @click="linkToIndex(2)" v-if="showTestBtn">新增当月</el-button>
           <el-button type="warning" @click="linkToIndex(1)" v-if="showTestBtn">新增{{scheduledMonth}}月</el-button>
         </div>
       </div>
-      <div v-if="queryTableAllData.length>0">
+      <div v-if="queryTableAllData.length>0" style="margin-top: 70px;">
         <table class="show-query-table" border="1">
           <thead>
           <tr>
@@ -179,15 +180,7 @@ export default {
     },
 
     linkToIndex(index) {
-      switch (index) {
-        case 0:
-          window.location = 'monthIndex.html?monthFromWhichBtn=0&isFixedMonth=0';
-          break;
-        case 1:
-          window.location = 'monthIndex.html?monthFromWhichBtn=0&isFixedMonth=1';
-          break;
-        default:
-      }
+      window.location = 'monthIndex.html?monthFromWhichBtn=0&isFixedMonth=' + index;
     },
 
     getBusinessOfficeRequest(permission) {
@@ -465,10 +458,10 @@ export default {
 }
 .button-container{
   position: absolute;
-  top:18px;
-  left:800px;
+  right:10px;
+  left:700px;
   a,button{
-    margin-left:30px;
+    margin-left:20px;
   }
 }
 .show-query-table{
