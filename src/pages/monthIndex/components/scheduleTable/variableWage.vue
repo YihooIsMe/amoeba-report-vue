@@ -83,16 +83,19 @@ export default {
   },
   watch: {
     isLoadCompleted() {
+      sch.setCalculatedPeopleNumber();
       this.commonCalculation(this.variableWageData, '.variableWageTable', 0, 1, 2);
     },
     recoveryPerformance(newVal) {
       this.$nextTick(() => {
         document.querySelector('.variableWageTable>tbody>tr.FD0>td:nth-child(3)>input').value = Number(newVal);
         document.querySelector('.variableWageTable>tbody>tr.FD1>td:nth-child(3)>input').value = Number(newVal);
+        sch.setCalculatedPeopleNumber();
         this.commonCalculation(this.variableWageData, '.variableWageTable', 0, 1, 2);
       });
     },
     isSumFixedSalary() {
+      sch.setCalculatedPeopleNumber();
       this.commonCalculation(this.variableWageData, '.variableWageTable', 0, 1, 2);
     },
   },
