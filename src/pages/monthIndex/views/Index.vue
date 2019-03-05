@@ -300,9 +300,13 @@ export default {
       const year = news.yearAndMonthChange().year;
       const month = news.yearAndMonthChange().month;
       if (this.monthFromWhichBtn === '0') {
+        if (process.env.VUE_APP_ISOPENAUTHORITY === '0') {
+          this.reachMatchAdjustment = false;
+        } else if (process.env.VUE_APP_ISOPENAUTHORITY === '1') {
+          this.reachMatchAdjustment = this.ReviewStatus === '2';
+        }
         this.showReviewAndReject = false;
         // note:若当前月为2月,做3月的预定,那么只有等到3月本人才能执行达成匹配调整的这个操作;
-        this.reachMatchAdjustment = false;
         this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
         this.inputDisabled = this.ReviewStatus === '1' || this.ReviewStatus === '2';
       } else if (this.monthFromWhichBtn === '1' && this.monthUserID !== this.monthCreateByUser) {

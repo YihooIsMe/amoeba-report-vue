@@ -310,7 +310,7 @@ export default {
       let info;
       if (from === 'operatingIncome') {
         if (this.multipleSelection.length === 0) {
-          info = '请选择一条进行匹配';
+          info = '请选择一条数据进行匹配';
           Message({
             message: info,
             type: 'error',
@@ -319,7 +319,7 @@ export default {
           return '';
         }
         if (this.multipleSelection.length > 1) {
-          info = '您只能选择一条进行匹配';
+          info = '您只能选择一条数据进行匹配';
           Message({
             message: info,
             type: 'error',
