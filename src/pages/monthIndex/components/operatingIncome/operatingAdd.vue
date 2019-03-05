@@ -203,7 +203,7 @@ export default {
       brokerLabel: '',
       discountTypeOption: [
         { label: '买卖(业主方)' },
-        { label: '买卖(卖方)' },
+        { label: '买卖(买方)' },
         { label: '租赁(出租方)' },
         { label: '租赁(承租方)' },
         { label: '买卖(业主方中人)' },
