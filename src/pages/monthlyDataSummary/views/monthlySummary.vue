@@ -266,10 +266,28 @@ export default {
         this.showDraftAndSubmit = (this.Review === '0' || this.Review === '3') && this.IsComplete === true && this.userID === this.CreateByUser;
       }
     },
+    interestRate(tar, molecule, denominator) {
+      // tar 目标值
+      // molecule 分子数值
+      // Denominator 分母数值
+      if (Number(document.querySelector('.monthly-summary-container table.monthly-summary tr.' + molecule + '>td:nth-child(2)>input').value) !== 0) {
+        document.querySelector('.monthly-summary-container table.monthly-summary tr.' + tar + '>td:nth-child(2)>input').value = cal.addPercent(Number(document.querySelector('.monthly-summary-container table.monthly-summary tr.' + denominator + '>td:nth-child(2)>input').value) / Number(document.querySelector('.monthly-summary-container table.monthly-summary tr.' + molecule + '>td:nth-child(2)>input').value));
+      }
+    },
   },
   computed: {
     storeName() {
       return sessionStorage.getItem('Name').slice(0, -3);
+    },
+  },
+  watch: {
+    tableDataInject() {
+      this.$nextTick(() => {
+        // 由于后台数据处理的原因,这三条数据在前台单独处理;
+        this.interestRate('F4', 'A6', 'F3');
+        this.interestRate('G2', 'G0', 'G1');
+        this.interestRate('H1', 'H0', 'F3');
+      });
     },
   },
   mounted() {
