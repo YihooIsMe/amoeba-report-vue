@@ -362,7 +362,7 @@ export default {
     },
     setLoading() {
       this.loading = this.$loading({
-        lock: false,
+        lock: true,
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)',
       });

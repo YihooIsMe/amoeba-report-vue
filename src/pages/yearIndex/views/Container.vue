@@ -227,7 +227,7 @@ export default {
 
     firstLoadingCover(text) {
       this.firstLoading = this.$loading({
-        lock: false,
+        lock: true,
         text,
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)',
@@ -794,6 +794,7 @@ export default {
 </script>
 <style lang="less" scoped>
   .table-container{
+    padding: 0 15px;
     h2{
       text-align: center;
     }

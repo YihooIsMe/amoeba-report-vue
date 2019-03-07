@@ -164,7 +164,7 @@ export default {
     },
     dataSubmission(index) {
       this.loadingCover = this.$loading({
-        lock: false,
+        lock: true,
         text: 'Loading',
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)',
@@ -519,7 +519,7 @@ export default {
   },
   created() {
     this.loadingCover = this.$loading({
-      lock: false,
+      lock: true,
       text: 'Loading...',
       spinner: 'el-icon-loading',
       background: 'rgba(0, 0, 0, 0.7)',
@@ -545,14 +545,14 @@ export default {
     .top-left{
       position:absolute;
       top:0;
-      left:0;
+      left:10px;
       font-size:20px;
       font-weight: bold;
     }
     .top-right{
       position: absolute;
       top:0;
-      right:0;
+      right:10px;
     }
   }
   table.KMTable1.commonTable{

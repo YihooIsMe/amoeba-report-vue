@@ -91,7 +91,7 @@ export default {
   methods: {
     loadingCover() {
       return this.$loading({
-        lock: false,
+        lock: true,
         text: 'loading...',
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)',
