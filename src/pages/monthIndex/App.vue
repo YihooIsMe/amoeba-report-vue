@@ -21,5 +21,6 @@ export default {
     width: 1200px;
     min-width: 1200px;
     margin: auto;
+    box-sizing: border-box;
   }
 </style>

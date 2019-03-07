@@ -140,7 +140,7 @@ export default {
     },
     loadingCover() {
       return this.$loading({
-        lock: false,
+        lock: true,
         text: 'Loading....',
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)',
@@ -283,6 +283,7 @@ export default {
 
 <style lang="less" scoped>
   .monthly-summary-container{
+    padding: 0;
     h2{
       text-align: center;
     }
@@ -343,6 +344,21 @@ export default {
   }
   .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
     opacity: 0;
+  }
+  @page {
+    size: A4;
+    margin: 0;
+    padding: 0;
+  }
+  @media print {
+    html,body{
+      box-sizing: border-box;
+      width: 210mm;
+      height: 296mm;
+    }
+    .monthly-summary-container{
+      margin: 0 3% 0 1%;
+    }
   }
 </style>
 <style lang="less" scoped>

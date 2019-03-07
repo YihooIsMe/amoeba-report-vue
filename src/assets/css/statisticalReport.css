@@ -25,6 +25,7 @@ input[readonly]{
     min-width: 1200px;
     width: 1200px;
     margin:10px auto 10px;
+    box-sizing: border-box;
 }
 .table-container table{
     width: 100%;
@@ -154,6 +155,28 @@ input[readonly]{
     color: #333;
     border-radius: 2px;
     margin-left: 20px;
+}
+@page {
+    size: A4;
+    margin: 0;
+    padding: 0;
+}
+@media print {
+    body, h1, h2, h3, ol, ul, div {
+        width: auto;
+        border: 0;
+        margin: 0;
+        padding: 0;
+        float: none;
+        position: static;
+        overflow: visible;
+        box-sizing: border-box;
+    }
+    html,body{
+        box-sizing: border-box;
+        width: 210mm;
+        height: 296mm;
+    }
 }
 
 
