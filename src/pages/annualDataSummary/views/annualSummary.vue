@@ -167,7 +167,7 @@ export default {
     },
     firstLoadingCover(text) {
       return this.$loading({
-        lock: false,
+        lock: true,
         text,
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)',
@@ -218,11 +218,17 @@ export default {
         const allInputEl = document.querySelectorAll('div.year-summary-container tr.' + item.className + '>td>input');
         for (let i = 0; i < 13; i += 1) {
           if (item.className === 'F4') {
-            allInputEl[i].value = cal.addPercent(cal.remSep(document.querySelectorAll('div.year-summary-container tr.F3>td>input')[i].value) / cal.remSep(document.querySelectorAll('div.year-summary-container tr.A6>td>input')[i].value));
+            if (cal.remSep(document.querySelectorAll('div.year-summary-container tr.A6>td>input')[i].value) !== 0) {
+              allInputEl[i].value = cal.addPercent(cal.remSep(document.querySelectorAll('div.year-summary-container tr.F3>td>input')[i].value) / cal.remSep(document.querySelectorAll('div.year-summary-container tr.A6>td>input')[i].value));
+            }
           } else if (item.className === 'G2') {
-            allInputEl[i].value = cal.addPercent(cal.remSep(document.querySelectorAll('div.year-summary-container tr.G1>td>input')[i].value) / cal.remSep(document.querySelectorAll('div.year-summary-container tr.G0>td>input')[i].value));
+            if (cal.remSep(document.querySelectorAll('div.year-summary-container tr.G0>td>input')[i].value) !== 0) {
+              allInputEl[i].value = cal.addPercent(cal.remSep(document.querySelectorAll('div.year-summary-container tr.G1>td>input')[i].value) / cal.remSep(document.querySelectorAll('div.year-summary-container tr.G0>td>input')[i].value));
+            }
           } else if (item.className === 'H1') {
-            allInputEl[i].value = Math.round(cal.remSep(document.querySelectorAll('div.year-summary-container tr.F3>td>input')[i].value) / cal.remSep(document.querySelectorAll('div.year-summary-container tr.H0>td>input')[i].value));
+            if (cal.remSep(document.querySelectorAll('div.year-summary-container tr.H0>td>input')[i].value) !== 0) {
+              allInputEl[i].value = Math.round(cal.remSep(document.querySelectorAll('div.year-summary-container tr.F3>td>input')[i].value) / cal.remSep(document.querySelectorAll('div.year-summary-container tr.H0>td>input')[i].value));
+            }
           } else {
             allInputEl[i].value = item[this.months[i]].toLocaleString();
           }
@@ -308,6 +314,7 @@ export default {
 </script>
 <style lang="less" scoped>
   .year-summary-container{
+    padding: 0 15px;
     h2{
       text-align: center;
     }
@@ -361,6 +368,23 @@ export default {
   }
   .hide-zero{
     display: none;
+  }
+  @page {
+    size: A4;
+    margin: 0;
+    padding: 0;
+  }
+  @media print {
+    html,body{
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      width: 210mm;
+      height: 296mm;
+    }
+    .year-summary-container{
+      margin: 0 2% 0 1%;
+    }
   }
 </style>
 <style lang="less">
