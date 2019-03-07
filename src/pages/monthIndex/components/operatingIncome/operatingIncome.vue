@@ -388,6 +388,7 @@ export default {
     tableRowClassName({ row, rowIndex }) {
       row.index = rowIndex;
     },
+    // TODO:后续功能添加;
     // modify(change) {
     //   if (change === 'operate') {
     //     if (this.multipleSelection.length === 1) {

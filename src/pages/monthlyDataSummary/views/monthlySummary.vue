@@ -266,13 +266,20 @@ export default {
         this.showDraftAndSubmit = (this.Review === '0' || this.Review === '3') && this.IsComplete === true && this.userID === this.CreateByUser;
       }
     },
-    interestRate(tar, molecule, denominator) {
+    interestRate(tar, molecule, denominator, isPercent) {
       // tar 目标值
       // molecule 分子数值
       // Denominator 分母数值
       if (Number(document.querySelector('.monthly-summary-container table.monthly-summary tr.' + molecule + '>td:nth-child(2)>input').value) !== 0) {
-        document.querySelector('.monthly-summary-container table.monthly-summary tr.' + tar + '>td:nth-child(2)>input').value = cal.addPercent(Number(document.querySelector('.monthly-summary-container table.monthly-summary tr.' + denominator + '>td:nth-child(2)>input').value) / Number(document.querySelector('.monthly-summary-container table.monthly-summary tr.' + molecule + '>td:nth-child(2)>input').value));
+        if (isPercent) {
+          document.querySelector('.monthly-summary-container table.monthly-summary tr.' + tar + '>td:nth-child(2)>input').value = cal.addPercent(Number(document.querySelector('.monthly-summary-container table.monthly-summary tr.' + denominator + '>td:nth-child(2)>input').value) / Number(document.querySelector('.monthly-summary-container table.monthly-summary tr.' + molecule + '>td:nth-child(2)>input').value));
+        } else {
+          document.querySelector('.monthly-summary-container table.monthly-summary tr.' + tar + '>td:nth-child(2)>input').value = Math.round(Number(document.querySelector('.monthly-summary-container table.monthly-summary tr.' + denominator + '>td:nth-child(2)>input').value) / Number(document.querySelector('.monthly-summary-container table.monthly-summary tr.' + molecule + '>td:nth-child(2)>input').value));
+        }
       }
+    },
+    getQueryEl(className) {
+      return document.querySelector('.monthly-summary-container table.monthly-summary tr.' + className + '>td:nth-child(2)>input');
     },
   },
   computed: {
@@ -284,9 +291,13 @@ export default {
     tableDataInject() {
       this.$nextTick(() => {
         // 由于后台数据处理的原因,这三条数据在前台单独处理;
-        this.interestRate('F4', 'A6', 'F3');
-        this.interestRate('G2', 'G0', 'G1');
-        this.interestRate('H1', 'H0', 'F3');
+
+        this.getQueryEl('F3').value = Number(this.getQueryEl('A6').value) - Number(this.getQueryEl('F0').value) - Number(this.getQueryEl('F1').value) - Number(this.getQueryEl('F2').value);
+        this.getQueryEl('G1').value = Number(this.getQueryEl('G0').value) - Number(this.getQueryEl('A4').value) - Number(this.getQueryEl('F0').value) - Number(this.getQueryEl('F1').value) - Number(this.getQueryEl('F2').value);
+
+        this.interestRate('F4', 'A6', 'F3', true);
+        this.interestRate('G2', 'G0', 'G1', true);
+        this.interestRate('H1', 'H0', 'F3', false);
       });
     },
   },
