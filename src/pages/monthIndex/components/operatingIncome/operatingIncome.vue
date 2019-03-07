@@ -404,8 +404,14 @@ export default {
     //         formData.customer = selectedForm.customer;
     //       }
     //       if (selectedForm.customerType === 2) {
-    //         // formData.searchCustomer =
+    //         formData.searchCustomer = selectedForm.searchCustomer;
+    //         formData.searchCustomerName = selectedForm.searchCustomer;
+    //         formData.demandContent = selectedForm.demandContent;
     //       }
+    //       formData.currentSituation = selectedForm.currentSituation;
+    //       formData.completedPercent = selectedForm.completedPercent;
+    //       formData.fullCommissionSign = selectedForm.fullCommissionSign;
+    //       formData.discountType = selectedForm.discountType;
     //     } else {
     //       Message({
     //         message: '您仅能选择一条信息进行修改!',

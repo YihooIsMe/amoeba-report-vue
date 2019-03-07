@@ -278,8 +278,9 @@ export default {
         }
       }
     },
-    getQueryEl(className) {
-      return document.querySelector('.monthly-summary-container table.monthly-summary tr.' + className + '>td:nth-child(2)>input');
+    getQueryEl(className, i) {
+      // return document.querySelector('.monthly-summary-container table.monthly-summary tr.' + className + '>td:nth-child(2)>input');
+      return document.querySelector('.monthly-summary-container table.monthly-summary tr.' + className + '>td:nth-child(' + i + ')>input');
     },
   },
   computed: {
@@ -292,12 +293,33 @@ export default {
       this.$nextTick(() => {
         // 由于后台数据处理的原因,这三条数据在前台单独处理;
 
-        this.getQueryEl('F3').value = Number(this.getQueryEl('A6').value) - Number(this.getQueryEl('F0').value) - Number(this.getQueryEl('F1').value) - Number(this.getQueryEl('F2').value);
-        this.getQueryEl('G1').value = Number(this.getQueryEl('G0').value) - Number(this.getQueryEl('A4').value) - Number(this.getQueryEl('F0').value) - Number(this.getQueryEl('F1').value) - Number(this.getQueryEl('F2').value);
+        this.getQueryEl('F3', 2).value = Number(this.getQueryEl('A6', 2).value) - Number(this.getQueryEl('F0', 2).value) - Number(this.getQueryEl('F1', 2).value) - Number(this.getQueryEl('F2', 2).value);
+        this.getQueryEl('G1', 2).value = Number(this.getQueryEl('G0', 2).value) - Number(this.getQueryEl('A4', 2).value) - Number(this.getQueryEl('F0', 2).value) - Number(this.getQueryEl('F1', 2).value) - Number(this.getQueryEl('F2', 2).value);
 
         this.interestRate('F4', 'A6', 'F3', true);
         this.interestRate('G2', 'G0', 'G1', true);
         this.interestRate('H1', 'H0', 'F3', false);
+
+        if (Number(this.getQueryEl('F3', 2).value) !== 0) {
+          this.getQueryEl('F3', 4).value = cal.addPercent(Number(this.getQueryEl('F3', 3).value) / Number(this.getQueryEl('F3', 2).value));
+        }
+        if (Number(this.getQueryEl('G1', 2).value) !== 0) {
+          this.getQueryEl('G1', 4).value = cal.addPercent(Number(this.getQueryEl('G1', 3).value) / Number(this.getQueryEl('G1', 2).value));
+        }
+        if (cal.remPercent(this.getQueryEl('F4', 2).value) !== 0) {
+          this.getQueryEl('F4', 4).value = cal.addPercent(cal.remPercent(this.getQueryEl('F4', 3).value) / cal.remPercent(this.getQueryEl('F4', 2).value));
+        }
+        if (cal.remPercent(this.getQueryEl('G2', 2).value) !== 0) {
+          this.getQueryEl('G2', 4).value = cal.addPercent(cal.remPercent(this.getQueryEl('G2', 3).value) / cal.remPercent(this.getQueryEl('G2', 2).value));
+        }
+        if (Number(this.getQueryEl('H1', 2).value) !== 0) {
+          this.getQueryEl('H1', 4).value = cal.addPercent(Number(this.getQueryEl('H1', 3).value) / Number(this.getQueryEl('H1', 2).value));
+        }
+        this.getQueryEl('F3', 5).value = Number(this.getQueryEl('F3', 3).value) - Number(this.getQueryEl('F3', 2).value);
+        this.getQueryEl('G1', 5).value = Number(this.getQueryEl('G1', 3).value) - Number(this.getQueryEl('G1', 2).value);
+        this.getQueryEl('F4', 5).value = cal.addPercent(cal.remPercent(this.getQueryEl('F4', 3).value) - cal.remPercent(this.getQueryEl('F4', 2).value));
+        this.getQueryEl('G2', 5).value = cal.addPercent(cal.remPercent(this.getQueryEl('G2', 3).value) - cal.remPercent(this.getQueryEl('G2', 2).value));
+        this.getQueryEl('H1', 5).value = Number(this.getQueryEl('H1', 3).value) - Number(this.getQueryEl('H1', 2).value);
       });
     },
   },
