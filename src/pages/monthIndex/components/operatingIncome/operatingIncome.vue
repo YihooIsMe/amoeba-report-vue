@@ -3,7 +3,7 @@
     营业收入（白色为预定，灰色为实际）
     <div class="child-operating-income">
       <el-button type="primary" plain size="small" @click="dialogTableVisible = true" v-if="showDraftAndSubmit">新增</el-button>
-      <el-button type="success" plain size="small" @click="modify('operate')" v-if="showDraftAndSubmit">修改</el-button>
+      <!--<el-button type="success" plain size="small" @click="modify('operate')" v-if="showDraftAndSubmit">修改</el-button>-->
       <el-button type="danger" plain size="small" @click="deleteSelected('operate')" v-if="showDraftAndSubmit">删除</el-button>
       <el-button type="warning" plain size="small" @click="matchAdjustment('operatingIncome')" v-if="reachMatchAdjustment">达成匹配调整</el-button>
       <el-table
@@ -388,35 +388,35 @@ export default {
     tableRowClassName({ row, rowIndex }) {
       row.index = rowIndex;
     },
-    modify(change) {
-      if (change === 'operate') {
-        if (this.multipleSelection.length === 1) {
-          console.log(this.addFormArr[this.multipleSelection[0].index]);
-          const selectedForm = this.addFormArr[this.multipleSelection[0].index];
-          const formData = {};
-          formData.broker = selectedForm.broker;
-          formData.saleAndLease = selectedForm.saleAndLease;
-          formData.customerType = selectedForm.customerType;
-          if (selectedForm.customerType === 1) {
-            formData.objectNum = selectedForm.objectNum;
-            formData.caseName = selectedForm.caseName;
-            formData.customer = selectedForm.customer;
-          }
-          if (selectedForm.customerType === 2) {
-            // formData.searchCustomer =
-          }
-        } else {
-          Message({
-            message: '您仅能选择一条信息进行修改!',
-            type: 'error',
-            duration: 2000,
-          });
-        }
-      }
-      if (change === 'performance') {
-
-      }
-    },
+    // modify(change) {
+    //   if (change === 'operate') {
+    //     if (this.multipleSelection.length === 1) {
+    //       console.log(this.addFormArr[this.multipleSelection[0].index]);
+    //       const selectedForm = this.addFormArr[this.multipleSelection[0].index];
+    //       const formData = {};
+    //       formData.broker = selectedForm.broker;
+    //       formData.saleAndLease = selectedForm.saleAndLease;
+    //       formData.customerType = selectedForm.customerType;
+    //       if (selectedForm.customerType === 1) {
+    //         formData.objectNum = selectedForm.objectNum;
+    //         formData.caseName = selectedForm.caseName;
+    //         formData.customer = selectedForm.customer;
+    //       }
+    //       if (selectedForm.customerType === 2) {
+    //         // formData.searchCustomer =
+    //       }
+    //     } else {
+    //       Message({
+    //         message: '您仅能选择一条信息进行修改!',
+    //         type: 'error',
+    //         duration: 2000,
+    //       });
+    //     }
+    //   }
+    //   if (change === 'performance') {
+    //
+    //   }
+    // },
     deleteSelected(sel) {
       if (sel === 'operate') {
         if (this.multipleSelection.length === this.addFormArr.length) {
