@@ -40,7 +40,7 @@
             <th><i class="el-icon-arrow-down" @click="toggleSubject($event)" id="toggle-icon">科目</i></th>
             <th>{{Month}}月预定</th>
             <th>{{Month}}月实际</th>
-            <th>预定比(%)</th>
+            <th>预定比</th>
             <th>{{Month}}月预定实际差异</th>
             <th>MP</th>
             <th>MP比</th>
@@ -55,7 +55,6 @@
             <td v-for="n in 8" :key="n">
               <input type="text"
                      :readonly="true"
-                     :value="item[rowSort[n-1]]"
               >
             </td>
           </tr>
@@ -73,12 +72,13 @@ import Vue from 'vue';
 import { MessageBox, Loading, Message } from 'element-ui';
 import cal from '@/assets/js/comCalculation';
 import news from '@/assets/js/notification';
+import summaryCal from '@/assets/js/summaryCalculation';
 import api from '@/http/index';
 
 Vue.component(MessageBox.name, MessageBox);
 Vue.use(Loading);
 Vue.use(api);
-
+// :value="item[rowSort[n-1]]"
 export default {
   name: 'monthlySummary',
   data() {
@@ -123,10 +123,23 @@ export default {
         this.tableDataList.forEach((item) => {
           const allInputEl = document.querySelectorAll('table.monthly-summary tr.' + item.className + ' input');
           let sumData = 0;
+          let isZero;
           for (let i = 0; i < 8; i += 1) {
-            sumData = cal.remSep(allInputEl[i].value) + sumData;
+            if (parseFloat(allInputEl[i].value) !== 0 && allInputEl[i].value !== '') {
+              isZero = false;
+              break;
+            } else {
+              isZero = true;
+              switch (allInputEl[i].value) {
+                case '':
+                  sumData = Number(allInputEl[i].value) + sumData;
+                  break;
+                default:
+                  sumData = parseFloat(allInputEl[i].value) + sumData;
+              }
+            }
           }
-          if (sumData === 0 || sumData === 0.0 || sumData === 0.00) {
+          if (isZero === true && (sumData === 0 || sumData === 0.0 || sumData === 0.00)) {
             document.querySelector('table.monthly-summary tr.' + item.className).classList.add('hide-zero');
           }
         });
@@ -138,6 +151,14 @@ export default {
         }
       }
     },
+    injectTableData() {
+      this.tableDataList.forEach((item) => {
+        const allInputEl = document.querySelectorAll('table.monthly-summary tr.' + item.className + '>td>input');
+        for (let i = 0; i < allInputEl.length; i += 1) {
+          allInputEl[i].value = item[this.rowSort[i]];
+        }
+      });
+    },
     loadingCover() {
       return this.$loading({
         lock: true,
@@ -145,6 +166,16 @@ export default {
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)',
       });
+    },
+    // 月度汇总表计算逻辑;
+    summaryCalculation() {
+      const arrIndex = [2, 3, 6, 8, 9];
+      arrIndex.forEach((item) => {
+        summaryCal.currentColumnCalculation(item);
+      });
+      summaryCal.ratio(this.tableDataList, 'monthly-summary', 0, 1, 2);
+      summaryCal.bookActualDiff(this.tableDataList, 'monthly-summary', 1, 0, 3);
+      summaryCal.ratio(this.tableDataList, 'monthly-summary', 4, 1, 5);
     },
     monthlySummaryRequest() {
       this.userID = sessionStorage.getItem('userID');
@@ -174,6 +205,10 @@ export default {
             this.tableDataInject.push(this['tableDataSource' + i]);
           }
           this.IsShowBtn = true;
+          this.$nextTick(() => {
+            this.injectTableData();
+            this.summaryCalculation();
+          });
         }
         this.monthAuthorityJudge();
         this.loadingCover().close();
@@ -266,61 +301,10 @@ export default {
         this.showDraftAndSubmit = (this.Review === '0' || this.Review === '3') && this.IsComplete === true && this.userID === this.CreateByUser;
       }
     },
-    interestRate(tar, molecule, denominator, isPercent) {
-      // tar 目标值
-      // molecule 分子数值
-      // Denominator 分母数值
-      if (Number(document.querySelector('.monthly-summary-container table.monthly-summary tr.' + molecule + '>td:nth-child(2)>input').value) !== 0) {
-        if (isPercent) {
-          document.querySelector('.monthly-summary-container table.monthly-summary tr.' + tar + '>td:nth-child(2)>input').value = cal.addPercent(Number(document.querySelector('.monthly-summary-container table.monthly-summary tr.' + denominator + '>td:nth-child(2)>input').value) / Number(document.querySelector('.monthly-summary-container table.monthly-summary tr.' + molecule + '>td:nth-child(2)>input').value));
-        } else {
-          document.querySelector('.monthly-summary-container table.monthly-summary tr.' + tar + '>td:nth-child(2)>input').value = Math.round(Number(document.querySelector('.monthly-summary-container table.monthly-summary tr.' + denominator + '>td:nth-child(2)>input').value) / Number(document.querySelector('.monthly-summary-container table.monthly-summary tr.' + molecule + '>td:nth-child(2)>input').value));
-        }
-      }
-    },
-    getQueryEl(className, i) {
-      // return document.querySelector('.monthly-summary-container table.monthly-summary tr.' + className + '>td:nth-child(2)>input');
-      return document.querySelector('.monthly-summary-container table.monthly-summary tr.' + className + '>td:nth-child(' + i + ')>input');
-    },
   },
   computed: {
     storeName() {
       return sessionStorage.getItem('Name').slice(0, -3);
-    },
-  },
-  watch: {
-    tableDataInject() {
-      this.$nextTick(() => {
-        // 由于后台数据处理的原因,这三条数据在前台单独处理;
-
-        this.getQueryEl('F3', 2).value = Number(this.getQueryEl('A6', 2).value) - Number(this.getQueryEl('F0', 2).value) - Number(this.getQueryEl('F1', 2).value) - Number(this.getQueryEl('F2', 2).value);
-        this.getQueryEl('G1', 2).value = Number(this.getQueryEl('G0', 2).value) - Number(this.getQueryEl('A4', 2).value) - Number(this.getQueryEl('F0', 2).value) - Number(this.getQueryEl('F1', 2).value) - Number(this.getQueryEl('F2', 2).value);
-
-        this.interestRate('F4', 'A6', 'F3', true);
-        this.interestRate('G2', 'G0', 'G1', true);
-        this.interestRate('H1', 'H0', 'F3', false);
-
-        if (Number(this.getQueryEl('F3', 2).value) !== 0) {
-          this.getQueryEl('F3', 4).value = cal.addPercent(Number(this.getQueryEl('F3', 3).value) / Number(this.getQueryEl('F3', 2).value));
-        }
-        if (Number(this.getQueryEl('G1', 2).value) !== 0) {
-          this.getQueryEl('G1', 4).value = cal.addPercent(Number(this.getQueryEl('G1', 3).value) / Number(this.getQueryEl('G1', 2).value));
-        }
-        if (cal.remPercent(this.getQueryEl('F4', 2).value) !== 0) {
-          this.getQueryEl('F4', 4).value = cal.addPercent(cal.remPercent(this.getQueryEl('F4', 3).value) / cal.remPercent(this.getQueryEl('F4', 2).value));
-        }
-        if (cal.remPercent(this.getQueryEl('G2', 2).value) !== 0) {
-          this.getQueryEl('G2', 4).value = cal.addPercent(cal.remPercent(this.getQueryEl('G2', 3).value) / cal.remPercent(this.getQueryEl('G2', 2).value));
-        }
-        if (Number(this.getQueryEl('H1', 2).value) !== 0) {
-          this.getQueryEl('H1', 4).value = cal.addPercent(Number(this.getQueryEl('H1', 3).value) / Number(this.getQueryEl('H1', 2).value));
-        }
-        this.getQueryEl('F3', 5).value = Number(this.getQueryEl('F3', 3).value) - Number(this.getQueryEl('F3', 2).value);
-        this.getQueryEl('G1', 5).value = Number(this.getQueryEl('G1', 3).value) - Number(this.getQueryEl('G1', 2).value);
-        this.getQueryEl('F4', 5).value = cal.addPercent(cal.remPercent(this.getQueryEl('F4', 3).value) - cal.remPercent(this.getQueryEl('F4', 2).value));
-        this.getQueryEl('G2', 5).value = cal.addPercent(cal.remPercent(this.getQueryEl('G2', 3).value) - cal.remPercent(this.getQueryEl('G2', 2).value));
-        this.getQueryEl('H1', 5).value = Number(this.getQueryEl('H1', 3).value) - Number(this.getQueryEl('H1', 2).value);
-      });
     },
   },
   mounted() {
@@ -363,25 +347,51 @@ export default {
     .F5{
       display: none;
     }
-    th{
-      width: 10% !important;
-    }
-    td{
-      height:30px;
-      input{
-        width: 100%;
-        height: 100%;
-        border:none;
-        font-size: 16px;
+    tr{
+      box-sizing: border-box;
+      th{
+        height:40px;
+      }
+      th:first-child{
+        cursor: pointer;
+        i{
+          padding:5px;
+        }
+        i:before{
+          content: '';
+        }
+        .el-icon-arrow-down:after{
+          content: '\E603' !important;
+          border:1px solid #ccc;
+          -webkit-border-radius: 3px;
+          -moz-border-radius: 3px;
+          border-radius: 3px;
+        }
+        i:hover{
+          color:#409eff;
+        }
+      }
+      td{
+        box-sizing: border-box;
+        height:40px;
+        width: 10%;
+        input{
+          width: 100%;
+          height: 100%;
+          border:none;
+          font-size: 16px;
+          text-align: center;
+        }
+        input[readonly] {
+          cursor: not-allowed;
+          background: rgba(170, 170, 170, 0.41);
+        }
+      }
+      td:first-child{
+        padding-left: 10px;
         text-align: center;
+        min-width: 140px;
       }
-      input[readonly] {
-        cursor: not-allowed;
-        background: rgba(170, 170, 170, 0.41);
-      }
-    }
-    td:first-child{
-      padding-left: 10px;
     }
   }
   .red{
@@ -395,6 +405,16 @@ export default {
   }
   .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
     opacity: 0;
+  }
+  .toggle-subject,.hide-zero{
+    display: none;
+  }
+  .el-icon-arrow-up:after{
+    content: '\E605' !important;
+    border:1px solid #ccc;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
   }
   @page {
     size: A4;
@@ -410,44 +430,6 @@ export default {
     .monthly-summary-container{
       margin: 0 3% 0 1%;
     }
-  }
-</style>
-<style lang="less" scoped>
-  table.KMTable1.commonTable{
-    thead{
-      tr{
-        height: 40px;
-        th:first-child{
-          cursor: pointer;
-          i{
-            padding:5px;
-          }
-          i:before{
-            content: '';
-          }
-          .el-icon-arrow-down:after{
-            content: '\E603' !important;
-            border:1px solid #ccc;
-            -webkit-border-radius: 3px;
-            -moz-border-radius: 3px;
-            border-radius: 3px;
-          }
-          i:hover{
-            color:#409eff;
-          }
-        }
-      }
-    }
-  }
-  .toggle-subject,.hide-zero{
-    display: none;
-  }
-  .el-icon-arrow-up:after{
-    content: '\E605' !important;
-    border:1px solid #ccc;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
   }
 </style>
 <style>
