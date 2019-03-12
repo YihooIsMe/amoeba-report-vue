@@ -287,7 +287,8 @@ export default {
         Month: this.Month,
       };
       console.log(params);
-      const SummaryMonthList = [];
+      const SummaryMonthList = {};
+      const SummaryMonthListArray = [];
       this.tableDataList.forEach((item) => {
         const allInputEl = document.querySelectorAll('table.monthly-summary tr.' + item.className + '>td>input');
         const obj = {};
@@ -296,10 +297,11 @@ export default {
         keyList.forEach((el, i) => {
           obj[el] = allInputEl[i].value;
         });
-        SummaryMonthList.push(obj);
+        SummaryMonthListArray.push(obj);
       });
+      SummaryMonthList.SummaryMonthList = SummaryMonthListArray;
       console.log(SummaryMonthList);
-      this.$api.monthlySummaryExport({ SummaryMonthList })
+      this.$api.monthlySummaryExport(SummaryMonthList)
         .then((res) => {
           console.log(res);
         })
