@@ -299,6 +299,7 @@ export default {
         });
         SummaryMonthListArray.push(obj);
       });
+      SummaryMonthList.test = '';
       SummaryMonthList.SummaryMonthList = SummaryMonthListArray;
       console.log(SummaryMonthList);
       this.$api.monthlySummaryExport(SummaryMonthList)

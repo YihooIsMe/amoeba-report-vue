@@ -402,7 +402,7 @@ export default {
           if (selectedForm.customerType === 1) {
             formData.objectNum = selectedForm.objectNum;
             formData.caseName = selectedForm.caseName;
-            formData.customer = selectedForm.customerNameSpl;
+            formData.customer = selectedForm.customerNameSpl.split('<br>').join(' ');
           } else {
             formData.objectNum = '';
             formData.caseName = '';
@@ -419,7 +419,7 @@ export default {
             formData.demandContent = '';
           }
           formData.currentSituation = selectedForm.currentSituation;
-          formData.completedPercent = selectedForm.completedPercent;
+          formData.completedPercent = selectedForm.completedPercent.slice(0, -1);
           formData.fullCommissionSign = selectedForm.fullCommissionSign;
           formData.discountType = selectedForm.discountType;
           formData.discountAmount = selectedForm.discountAmount;
