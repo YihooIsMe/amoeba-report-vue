@@ -299,17 +299,15 @@ export default {
         });
         SummaryMonthListArray.push(obj);
       });
-      SummaryMonthList.test = '';
       SummaryMonthList.SummaryMonthList = SummaryMonthListArray;
-      console.log(SummaryMonthList);
       this.$api.monthlySummaryExport(SummaryMonthList)
         .then((res) => {
           console.log(res);
+          this.$refs.exportIframe.setAttribute('src', this.exportUrl + '?OrganizeId=' + params.OrganizeId + '&company=' + params.company + '&years=' + params.years + '&Month=' + params.Month);
         })
         .catch((errMsg) => {
           console.log(errMsg);
         });
-      // this.$refs.exportIframe.setAttribute('src', this.exportUrl + '?OrganizeId=' + params.OrganizeId + '&company=' + params.company + '&years=' + params.years + '&Month=' + params.Month);
     },
     monthAuthorityJudge() {
       const year = news.yearAndMonthChange().year;
