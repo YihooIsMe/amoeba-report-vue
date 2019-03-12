@@ -178,7 +178,6 @@ export default {
   props: {
     dialogTableVisible: Boolean,
     getStoreBrokerData: Array,
-    modifyAddForm: Object,
   },
   data() {
     const checkDiscountAmount = (rule, value, callback) => {
@@ -222,6 +221,7 @@ export default {
         caseName: '',
         customer: '',
         customerID: '',
+        // searchCustomer: 15088909556,
         searchCustomer: '',
         searchCustomerName: '',
         demandContent: '',
@@ -291,6 +291,13 @@ export default {
         } else {
           console.log('error submit!');
         }
+      });
+    },
+    doModify(data) {
+      console.log(data);
+      const arrList = ['broker', 'saleAndLease', 'customerType', 'objectNum', 'caseName', 'customer', 'searchCustomer', 'searchCustomerName', 'demandContent', 'currentSituation', 'completedPercent', 'fullCommissionSign', 'discountType', 'discountAmount', 'index'];
+      arrList.forEach((el) => {
+        this.AddForm[el] = data[el];
       });
     },
     selectCustomerType() {

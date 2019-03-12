@@ -206,9 +206,9 @@
       </el-table>
     </div>
     <OperatingAdd
+      ref="operatingAdd"
       :dialogTableVisible="dialogTableVisible"
       :getStoreBrokerData="getStoreBrokerData"
-      :modifyAddForm="modifyAddForm"
       @changeDialogShow="getDialogShow"
       @giveFormDate="getAddFormData"></OperatingAdd>
     <AchieveAdjustment
@@ -264,7 +264,6 @@ export default {
       MonthPerformanceYD: [],
       operatingSumIndex: 0,
       selectedIndexArr: '',
-      modifyAddForm: {},
     };
   },
   methods: {
@@ -403,19 +402,30 @@ export default {
           if (selectedForm.customerType === 1) {
             formData.objectNum = selectedForm.objectNum;
             formData.caseName = selectedForm.caseName;
-            formData.customer = selectedForm.customer;
+            formData.customer = selectedForm.customerNameSpl;
+          } else {
+            formData.objectNum = '';
+            formData.caseName = '';
+            formData.customer = '';
+
           }
           if (selectedForm.customerType === 2) {
             formData.searchCustomer = selectedForm.searchCustomer;
             formData.searchCustomerName = selectedForm.searchCustomerName;
             formData.demandContent = selectedForm.demandContent;
+          } else {
+            formData.searchCustomer = '';
+            formData.searchCustomerName = '';
+            formData.demandContent = '';
           }
           formData.currentSituation = selectedForm.currentSituation;
           formData.completedPercent = selectedForm.completedPercent;
           formData.fullCommissionSign = selectedForm.fullCommissionSign;
           formData.discountType = selectedForm.discountType;
           formData.discountAmount = selectedForm.discountAmount;
-          this.modifyAddForm = formData;
+          formData.index = selectedForm.index;
+          this.$refs.operatingAdd.doModify(formData);
+          this.dialogTableVisible = true;
         } else {
           Message({
             message: '您仅能选择一条信息进行修改!',

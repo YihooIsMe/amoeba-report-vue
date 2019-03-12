@@ -155,7 +155,7 @@ export default {
         caseName: '',
         customer: '',
         customerID: '',
-        // searchCustomer: 8602165120564,
+        // searchCustomer: 15088909556,
         searchCustomer: '',
         searchCustomerName: '',
         demandContent: '',
