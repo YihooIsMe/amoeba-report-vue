@@ -178,6 +178,7 @@ export default {
   props: {
     dialogTableVisible: Boolean,
     getStoreBrokerData: Array,
+    modifyAddForm: Object,
   },
   data() {
     const checkDiscountAmount = (rule, value, callback) => {

@@ -288,6 +288,7 @@ export default {
       };
       console.log(params);
       const SummaryMonthList = {};
+      const test = {};
       const SummaryMonthListArray = [];
       this.tableDataList.forEach((item) => {
         const allInputEl = document.querySelectorAll('table.monthly-summary tr.' + item.className + '>td>input');
@@ -300,8 +301,9 @@ export default {
         SummaryMonthListArray.push(obj);
       });
       SummaryMonthList.SummaryMonthList = SummaryMonthListArray;
-      console.log(SummaryMonthList);
-      this.$api.monthlySummaryExport(SummaryMonthList)
+      test.test = SummaryMonthList;
+      console.log(test);
+      this.$api.monthlySummaryExport(test)
         .then((res) => {
           console.log(res);
         })
