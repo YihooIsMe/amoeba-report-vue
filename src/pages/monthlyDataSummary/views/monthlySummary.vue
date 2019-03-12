@@ -287,7 +287,26 @@ export default {
         Month: this.Month,
       };
       console.log(params);
-      this.$refs.exportIframe.setAttribute('src', this.exportUrl + '?OrganizeId=' + params.OrganizeId + '&company=' + params.company + '&years=' + params.years + '&Month=' + params.Month);
+      const SummaryMonthList = [];
+      this.tableDataList.forEach((item) => {
+        const allInputEl = document.querySelectorAll('table.monthly-summary tr.' + item.className + '>td>input');
+        const obj = {};
+        obj.Name = item.Name;
+        const keyList = ['MonthData', 'TheMonthAmount', 'PredeterminedRatio', 'Difference', 'AnnualReservation', 'MPRatio', 'GrandTotalMP', 'GrandTotalActualMP'];
+        keyList.forEach((el, i) => {
+          obj[el] = allInputEl[i].value;
+        });
+        SummaryMonthList.push(obj);
+      });
+      console.log(SummaryMonthList);
+      this.$api.monthlySummaryExport({ SummaryMonthList })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((errMsg) => {
+          console.log(errMsg);
+        });
+      // this.$refs.exportIframe.setAttribute('src', this.exportUrl + '?OrganizeId=' + params.OrganizeId + '&company=' + params.company + '&years=' + params.years + '&Month=' + params.Month);
     },
     monthAuthorityJudge() {
       const year = news.yearAndMonthChange().year;
@@ -344,6 +363,7 @@ export default {
   table.KMTable1.commonTable{
     margin-top: 20px;
     border-collapse: collapse;
+    width: 100%;
     .F5{
       display: none;
     }
@@ -351,6 +371,7 @@ export default {
       box-sizing: border-box;
       th{
         height:40px;
+        width: 10%;
       }
       th:first-child{
         cursor: pointer;
@@ -387,7 +408,7 @@ export default {
           background: rgba(170, 170, 170, 0.41);
         }
       }
-      td:first-child{
+      td:first-child,th:first-child{
         padding-left: 10px;
         text-align: center;
         min-width: 140px;

@@ -80,6 +80,12 @@ export const summaryData = params => axios({
   data: params,
 });
 
+export const monthlySummaryExport = params => axios({
+  url: '/TDownLoad',
+  method: 'POST',
+  data: params,
+});
+
 export default {
   searchUserID,
   monthScheduleTable,
@@ -94,4 +100,5 @@ export default {
   monthTransactionCase,
   monthMissionList,
   summaryData,
+  monthlySummaryExport,
 };
