@@ -314,16 +314,16 @@ export default {
           // URL.revokeObjectURL(elink.href); // 释放URL 对象
           // document.body.removeChild(elink);
 
-          const blob = new Blob([res]);
-          const fileName = '统计.xlsx';
-          const elink = document.createElement('a');
-          elink.download = fileName;
-          elink.style.display = 'none';
-          elink.href = URL.createObjectURL(blob);
-          document.body.appendChild(elink);
-          elink.click();
-          URL.revokeObjectURL(elink.href); // 释放URL 对象
-          document.body.removeChild(elink);
+          // const blob = new Blob([res]);
+          // const fileName = '统计.xlsx';
+          // const elink = document.createElement('a');
+          // elink.download = fileName;
+          // elink.style.display = 'none';
+          // elink.href = URL.createObjectURL(blob);
+          // document.body.appendChild(elink);
+          // elink.click();
+          // URL.revokeObjectURL(elink.href); // 释放URL 对象
+          // document.body.removeChild(elink);
 
           // this.$refs.exportIframe.setAttribute('src', this.exportUrl);
           // this.$api.monthlySummaryDown({

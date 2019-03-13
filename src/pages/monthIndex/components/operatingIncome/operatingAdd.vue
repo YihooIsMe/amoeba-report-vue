@@ -212,6 +212,7 @@ export default {
         { label: '租赁(承租方中人)' },
       ], // 折让中人类型
       AddForm: {
+        type: '',
         id: '',
         broker: '',
         saleAndLease: 1,
@@ -288,16 +289,26 @@ export default {
           this.copyDialogTableVisible = false;
           this.$refs[formName].resetFields();
           this.AddForm.caseName = '';
+          this.AddForm.searchCustomerName = '';
         } else {
           console.log('error submit!');
         }
       });
     },
+    doNewAdd() {
+      Vue.set(this.AddForm, 'type', 'newAdd');
+    },
     doModify(data) {
       console.log(data);
-      const arrList = ['broker', 'saleAndLease', 'customerType', 'objectNum', 'caseName', 'customer', 'searchCustomer', 'searchCustomerName', 'demandContent', 'currentSituation', 'completedPercent', 'fullCommissionSign', 'discountType', 'discountAmount', 'index'];
-      arrList.forEach((el) => {
-        this.AddForm[el] = data[el];
+      // DOM加载完成后执行，否则获取不到this.$refs.AddForm元素，报错；
+      this.$nextTick(() => {
+        this.$refs.AddForm.resetFields();
+        this.AddForm.caseName = '';
+        this.AddForm.searchCustomerName = '';
+        const arrList = ['type', 'broker', 'saleAndLease', 'customerType', 'objectNum', 'caseName', 'customer', 'searchCustomer', 'searchCustomerName', 'demandContent', 'currentSituation', 'completedPercent', 'fullCommissionSign', 'discountType', 'discountAmount', 'index'];
+        arrList.forEach((el) => {
+          this.AddForm[el] = data[el];
+        });
       });
     },
     selectCustomerType() {
@@ -320,6 +331,9 @@ export default {
     },
     doClose() {
       this.$emit('changeDialogShow', false);
+      this.$refs.AddForm.resetFields();
+      this.AddForm.caseName = '';
+      this.AddForm.searchCustomerName = '';
     },
     messageInfo(msg) {
       Message({

@@ -2,7 +2,7 @@
   <div class="operating-income">
     营业收入（白色为预定，灰色为实际）
     <div class="child-operating-income">
-      <el-button type="primary" plain size="small" @click="dialogTableVisible = true" v-if="showDraftAndSubmit">新增</el-button>
+      <el-button type="primary" plain size="small" @click="newAdd" v-if="showDraftAndSubmit">新增</el-button>
       <el-button type="success" plain size="small" @click="modify('operate')" v-if="showDraftAndSubmit">修改</el-button>
       <el-button type="danger" plain size="small" @click="deleteSelected('operate')" v-if="showDraftAndSubmit">删除</el-button>
       <el-button type="warning" plain size="small" @click="matchAdjustment('operatingIncome')" v-if="reachMatchAdjustment">达成匹配调整</el-button>
@@ -389,6 +389,10 @@ export default {
     tableRowClassName({ row, rowIndex }) {
       row.index = rowIndex;
     },
+    newAdd() {
+      this.dialogTableVisible = true;
+      this.$refs.operatingAdd.doNewAdd();
+    },
     // TODO:后续功能添加;
     modify(change) {
       if (change === 'operate') {
@@ -410,7 +414,7 @@ export default {
 
           }
           if (selectedForm.customerType === 2) {
-            formData.searchCustomer = selectedForm.searchCustomer;
+            formData.searchCustomer = Number(selectedForm.searchCustomer);
             formData.searchCustomerName = selectedForm.searchCustomerName;
             formData.demandContent = selectedForm.demandContent;
           } else {
@@ -424,8 +428,9 @@ export default {
           formData.discountType = selectedForm.discountType;
           formData.discountAmount = selectedForm.discountAmount;
           formData.index = selectedForm.index;
-          this.$refs.operatingAdd.doModify(formData);
+          formData.type = 'modify';
           this.dialogTableVisible = true;
+          this.$refs.operatingAdd.doModify(formData);
         } else {
           Message({
             message: '您仅能选择一条信息进行修改!',
@@ -536,46 +541,73 @@ export default {
       this.addPerformanceArr.push(formArrObj);
     },
     getAddFormData(newVal) {
-      const formArrObj = {};
-      if (newVal.customerType === 1) {
-        formArrObj.customerNameSpl = newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1];
-        formArrObj.customerName = newVal.customer.split(' ')[0];
-        formArrObj.customerPhone = newVal.customer.split(' ')[1];
-        formArrObj.objectNameDes = newVal.objectNum + '<br>' + newVal.caseName;
-        formArrObj.objectNum = newVal.objectNum;
-        formArrObj.caseName = newVal.caseName;
-      } else {
-        formArrObj.customerNameSpl = newVal.searchCustomerName + '<br>' + newVal.searchCustomer;
-        formArrObj.customerName = newVal.searchCustomerName;
-        formArrObj.customerPhone = newVal.searchCustomer;
-        formArrObj.objectNameDes = newVal.demandContent;
-        formArrObj.objectNum = '';
-        formArrObj.caseName = newVal.demandContent;
-      }
-      formArrObj.bookType = '月预订';
-      formArrObj.status = '未达成'; // TODO:后面数据库传入数据;
-      formArrObj.broker = newVal.broker;
-      formArrObj.searchCustomer = newVal.searchCustomer;
-      formArrObj.searchCustomerName = newVal.searchCustomerName;
-      formArrObj.demandContent = newVal.demandContent;
-      formArrObj.brokerLabel = newVal.brokerLabel;
-      formArrObj.saleAndLease = newVal.saleAndLease;
-      formArrObj.customerType = newVal.customerType;
-      formArrObj.customerID = newVal.customerID;
-      formArrObj.customerTypeSpl = (newVal.saleAndLease === 1 ? '买卖' : '租赁') + '(' + (newVal.customerType === 1 ? '业主方' : '买方') + ')';
+      if (newVal.type === 'newAdd') {
+        const formArrObj = {};
+        if (newVal.customerType === 1) {
+          formArrObj.customerNameSpl = newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1];
+          formArrObj.customerName = newVal.customer.split(' ')[0];
+          formArrObj.customerPhone = newVal.customer.split(' ')[1];
+          formArrObj.objectNameDes = newVal.objectNum + '<br>' + newVal.caseName;
+          formArrObj.objectNum = newVal.objectNum;
+          formArrObj.caseName = newVal.caseName;
+        } else {
+          formArrObj.customerNameSpl = newVal.searchCustomerName + '<br>' + newVal.searchCustomer;
+          formArrObj.customerName = newVal.searchCustomerName;
+          formArrObj.customerPhone = newVal.searchCustomer;
+          formArrObj.objectNameDes = newVal.demandContent;
+          formArrObj.objectNum = '';
+          formArrObj.caseName = newVal.demandContent;
+        }
+        formArrObj.bookType = '月预订';
+        formArrObj.status = '未达成'; // TODO:后面数据库传入数据;
+        formArrObj.broker = newVal.broker;
+        formArrObj.searchCustomer = newVal.searchCustomer;
+        formArrObj.searchCustomerName = newVal.searchCustomerName;
+        formArrObj.demandContent = newVal.demandContent;
+        formArrObj.brokerLabel = newVal.brokerLabel;
+        formArrObj.saleAndLease = newVal.saleAndLease;
+        formArrObj.customerType = newVal.customerType;
+        formArrObj.customerID = newVal.customerID;
+        formArrObj.customerTypeSpl = (newVal.saleAndLease === 1 ? '买卖' : '租赁') + '(' + (newVal.customerType === 1 ? '业主方' : '买方') + ')';
 
-      formArrObj.currentSituation = newVal.currentSituation;
-      formArrObj.completedPercent = newVal.completedPercent + '%'; // TODO:暂时先写死;
-      formArrObj.fullCommissionSign = newVal.fullCommissionSign;
-      formArrObj.discountType = newVal.discountType;
-      formArrObj.discountAmount = newVal.discountAmount;
-      formArrObj.estimatedContractMoney = newVal.fullCommissionSign - newVal.discountAmount;
-      console.log(formArrObj);
-      // 预定的时候,没有实际的数据
-      // Vue.set(formArrObj, 'fullCommissionSignActual', 12345);
-      // Vue.set(formArrObj, 'discountAmountActual', 12345);
-      // Vue.set(formArrObj, 'relContractMoney', 12345);
-      this.addFormArr.push(formArrObj);
+        formArrObj.currentSituation = newVal.currentSituation;
+        formArrObj.completedPercent = newVal.completedPercent + '%'; // TODO:暂时先写死;
+        formArrObj.fullCommissionSign = newVal.fullCommissionSign;
+        formArrObj.discountType = newVal.discountType;
+        formArrObj.discountAmount = newVal.discountAmount;
+        formArrObj.estimatedContractMoney = newVal.fullCommissionSign - newVal.discountAmount;
+        console.log(formArrObj);
+        // 预定的时候,没有实际的数据
+        // Vue.set(formArrObj, 'fullCommissionSignActual', 12345);
+        // Vue.set(formArrObj, 'discountAmountActual', 12345);
+        // Vue.set(formArrObj, 'relContractMoney', 12345);
+        this.addFormArr.push(formArrObj);
+      }
+      if (newVal.type === 'modify') {
+        console.log(this.addFormArr[newVal.index]);
+        const arrayList = ['broker', 'searchCustomer', 'searchCustomerName', 'demandContent', 'brokerLabel', 'saleAndLease', 'customerType', 'customerID', 'currentSituation', 'fullCommissionSign', 'discountType', 'discountAmount']
+        arrayList.forEach((el) => {
+          Vue.set(this.addFormArr[newVal.index], el, newVal[el]);
+        });
+        if (newVal.customerType === 1) {
+          Vue.set(this.addFormArr[newVal.index], 'customerNameSpl', newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1]);
+          Vue.set(this.addFormArr[newVal.index], 'customerName', newVal.customer.split(' ')[0]);
+          Vue.set(this.addFormArr[newVal.index], 'customerPhone', newVal.customer.split(' ')[1]);
+          Vue.set(this.addFormArr[newVal.index], 'objectNameDes', newVal.objectNum + '<br>' + newVal.caseName);
+          Vue.set(this.addFormArr[newVal.index], 'objectNum', newVal.objectNum);
+          Vue.set(this.addFormArr[newVal.index], 'caseName', newVal.caseName);
+        } else {
+          Vue.set(this.addFormArr[newVal.index], 'customerNameSpl', newVal.searchCustomerName + '<br>' + newVal.searchCustomer);
+          Vue.set(this.addFormArr[newVal.index], 'customerName', newVal.searchCustomerName);
+          Vue.set(this.addFormArr[newVal.index], 'customerPhone', newVal.searchCustomer);
+          Vue.set(this.addFormArr[newVal.index], 'objectNameDes', newVal.demandContent);
+          Vue.set(this.addFormArr[newVal.index], 'objectNum', '');
+          Vue.set(this.addFormArr[newVal.index], 'caseName', newVal.demandContent);
+        }
+        Vue.set(this.addFormArr[newVal.index], 'customerTypeSpl', (newVal.saleAndLease === 1 ? '买卖' : '租赁') + '(' + (newVal.customerType === 1 ? '业主方' : '买方') + ')');
+        Vue.set(this.addFormArr[newVal.index], 'completedPercent', newVal.completedPercent + '%');
+        Vue.set(this.addFormArr[newVal.index], 'estimatedContractMoney', newVal.fullCommissionSign - newVal.discountAmount);
+      }
     },
     getStoreBroker() {
       console.log({ OrganizeID: this.$store.state.comData.commonData.OrganizeId });
