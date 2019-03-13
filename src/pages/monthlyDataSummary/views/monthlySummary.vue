@@ -86,7 +86,7 @@ export default {
       userID: '',
       // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 瑞虹一店;
       // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 咨询部;
-      exportUrl: process.env.VUE_APP_APIRELEASEADDRESS + '/MonthSummaryDownLoad',
+      exportUrl: process.env.VUE_APP_APIRELEASEADDRESS + '/TDownLoad',
       tableDataSource0: [], // Type类型为0的数据;
       tableDataSource1: [], // Type类型为1的数据;
       tableDataSource2: [], // Type类型为2的数据;
@@ -303,7 +303,41 @@ export default {
       this.$api.monthlySummaryExport(SummaryMonthList)
         .then((res) => {
           console.log(res);
-          this.$refs.exportIframe.setAttribute('src', this.exportUrl + '?OrganizeId=' + params.OrganizeId + '&company=' + params.company + '&years=' + params.years + '&Month=' + params.Month);
+          // const blob = new Blob([res]);
+          // const fileName = '月度汇总表';
+          // const elink = document.createElement('a');
+          // elink.download = fileName;
+          // elink.style.display = 'none';
+          // elink.href = URL.createObjectURL(blob);
+          // document.body.appendChild(elink);
+          // elink.click();
+          // URL.revokeObjectURL(elink.href); // 释放URL 对象
+          // document.body.removeChild(elink);
+
+          const blob = new Blob([res]);
+          const fileName = '统计.xlsx';
+          const elink = document.createElement('a');
+          elink.download = fileName;
+          elink.style.display = 'none';
+          elink.href = URL.createObjectURL(blob);
+          document.body.appendChild(elink);
+          elink.click();
+          URL.revokeObjectURL(elink.href); // 释放URL 对象
+          document.body.removeChild(elink);
+
+          // this.$refs.exportIframe.setAttribute('src', this.exportUrl);
+          // this.$api.monthlySummaryDown({
+          //   OrganizeId: params.OrganizeId,
+          //   company: params.company,
+          //   years: params.years,
+          //   Month: params.Month,
+          // })
+          //   .then((res) => {
+          //     console.log(res);
+          //   })
+          //   .catch((err) => {
+          //     console.log(err);
+          //   });
         })
         .catch((errMsg) => {
           console.log(errMsg);

@@ -84,6 +84,13 @@ export const monthlySummaryExport = params => axios({
   url: '/TDownLoad',
   method: 'POST',
   data: params,
+  responseType: 'blob',
+});
+
+export const monthlySummaryDown = params => axios({
+  url: '/MonthSummaryDownLoad',
+  method: 'GET',
+  params,
 });
 
 export default {
@@ -101,4 +108,5 @@ export default {
   monthMissionList,
   summaryData,
   monthlySummaryExport,
+  monthlySummaryDown,
 };
