@@ -6,11 +6,16 @@
         <div class="close" @click="closeManagement">×</div>
         <div class="select">
           <select id="qyjVal" v-model="selected">
-            <option value="0.1">A</option>
-            <option value="0.075">B</option>
-            <option value="0.05">C</option>
-            <option value="0.025">D</option>
-            <option value="0">E</option>
+            <option value="0.15">A</option>
+            <option value="0.125">B</option>
+            <option value="0.1">C</option>
+            <option value="0.075">D</option>
+            <template v-if="city">
+              <option value="0.03">E</option>
+            </template>
+            <template v-else>
+              <option value="0.05">E</option>
+            </template>
           </select>
         </div>
         <div class="bottomBtn">
@@ -28,7 +33,7 @@ export default {
   props: ['alertIndex', 'SigningRatio', 'applyWhere'],
   data() {
     return {
-      selected: '0.1',
+      selected: '0.15',
     };
   },
   methods: {
@@ -38,6 +43,11 @@ export default {
 
     getSelectedNum() {
       this.$emit('giveSelectedNum', Number(this.selected));
+    },
+  },
+  computed: {
+    city() {
+      return this.$store.state.comData.commonData.City === '001';
     },
   },
   watch: {

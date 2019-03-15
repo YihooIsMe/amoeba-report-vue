@@ -8,11 +8,16 @@ export default {
   department: '',
   SocialInsurancePremium: '',
   ProvidentFundPeople: '',
+  month: '',
+  quarterlyCapAmount: '',
   setSocialInsurancePremium(val) {
     this.SocialInsurancePremium = val;
   },
   setProvidentFundPeople(val) {
     this.ProvidentFundPeople = val;
+  },
+  set(val) {
+    this.month = val;
   },
   getCity(val) {
     this.city = val;
@@ -26,8 +31,55 @@ export default {
   getVueSigningRatio(val) {
     this.VueSigningRatio = val;
   },
+  setQuarterlyCapAmount() {
+    switch (this.VueSigningRatio) {
+      case 0.15:
+        this.quarterlyCapAmount = 135000;
+        break;
+      case 0.125:
+        this.quarterlyCapAmount = 103500;
+        break;
+      case 0.1:
+        this.quarterlyCapAmount = 69000;
+        break;
+      case 0.075:
+        this.quarterlyCapAmount = 42000;
+        break;
+      case 0.03:
+      case 0.05:
+        this.quarterlyCapAmount = 22500;
+        break;
+      default:
+    }
+  },
+  managementServiceFee(index) {
+    let managementServiceFee;
+    switch (true) {
+      case this.VueSigningRatio === 0.15:
+        managementServiceFee = 15000 + 0.15 * this.remSep(this.tableOne(index).OriginalContractFee.value);
+        break;
+      case this.VueSigningRatio === 0.125:
+        managementServiceFee = 12000 + 0.125 * this.remSep(this.tableOne(index).OriginalContractFee.value);
+        break;
+      case this.VueSigningRatio === 0.1:
+        managementServiceFee = 8000 + 0.1 * this.remSep(this.tableOne(index).OriginalContractFee.value);
+        break;
+      case this.VueSigningRatio === 0.075:
+        managementServiceFee = 5000 + 0.075 * this.remSep(this.tableOne(index).OriginalContractFee.value);
+        break;
+      case this.VueSigningRatio === 0.03 && this.city === '001':
+        managementServiceFee = 2500 + 0.03 * this.remSep(this.tableOne(index).OriginalContractFee.value);
+        break;
+      case this.VueSigningRatio === 0.05 && (this.city === '002' || this.city === '003'):
+        managementServiceFee = 2500 + 0.05 * this.remSep(this.tableOne(index).OriginalContractFee.value);
+        break;
+      default:
+    }
+    return managementServiceFee;
+  },
   /* Type类型为0时 */
   tableOne(index) {
+    console.log(this.month);
     return {
       /* 原始签约金 */
       OriginalContractFee: document.querySelector('tr.A0>td:nth-child(' + index + ') input'),
@@ -346,6 +398,8 @@ export default {
   tableSixCalculation(index) {
     /* 营业支出 */
     this.tableSix(index).OperatingExpenses.value = (this.remSep(this.tableTwo(index).EmploymentFee.value) + this.remSep(this.tableThree(index).EquipmentCost.value) + this.remSep(this.tableFour(index).TotalTransactionCost.value) + this.remSep(this.tableFive(index).TotalMarketingFee.value)).toLocaleString();
+
+    // ------------start 原来的逻辑----------------
     /* 管理服务费固定加数上海12000, 苏州和杭州10000 */
     let FixedAddendum;
     if (this.city === '001') {
@@ -364,6 +418,42 @@ export default {
     } else if (this.tableSix(index).ManagementServiceFee && this.department !== 'A2') {
       this.tableSix(index).ManagementServiceFee.value = Math.round(this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio) + FixedAddendum).toLocaleString();
     }
+    // -------------------end 原来的逻辑-------------------
+
+    // -----------------start 更改后的功能------------------
+    if (this.fromWhere === 'yearIndex') {
+      if (this.tableSix(index).ManagementServiceFee && this.department !== 'A2') {
+
+      }
+    } else if (this.tableSix(index).ManagementServiceFee && this.department !== 'A2') {
+      if ((this.month + 2) % 3 === 0) {
+        this.tableSix(index).ManagementServiceFee.value = this.managementServiceFee(3) < this.quarterlyCapAmount ? this.managementServiceFee(3) : this.quarterlyCapAmount;
+      }
+      if ((this.month + 1) % 3 === 0) {
+        if (firstMonth >= this.quarterlyCapAmount) {
+          this.tableSix(index).ManagementServiceFee.value = 0;
+        } else {
+          if (firstMonth + this.managementServiceFee(3) >= this.quarterlyCapAmount) {
+            this.tableSix(index).ManagementServiceFee.value = this.quarterlyCapAmount - firstMonth;
+          } else {
+            this.tableSix(index).ManagementServiceFee.value = this.managementServiceFee(3);
+          }
+        }
+      }
+      if (this.month % 3 === 0) {
+        if (firstMonth + secondMonth >= this.quarterlyCapAmount) {
+          this.tableSix(index).ManagementServiceFee.value = 0;
+        } else {
+          if (firstMonth + secondMonth + this.managementServiceFee(3) >= this.quarterlyCapAmount) {
+            this.tableSix(index).ManagementServiceFee.value = this.quarterlyCapAmount - (firstMonth + secondMonth);
+          } else {
+            this.tableSix(index).ManagementServiceFee.value = this.managementServiceFee(3);
+          }
+        }
+      }
+    }
+    // -----------------end 更改后的功能------------------
+
 
     /* 签约金损益 */
     // this.tableSix(index).SigningFeeProfitAndLoss.value = ((Number(this.remSep(this.tableOne(index).OperatingNetProfit.value)) - Number(this.remSep(this.tableSix(index).OperatingExpenses.value)) - Number(this.remSep(this.tableSix(index).ManagementServiceFee.value))).toFixed(2)).toLocaleString();

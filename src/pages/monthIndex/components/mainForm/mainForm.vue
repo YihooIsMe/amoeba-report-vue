@@ -132,18 +132,24 @@ export default {
     inputFocus(className, event) {
       const currentEl = event.target;
       if (className === 'F1' && this.$store.state.comData.commonData.Pr0111 !== 'A2') {
+        this.isAlertShow = true;
         const params = {};
         params.CostCode = this.$store.state.comData.commonData.Pr0139;
         params.Years = news.injectYearAndMonth().Years;
         params.Month = news.injectYearAndMonth().Month;
-        // this.$api.monthScheduleTable(params)
-        //   .then((res) => {
-        //     console.log(res);
-        //   })
-        //   .catch((errMsg) => {
-        //     console.log(errMsg);
-        //   });
-        this.isAlertShow = true;
+        if ((params.Month + 2) % 3 === 0) {
+
+        } else {
+          // TODO:功能待完善;
+          // this.$api.monthScheduleTable(params)
+          //   .then((res) => {
+          //     console.log(res);
+          //   })
+          //   .catch((errMsg) => {
+          //     console.log(errMsg);
+          //   });
+        }
+
         this.alertIndex = 3;
       } else if (currentEl.value !== '') {
         currentEl.value = cal.remSep(currentEl.value);
