@@ -3,7 +3,7 @@
     <el-dialog
       class="signingFeeAddDialog"
       width="600px"
-      title="签约金调整新增"
+      title="业绩调整新增"
       :visible.sync="dialogFormVisible"
       center
       @close="doClose">
@@ -48,6 +48,8 @@
 </template>
 
 <script>
+import Vue from 'vue';
+
 export default {
   name: 'businessAdjustmentAdd',
   props: ['dialogIsShow'],
@@ -92,10 +94,29 @@ export default {
   methods: {
     doClose() {
       this.$emit('changeDialogShow', false);
+      this.$refs.businessAdjustmentForm.resetFields();
+      Vue.delete(this.businessAdjustmentForm, 'type');
+      Vue.delete(this.businessAdjustmentForm, 'index');
+    },
+    doNewAdd() {
+      Vue.set(this.businessAdjustmentForm, 'type', 'newAdd');
+    },
+    doModify(data) {
+      this.$nextTick(() => {
+        this.$refs.businessAdjustmentForm.resetFields();
+        const arrayList = ['index', 'type', 'Name', 'OrganizeName_A', 'YDAmount_A', 'OrganizeName_B', 'YDAmount_B', 'AdjustmentAmount'];
+        arrayList.forEach((el) => {
+          Vue.set(this.businessAdjustmentForm, el, data[el]);
+          // this.businessAdjustmentForm[el] = data[el];
+        });
+      });
     },
     businessAdjustmentSureForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          // TODO:为什么console.log打印出来没有数据，但是父组件却拿到了数据？？？
+          // 原因找到了：是因为在打印之后，会有清空表单这样一部操作，log里面的数据其实是有的，但是后面变没有了；
+          console.log(this.businessAdjustmentForm);
           this.$emit('setBusinessAdjustmentForm', this.businessAdjustmentForm);
           this.dialogFormVisible = false;
           this.$refs[formName].resetFields();

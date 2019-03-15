@@ -1,8 +1,9 @@
 <template>
   <div class="signingFeeAdjustment">
     <el-card>
-      <el-button type="primary" icon="el-icon-circle-plus" size="medium" @click="dialogIsShow = true">新增</el-button>
-      <el-button type="warning" icon='el-icon-remove' size="medium" @click="deleteEvent">删除</el-button>
+      <el-button type="primary" icon="el-icon-circle-plus" size="medium" @click="newAdd">新增</el-button>
+      <el-button type="warning" icon="el-icon-edit" size="medium" @click="modify">修改</el-button>
+      <el-button type="danger" icon='el-icon-remove' size="medium" @click="deleteEvent">删除</el-button>
       <el-table
         ref="multipleTable"
         :data="signingFeeAdjustmentData"
@@ -46,6 +47,7 @@
       </el-table>
     </el-card>
     <signingFeeAdjustmentAdd
+      ref="signingFeeAdjustmentAdd"
       :dialogIsShow="dialogIsShow"
       @changeDialogShow="changeDialogShow"
       @setSigningFeeAddForm="getSigningFeeAddForm"></signingFeeAdjustmentAdd>
@@ -53,6 +55,8 @@
 </template>
 
 <script>
+import Vue from 'vue';
+import { Message } from 'element-ui';
 import signingFeeAdjustmentAdd from './signingFeeAdjustmentAdd.vue';
 
 export default {
@@ -80,14 +84,45 @@ export default {
       this.dialogIsShow = newVal;
     },
     getSigningFeeAddForm(val) {
-      const obj = {};
-      obj.Name = val.Name;
-      obj.OrganizeName_A = val.OrganizeName_A;
-      obj.YDAmount_A = val.YDAmount_A;
-      obj.OrganizeName_B = val.OrganizeName_B;
-      obj.YDAmount_B = val.YDAmount_B;
-      obj.AdjustmentAmount = val.AdjustmentAmount;
-      this.signingFeeAdjustmentData.push(obj);
+      if (val.type === 'newAdd') {
+        const obj = {};
+        obj.Name = val.Name;
+        obj.OrganizeName_A = val.OrganizeName_A;
+        obj.YDAmount_A = val.YDAmount_A;
+        obj.OrganizeName_B = val.OrganizeName_B;
+        obj.YDAmount_B = val.YDAmount_B;
+        obj.AdjustmentAmount = val.AdjustmentAmount;
+        this.signingFeeAdjustmentData.push(obj);
+      }
+      if (val.type === 'modify') {
+        const arrayList = ['Name', 'OrganizeName_A', 'YDAmount_A', 'OrganizeName_B', 'YDAmount_B', 'AdjustmentAmount'];
+        arrayList.forEach((el) => {
+          Vue.set(this.signingFeeAdjustmentData[val.index], el, val[el]);
+        });
+      }
+    },
+    newAdd() {
+      this.dialogIsShow = true;
+      this.$refs.signingFeeAdjustmentAdd.doNewAdd();
+    },
+    modify() {
+      if (this.multipleSelection.length === 1) {
+        const selectedForm = this.signingFeeAdjustmentData[this.multipleSelection[0].index];
+        const formData = {};
+        const arrayList = ['index', 'Name', 'OrganizeName_A', 'YDAmount_A', 'OrganizeName_B', 'YDAmount_B', 'AdjustmentAmount'];
+        arrayList.forEach((el) => {
+          formData[el] = selectedForm[el];
+        });
+        formData.type = 'modify';
+        this.dialogIsShow = true;
+        this.$refs.signingFeeAdjustmentAdd.doModify(formData);
+      } else {
+        Message({
+          message: '您仅能选择一条信息进行修改!',
+          type: 'error',
+          duration: 2000,
+        });
+      }
     },
     getSummaries(param) {
       const { columns, data } = param;

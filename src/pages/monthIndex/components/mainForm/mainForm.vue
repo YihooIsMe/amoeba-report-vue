@@ -66,8 +66,10 @@ import { MessageBox, Message } from 'element-ui';
 import ManagementAlert from '@/components/managementAlert.vue';
 import cal from '@/assets/js/comCalculation';
 import news from '@/assets/js/notification';
+import api from '@/http/index';
 
 Vue.component(MessageBox.name, MessageBox);
+Vue.use(api);
 
 export default {
   name: 'mainForm',
@@ -130,6 +132,17 @@ export default {
     inputFocus(className, event) {
       const currentEl = event.target;
       if (className === 'F1' && this.$store.state.comData.commonData.Pr0111 !== 'A2') {
+        const params = {};
+        params.CostCode = this.$store.state.comData.commonData.Pr0139;
+        params.Years = news.injectYearAndMonth().Years;
+        params.Month = news.injectYearAndMonth().Month;
+        // this.$api.monthScheduleTable(params)
+        //   .then((res) => {
+        //     console.log(res);
+        //   })
+        //   .catch((errMsg) => {
+        //     console.log(errMsg);
+        //   });
         this.isAlertShow = true;
         this.alertIndex = 3;
       } else if (currentEl.value !== '') {

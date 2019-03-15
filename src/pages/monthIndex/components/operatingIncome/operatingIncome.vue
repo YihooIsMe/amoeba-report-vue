@@ -2,7 +2,7 @@
   <div class="operating-income">
     营业收入（白色为预定，灰色为实际）
     <div class="child-operating-income">
-      <el-button type="primary" plain size="small" @click="newAdd" v-if="showDraftAndSubmit">新增</el-button>
+      <el-button type="primary" plain size="small" @click="newAdd('operate')" v-if="showDraftAndSubmit">新增</el-button>
       <el-button type="success" plain size="small" @click="modify('operate')" v-if="showDraftAndSubmit">修改</el-button>
       <el-button type="danger" plain size="small" @click="deleteSelected('operate')" v-if="showDraftAndSubmit">删除</el-button>
       <el-button type="warning" plain size="small" @click="matchAdjustment('operatingIncome')" v-if="reachMatchAdjustment">达成匹配调整</el-button>
@@ -82,7 +82,15 @@
           label="全佣签约金预定实际差额"
           width="110"
           prop="fullCommissionSignDiff">
+          <template slot-scope="scope">
+            {{scope.row.fullCommissionSignDiff = scope.row.fullCommissionSignActual - scope.row.fullCommissionSign}}
+          </template>
         </el-table-column>
+        <!--<el-table-column-->
+          <!--label="全佣签约金预定实际差额"-->
+          <!--width="110"-->
+          <!--prop="fullCommissionSignDiff">-->
+        <!--</el-table-column>-->
         <el-table-column
           label="折让中人"
           width="100"
@@ -100,7 +108,15 @@
           label="折让中人预定实际差异"
           width="110"
           prop="discountAmountDiff">
+          <template slot-scope="scope">
+            {{scope.row.discountAmountDiff = scope.row.discountAmountActual - scope.row.discountAmount}}
+          </template>
         </el-table-column>
+        <!--<el-table-column-->
+          <!--label="折让中人预定实际差异"-->
+          <!--width="110"-->
+          <!--prop="discountAmountDiff">-->
+        <!--</el-table-column>-->
         <el-table-column
           label="预估签约金"
           width="90"
@@ -111,17 +127,25 @@
           width="90"
           prop="relContractMoney">
         </el-table-column>
+        <!--<el-table-column-->
+          <!--label="签约金预定实际差异"-->
+          <!--width="100"-->
+          <!--prop="ContractMoneyDiff">-->
+        <!--</el-table-column>-->
         <el-table-column
           label="签约金预定实际差异"
           width="100"
           prop="ContractMoneyDiff">
+          <template slot-scope="scope">
+            {{scope.row.ContractMoneyDiff = scope.row.relContractMoney - scope.row.estimatedContractMoney}}
+          </template>
         </el-table-column>
       </el-table>
     </div>
     <div class="performance-title">业绩收入（白色为预定，灰色为实际）</div>
     <div class="child-performance-income">
-      <el-button type="primary" plain size="small" @click="dialogPerformance = true" v-if="showDraftAndSubmit">新增</el-button>
-      <!--<el-button type="success" plain size="small" @click="dialogPerformance = true" v-if="showDraftAndSubmit">修改</el-button>-->
+      <el-button type="primary" plain size="small" @click="newAdd('performance')" v-if="showDraftAndSubmit">新增</el-button>
+      <el-button type="success" plain size="small" @click="modify('performance')" v-if="showDraftAndSubmit">修改</el-button>
       <el-button type="danger" plain size="small" @click="deleteSelected('performance')" v-if="showDraftAndSubmit">删除</el-button>
       <el-button type="warning" plain size="small" @click="matchAdjustment('performance')" v-if="reachMatchAdjustment">达成匹配调整</el-button>
       <el-table
@@ -202,7 +226,14 @@
         <el-table-column
           label="全佣业绩预定实际差额"
           prop="discountAmount">
+          <template slot-scope="scope">
+            {{scope.row.discountAmount = scope.row.discountType - scope.row.recoveryPerformance}}
+          </template>
         </el-table-column>
+        <!--<el-table-column-->
+          <!--label="全佣业绩预定实际差额"-->
+          <!--prop="discountAmount">-->
+        <!--</el-table-column>-->
       </el-table>
     </div>
     <OperatingAdd
@@ -217,6 +248,7 @@
       :multipleSelection="multipleSelection"
       @closeAchieveDialog="getAchieveDialog"></AchieveAdjustment>
     <PerformanceAdd
+      ref="performanceAdd"
       :dialogPerformance="dialogPerformance"
       :getStoreBrokerData="getStoreBrokerData"
       @changePerformanceDialog="getPerformanceShow"
@@ -280,19 +312,26 @@ export default {
     getSummaries(param) {
       const { columns, data } = param;
       const sums = [];
-      // TODO:data数据需要处理；
-      const filterData = data.filter(item => item.PreordainID !== '');
-      // TODO:后续继续修改；
+      // 以前的逻辑是只相加能勾选（未达成）的项，现在逻辑为所有项相加（达成以及未达成）
+      // 下面一行代码筛选PreordainID !== ''的项相加
+      // const filterData = data.filter(item => item.PreordainID !== '');
       columns.forEach((column, index) => {
         if (index === 0) {
           sums[index] = '合计';
           return;
         }
-        if (index === 1) {
+        if (index > 1 && index < 10) {
           sums[index] = '';
           return;
         }
-        const values = filterData.map(item => Number(item[column.property]));
+        // if (index === 1) {
+        //   sums[index] = '';
+        //   return;
+        // }
+        // 能勾选项相加
+        // const values = filterData.map(item => Number(item[column.property]));
+        // 所有项相加
+        const values = data.map(item => Number(item[column.property]));
         if (!values.every(value => Number.isNaN(value))) {
           sums[index] = values.reduce((prev, curr) => {
             const value = Number(curr);
@@ -389,9 +428,15 @@ export default {
     tableRowClassName({ row, rowIndex }) {
       row.index = rowIndex;
     },
-    newAdd() {
-      this.dialogTableVisible = true;
-      this.$refs.operatingAdd.doNewAdd();
+    newAdd(el) {
+      if (el === 'operate') {
+        this.dialogTableVisible = true;
+        this.$refs.operatingAdd.doNewAdd();
+      }
+      if (el === 'performance') {
+        this.dialogPerformance = true;
+        this.$refs.performanceAdd.doNewAdd();
+      }
     },
     // TODO:后续功能添加;
     modify(change) {
@@ -401,6 +446,7 @@ export default {
           const selectedForm = this.addFormArr[this.multipleSelection[0].index];
           const formData = {};
           formData.broker = selectedForm.broker;
+          formData.brokerLabel = selectedForm.brokerLabel;
           formData.saleAndLease = selectedForm.saleAndLease;
           formData.customerType = selectedForm.customerType;
           if (selectedForm.customerType === 1) {
@@ -411,7 +457,6 @@ export default {
             formData.objectNum = '';
             formData.caseName = '';
             formData.customer = '';
-
           }
           if (selectedForm.customerType === 2) {
             formData.searchCustomer = Number(selectedForm.searchCustomer);
@@ -440,7 +485,46 @@ export default {
         }
       }
       if (change === 'performance') {
-
+        if (this.multipleSelectionPer.length === 1) {
+          console.log(this.addPerformanceArr[this.multipleSelectionPer[0].index]);
+          const selectedFormPer = this.addPerformanceArr[this.multipleSelectionPer[0].index];
+          const perFormData = {};
+          perFormData.broker = selectedFormPer.broker;
+          perFormData.brokerLabel = selectedFormPer.brokerLabel;
+          perFormData.saleAndLease = selectedFormPer.saleAndLease;
+          perFormData.customerType = selectedFormPer.customerType;
+          if (selectedFormPer.customerType === 1) {
+            perFormData.objectNum = selectedFormPer.objectNum;
+            perFormData.caseName = selectedFormPer.caseName;
+            perFormData.customer = selectedFormPer.customerNameSpl.split('<br>').join(' ');
+          } else {
+            perFormData.objectNum = '';
+            perFormData.caseName = '';
+            perFormData.customer = '';
+          }
+          if (selectedFormPer.customerType === 2) {
+            perFormData.searchCustomer = Number(selectedFormPer.searchCustomer);
+            perFormData.searchCustomerName = selectedFormPer.searchCustomerName;
+            perFormData.demandContent = selectedFormPer.demandContent;
+          } else {
+            perFormData.searchCustomer = '';
+            perFormData.searchCustomerName = '';
+            perFormData.demandContent = '';
+          }
+          perFormData.currentSituation = selectedFormPer.currentSituation;
+          perFormData.completedPercent = selectedFormPer.completedPercent.slice(0, -1);
+          perFormData.recoveryPerformance = selectedFormPer.recoveryPerformance;
+          perFormData.index = selectedFormPer.index;
+          perFormData.type = 'modify';
+          this.dialogPerformance = true;
+          this.$refs.performanceAdd.doModify(perFormData);
+        } else {
+          Message({
+            message: '您仅能选择一条信息进行修改!',
+            type: 'error',
+            duration: 2000,
+          });
+        }
       }
     },
     deleteSelected(sel) {
@@ -507,38 +591,63 @@ export default {
       this.perAchieveAdjustmentVisible = newVal;
     },
     getPerformData(newVal) {
-      const formArrObj = {};
-      if (newVal.customerType === 1) {
-        formArrObj.customerNameSpl = newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1];
-        formArrObj.customerName = newVal.customer.split(' ')[0];
-        formArrObj.customerPhone = newVal.customer.split(' ')[1];
-        formArrObj.objectNameDes = newVal.objectNum + '<br>' + newVal.caseName;
-        formArrObj.objectNum = newVal.objectNum;
-        formArrObj.caseName = newVal.caseName;
-      } else {
-        formArrObj.customerNameSpl = newVal.searchCustomerName + '<br>' + newVal.searchCustomer;
-        formArrObj.customerName = newVal.searchCustomerName;
-        formArrObj.customerPhone = newVal.searchCustomer;
-        formArrObj.objectNameDes = newVal.demandContent;
-        formArrObj.objectNum = '';
-        formArrObj.caseName = newVal.demandContent;
+      if (newVal.type === 'newAdd') {
+        const formArrObj = {};
+        if (newVal.customerType === 1) {
+          formArrObj.customerNameSpl = newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1];
+          formArrObj.customerName = newVal.customer.split(' ')[0];
+          formArrObj.customerPhone = newVal.customer.split(' ')[1];
+          formArrObj.objectNameDes = newVal.objectNum + '<br>' + newVal.caseName;
+          formArrObj.objectNum = newVal.objectNum;
+          formArrObj.caseName = newVal.caseName;
+        } else {
+          formArrObj.customerNameSpl = newVal.searchCustomerName + '<br>' + newVal.searchCustomer;
+          formArrObj.customerName = newVal.searchCustomerName;
+          formArrObj.customerPhone = newVal.searchCustomer;
+          formArrObj.objectNameDes = newVal.demandContent;
+          formArrObj.objectNum = '';
+          formArrObj.caseName = newVal.demandContent;
+        }
+        formArrObj.bookType = '月预订';
+        formArrObj.status = '未达成'; // TODO:后面数据库传入数据;
+        formArrObj.broker = newVal.broker;
+        formArrObj.searchCustomer = newVal.searchCustomer;
+        formArrObj.searchCustomerName = newVal.searchCustomerName;
+        formArrObj.demandContent = newVal.demandContent;
+        formArrObj.brokerLabel = newVal.brokerLabel;
+        formArrObj.saleAndLease = newVal.saleAndLease;
+        formArrObj.customerType = newVal.customerType;
+        formArrObj.customerID = newVal.customerID;
+        formArrObj.customerTypeSpl = (newVal.saleAndLease === 1 ? '买卖' : '租赁') + '(' + (newVal.customerType === 1 ? '业主方' : '买方') + ')';
+        formArrObj.currentSituation = newVal.currentSituation;
+        formArrObj.completedPercent = newVal.completedPercent + '%'; // TODO:暂时先写死;
+        formArrObj.recoveryPerformance = newVal.recoveryPerformance;
+        // Vue.set(formArrObj, 'discountType', 12345);
+        this.addPerformanceArr.push(formArrObj);
       }
-      formArrObj.bookType = '月预订';
-      formArrObj.status = '未达成'; // TODO:后面数据库传入数据;
-      formArrObj.broker = newVal.broker;
-      formArrObj.searchCustomer = newVal.searchCustomer;
-      formArrObj.searchCustomerName = newVal.searchCustomerName;
-      formArrObj.demandContent = newVal.demandContent;
-      formArrObj.brokerLabel = newVal.brokerLabel;
-      formArrObj.saleAndLease = newVal.saleAndLease;
-      formArrObj.customerType = newVal.customerType;
-      formArrObj.customerID = newVal.customerID;
-      formArrObj.customerTypeSpl = (newVal.saleAndLease === 1 ? '买卖' : '租赁') + '(' + (newVal.customerType === 1 ? '业主方' : '买方') + ')';
-      formArrObj.currentSituation = newVal.currentSituation;
-      formArrObj.completedPercent = newVal.completedPercent + '%'; // TODO:暂时先写死;
-      formArrObj.recoveryPerformance = newVal.recoveryPerformance;
-      // Vue.set(formArrObj, 'discountType', 12345);
-      this.addPerformanceArr.push(formArrObj);
+      if (newVal.type === 'modify') {
+        const arrayList = ['broker', 'searchCustomer', 'searchCustomerName', 'demandContent', 'brokerLabel', 'saleAndLease', 'customerType', 'customerID', 'currentSituation', 'recoveryPerformance'];
+        arrayList.forEach((el) => {
+          Vue.set(this.addPerformanceArr[newVal.index], el, newVal[el]);
+        });
+        if (newVal.customerType === 1) {
+          Vue.set(this.addPerformanceArr[newVal.index], 'customerNameSpl', newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1]);
+          Vue.set(this.addPerformanceArr[newVal.index], 'customerName', newVal.customer.split(' ')[0]);
+          Vue.set(this.addPerformanceArr[newVal.index], 'customerPhone', newVal.customer.split(' ')[1]);
+          Vue.set(this.addPerformanceArr[newVal.index], 'objectNameDes', newVal.objectNum + '<br>' + newVal.caseName);
+          Vue.set(this.addPerformanceArr[newVal.index], 'objectNum', newVal.objectNum);
+          Vue.set(this.addPerformanceArr[newVal.index], 'caseName', newVal.caseName);
+        } else {
+          Vue.set(this.addPerformanceArr[newVal.index], 'customerNameSpl', newVal.searchCustomerName + '<br>' + newVal.searchCustomer);
+          Vue.set(this.addPerformanceArr[newVal.index], 'customerName', newVal.searchCustomerName);
+          Vue.set(this.addPerformanceArr[newVal.index], 'customerPhone', newVal.searchCustomer);
+          Vue.set(this.addPerformanceArr[newVal.index], 'objectNameDes', newVal.demandContent);
+          Vue.set(this.addPerformanceArr[newVal.index], 'objectNum', '');
+          Vue.set(this.addPerformanceArr[newVal.index], 'caseName', newVal.demandContent);
+        }
+        Vue.set(this.addPerformanceArr[newVal.index], 'customerTypeSpl', (newVal.saleAndLease === 1 ? '买卖' : '租赁') + '(' + (newVal.customerType === 1 ? '业主方' : '买方') + ')');
+        Vue.set(this.addPerformanceArr[newVal.index], 'completedPercent', newVal.completedPercent + '%');
+      }
     },
     getAddFormData(newVal) {
       if (newVal.type === 'newAdd') {
@@ -585,7 +694,7 @@ export default {
       }
       if (newVal.type === 'modify') {
         console.log(this.addFormArr[newVal.index]);
-        const arrayList = ['broker', 'searchCustomer', 'searchCustomerName', 'demandContent', 'brokerLabel', 'saleAndLease', 'customerType', 'customerID', 'currentSituation', 'fullCommissionSign', 'discountType', 'discountAmount']
+        const arrayList = ['broker', 'searchCustomer', 'searchCustomerName', 'demandContent', 'brokerLabel', 'saleAndLease', 'customerType', 'customerID', 'currentSituation', 'fullCommissionSign', 'discountType', 'discountAmount'];
         arrayList.forEach((el) => {
           Vue.set(this.addFormArr[newVal.index], el, newVal[el]);
         });

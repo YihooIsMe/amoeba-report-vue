@@ -300,6 +300,7 @@ export default {
         SummaryMonthListArray.push(obj);
       });
       SummaryMonthList.SummaryMonthList = SummaryMonthListArray;
+      console.log(SummaryMonthList);
       this.$api.monthlySummaryExport(SummaryMonthList)
         .then((res) => {
           console.log(res);
@@ -344,6 +345,11 @@ export default {
         });
     },
     monthAuthorityJudge() {
+      // ReviewStatus = '' 未填写
+      // ReviewStatus = '0' 填写中
+      // ReviewStatus = '1' 待审核
+      // ReviewStatus = '2' 审核通过
+      // ReviewStatus = '3' 驳回
       const year = news.yearAndMonthChange().year;
       const month = news.yearAndMonthChange().month;
       if (process.env.VUE_APP_ISOPENAUTHORITY === '0') {

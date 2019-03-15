@@ -48,6 +48,8 @@
 </template>
 
 <script>
+import Vue from 'vue';
+
 export default {
   name: 'signingFeeAdjustmentAdd',
   props: ['dialogIsShow'],
@@ -92,6 +94,22 @@ export default {
   methods: {
     doClose() {
       this.$emit('changeDialogShow', false);
+      // this.$refs.signingFeeAddForm.resetFields();
+      Vue.delete(this.signingFeeAddForm, 'index');
+      Vue.delete(this.signingFeeAddForm, 'type');
+    },
+    doNewAdd() {
+      Vue.set(this.signingFeeAddForm, 'type', 'newAdd');
+    },
+    doModify(data) {
+      console.log(data);
+      this.$nextTick(() => {
+        this.$refs.signingFeeAddForm.resetFields();
+        const arrayList = ['index', 'type', 'Name', 'OrganizeName_A', 'YDAmount_A', 'OrganizeName_B', 'YDAmount_B', 'AdjustmentAmount'];
+        arrayList.forEach((el) => {
+          Vue.set(this.signingFeeAddForm, el, data[el]);
+        });
+      });
     },
     signingFeeSureForm(formName) {
       this.$refs[formName].validate((valid) => {

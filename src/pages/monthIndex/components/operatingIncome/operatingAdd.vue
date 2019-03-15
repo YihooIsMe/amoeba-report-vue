@@ -305,7 +305,7 @@ export default {
         this.$refs.AddForm.resetFields();
         this.AddForm.caseName = '';
         this.AddForm.searchCustomerName = '';
-        const arrList = ['type', 'broker', 'saleAndLease', 'customerType', 'objectNum', 'caseName', 'customer', 'searchCustomer', 'searchCustomerName', 'demandContent', 'currentSituation', 'completedPercent', 'fullCommissionSign', 'discountType', 'discountAmount', 'index'];
+        const arrList = ['type', 'broker', 'brokerLabel', 'saleAndLease', 'customerType', 'objectNum', 'caseName', 'customer', 'searchCustomer', 'searchCustomerName', 'demandContent', 'currentSituation', 'completedPercent', 'fullCommissionSign', 'discountType', 'discountAmount', 'index'];
         arrList.forEach((el) => {
           this.AddForm[el] = data[el];
         });
@@ -319,6 +319,9 @@ export default {
         this.$refs.objectNumForm.clearValidate();
         this.$refs.customerForm.clearValidate();
       }
+      if (this.AddForm.type === 'modify') {
+        this.getQueryInfo();
+      }
     },
     selectBrokerLabel(val) {
       this.getStoreBrokerData.forEach((item, i) => {
@@ -328,17 +331,25 @@ export default {
           this.AddForm.brokerLabel = brokerObj.label;
         }
       });
+      if (this.AddForm.type === 'modify') {
+        this.getQueryInfo();
+      }
     },
     doClose() {
       this.$emit('changeDialogShow', false);
       this.$refs.AddForm.resetFields();
-      this.AddForm.caseName = '';
-      this.AddForm.searchCustomerName = '';
+      Vue.set(this.AddForm, 'caseName', '');
+      Vue.set(this.AddForm, 'searchCustomerName', '');
+      Vue.set(this.AddForm, 'objectNum', '');
+      Vue.set(this.AddForm, 'searchCustomer', '');
+      Vue.set(this.AddForm, 'saleAndLease', 1);
+      Vue.set(this.AddForm, 'customerType', 1);
+      Vue.delete(this.AddForm, 'index');
     },
     messageInfo(msg) {
       Message({
         message: msg,
-        duration: 1000,
+        duration: 2000,
         type: 'warning',
       });
     },

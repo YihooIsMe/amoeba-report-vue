@@ -215,6 +215,9 @@ export default {
         }
       });
       console.log(this.performanceAddForm.brokerLabel);
+      if (this.performanceAddForm.type === 'modify') {
+        this.getQueryInfo();
+      }
     },
     onSubmit(formName) {
       this.$refs[formName].validate((valid) => {
@@ -228,6 +231,21 @@ export default {
         }
       });
     },
+    doNewAdd() {
+      Vue.set(this.performanceAddForm, 'type', 'newAdd');
+    },
+    doModify(data) {
+      console.log(data);
+      this.$nextTick(() => {
+        this.$refs.performanceAddForm.resetFields();
+        this.performanceAddForm.caseName = '';
+        this.performanceAddForm.searchCustomerName = '';
+        const arrList = ['type', 'broker', 'saleAndLease', 'customerType', 'objectNum', 'caseName', 'customer', 'customerID', 'searchCustomer', 'searchCustomerName', 'demandContent', 'currentSituation', 'completedPercent', 'recoveryPerformance', 'brokerLabel', 'index'];
+        arrList.forEach((el) => {
+          this.performanceAddForm[el] = data[el];
+        });
+      });
+    },
     selectCustomerType() {
       if (this.performanceAddForm.customerType === 1) {
         this.$refs.searchCustomerForm.clearValidate();
@@ -236,14 +254,25 @@ export default {
         this.$refs.objectNumForm.clearValidate();
         this.$refs.customerForm.clearValidate();
       }
+      if (this.performanceAddForm.type === 'modify') {
+        this.getQueryInfo();
+      }
     },
     doClose() {
       this.$emit('changePerformanceDialog', false);
+      this.$refs.performanceAddForm.resetFields();
+      Vue.set(this.performanceAddForm, 'caseName', '');
+      Vue.set(this.performanceAddForm, 'searchCustomerName', '');
+      Vue.set(this.performanceAddForm, 'objectNum', '');
+      Vue.set(this.performanceAddForm, 'searchCustomer', '');
+      Vue.set(this.performanceAddForm, 'saleAndLease', 1);
+      Vue.set(this.performanceAddForm, 'customerType', 1);
+      Vue.delete(this.performanceAddForm, 'index');
     },
     messageInfo(msg) {
       Message({
         message: msg,
-        duration: 1000,
+        duration: 2000,
         type: 'warning',
       });
     },
