@@ -10,7 +10,7 @@
             <option value="0.125">B</option>
             <option value="0.1">C</option>
             <option value="0.075">D</option>
-            <template v-if="city">
+            <template v-if="city === '001'">
               <option value="0.03">E</option>
             </template>
             <template v-else>
@@ -30,10 +30,11 @@
 <script>
 export default {
   name: 'managementAlert',
-  props: ['alertIndex', 'SigningRatio', 'applyWhere'],
+  props: ['alertIndex', 'SigningRatio', 'applyWhere', 'City'],
   data() {
     return {
       selected: '0.15',
+      city: '',
     };
   },
   methods: {
@@ -46,8 +47,14 @@ export default {
     },
   },
   computed: {
-    city() {
-      return this.$store.state.comData.commonData.City === '001';
+    getCityNumber() {
+      if (this.applyWhere === 'monthIndex') {
+        return this.$store.state.comData.commonData.City;
+      }
+      if (this.applyWhere === 'yearIndex') {
+        return this.City;
+      }
+      return '';
     },
   },
   watch: {
@@ -61,6 +68,9 @@ export default {
           break;
         default:
       }
+    },
+    getCityNumber(val) {
+      this.city = val;
     },
   },
 };

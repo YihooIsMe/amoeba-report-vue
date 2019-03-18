@@ -10,13 +10,15 @@ export default {
   ProvidentFundPeople: '',
   month: '',
   quarterlyCapAmount: '',
+  // 当前季度前一月或者前两月数据
+  quarterData: '',
   setSocialInsurancePremium(val) {
     this.SocialInsurancePremium = val;
   },
   setProvidentFundPeople(val) {
     this.ProvidentFundPeople = val;
   },
-  set(val) {
+  setMonth(val) {
     this.month = val;
   },
   getCity(val) {
@@ -31,55 +33,105 @@ export default {
   getVueSigningRatio(val) {
     this.VueSigningRatio = val;
   },
-  setQuarterlyCapAmount() {
-    switch (this.VueSigningRatio) {
-      case 0.15:
-        this.quarterlyCapAmount = 135000;
-        break;
-      case 0.125:
-        this.quarterlyCapAmount = 103500;
-        break;
-      case 0.1:
-        this.quarterlyCapAmount = 69000;
-        break;
-      case 0.075:
-        this.quarterlyCapAmount = 42000;
-        break;
-      case 0.03:
-      case 0.05:
-        this.quarterlyCapAmount = 22500;
-        break;
-      default:
+  setQuarterData(val) {
+    this.quarterData = val;
+  },
+  setQuarterlyCapAmount(index) {
+    if (this.fromWhere === 'monthIndex') {
+      switch (this.VueSigningRatio) {
+        case 0.15:
+          this.quarterlyCapAmount = 135000;
+          break;
+        case 0.125:
+          this.quarterlyCapAmount = 103500;
+          break;
+        case 0.1:
+          this.quarterlyCapAmount = 69000;
+          break;
+        case 0.075:
+          this.quarterlyCapAmount = 42000;
+          break;
+        case 0.03:
+        case 0.05:
+          this.quarterlyCapAmount = 22500;
+          break;
+        default:
+      }
+    }
+    if (this.fromWhere === 'yearIndex') {
+      switch (this.VueSigningRatio['SigningRatio' + (index - 2)]) {
+        case 0.15:
+          this.quarterlyCapAmount = 135000;
+          break;
+        case 0.125:
+          this.quarterlyCapAmount = 103500;
+          break;
+        case 0.1:
+          this.quarterlyCapAmount = 69000;
+          break;
+        case 0.075:
+          this.quarterlyCapAmount = 42000;
+          break;
+        case 0.03:
+        case 0.05:
+          this.quarterlyCapAmount = 22500;
+          break;
+        default:
+      }
     }
   },
   managementServiceFee(index) {
     let managementServiceFee;
-    switch (true) {
-      case this.VueSigningRatio === 0.15:
-        managementServiceFee = 15000 + 0.15 * this.remSep(this.tableOne(index).OriginalContractFee.value);
-        break;
-      case this.VueSigningRatio === 0.125:
-        managementServiceFee = 12000 + 0.125 * this.remSep(this.tableOne(index).OriginalContractFee.value);
-        break;
-      case this.VueSigningRatio === 0.1:
-        managementServiceFee = 8000 + 0.1 * this.remSep(this.tableOne(index).OriginalContractFee.value);
-        break;
-      case this.VueSigningRatio === 0.075:
-        managementServiceFee = 5000 + 0.075 * this.remSep(this.tableOne(index).OriginalContractFee.value);
-        break;
-      case this.VueSigningRatio === 0.03 && this.city === '001':
-        managementServiceFee = 2500 + 0.03 * this.remSep(this.tableOne(index).OriginalContractFee.value);
-        break;
-      case this.VueSigningRatio === 0.05 && (this.city === '002' || this.city === '003'):
-        managementServiceFee = 2500 + 0.05 * this.remSep(this.tableOne(index).OriginalContractFee.value);
-        break;
-      default:
+    if (this.fromWhere === 'monthIndex') {
+      switch (true) {
+        case this.VueSigningRatio === 0.15:
+          managementServiceFee = 15000 + 0.15 * this.remSep(this.tableOne(index).OriginalContractFee.value);
+          break;
+        case this.VueSigningRatio === 0.125:
+          managementServiceFee = 12000 + 0.125 * this.remSep(this.tableOne(index).OriginalContractFee.value);
+          break;
+        case this.VueSigningRatio === 0.1:
+          managementServiceFee = 8000 + 0.1 * this.remSep(this.tableOne(index).OriginalContractFee.value);
+          break;
+        case this.VueSigningRatio === 0.075:
+          managementServiceFee = 5000 + 0.075 * this.remSep(this.tableOne(index).OriginalContractFee.value);
+          break;
+        case this.VueSigningRatio === 0.03 && this.city === '001':
+          managementServiceFee = 2500 + 0.03 * this.remSep(this.tableOne(index).OriginalContractFee.value);
+          break;
+        case this.VueSigningRatio === 0.05 && (this.city === '002' || this.city === '003'):
+          managementServiceFee = 2500 + 0.05 * this.remSep(this.tableOne(index).OriginalContractFee.value);
+          break;
+        default:
+      }
+    }
+    if (this.fromWhere === 'yearIndex') {
+      switch (true) {
+        case this.VueSigningRatio['SigningRatio' + (index - 2)] === 0.15:
+          managementServiceFee = 15000 + 0.15 * this.remSep(this.tableOne(index).OriginalContractFee.value);
+          break;
+        case this.VueSigningRatio['SigningRatio' + (index - 2)] === 0.125:
+          managementServiceFee = 12000 + 0.125 * this.remSep(this.tableOne(index).OriginalContractFee.value);
+          break;
+        case this.VueSigningRatio['SigningRatio' + (index - 2)] === 0.1:
+          managementServiceFee = 8000 + 0.1 * this.remSep(this.tableOne(index).OriginalContractFee.value);
+          break;
+        case this.VueSigningRatio['SigningRatio' + (index - 2)] === 0.075:
+          managementServiceFee = 5000 + 0.075 * this.remSep(this.tableOne(index).OriginalContractFee.value);
+          break;
+        case this.VueSigningRatio['SigningRatio' + (index - 2)] === 0.03 && this.city === '001':
+          managementServiceFee = 2500 + 0.03 * this.remSep(this.tableOne(index).OriginalContractFee.value);
+          break;
+        case this.VueSigningRatio['SigningRatio' + (index - 2)] === 0.05 && (this.city === '002' || this.city === '003'):
+          managementServiceFee = 2500 + 0.05 * this.remSep(this.tableOne(index).OriginalContractFee.value);
+          break;
+        default:
+      }
     }
     return managementServiceFee;
   },
   /* Type类型为0时 */
   tableOne(index) {
-    console.log(this.month);
     return {
       /* 原始签约金 */
       OriginalContractFee: document.querySelector('tr.A0>td:nth-child(' + index + ') input'),
@@ -395,60 +447,72 @@ export default {
       ContractedFeeProfitAndLossYield: document.querySelector('tr.F4>td:nth-child(' + index + ') input'),
     };
   },
+  getF1_El(index) {
+    return document.querySelector('table.KMTable1.commonTable>tbody>tr.F1>td:nth-child(' + index + ')>input');
+  },
   tableSixCalculation(index) {
     /* 营业支出 */
     this.tableSix(index).OperatingExpenses.value = (this.remSep(this.tableTwo(index).EmploymentFee.value) + this.remSep(this.tableThree(index).EquipmentCost.value) + this.remSep(this.tableFour(index).TotalTransactionCost.value) + this.remSep(this.tableFive(index).TotalMarketingFee.value)).toLocaleString();
 
     // ------------start 原来的逻辑----------------
     /* 管理服务费固定加数上海12000, 苏州和杭州10000 */
-    let FixedAddendum;
-    if (this.city === '001') {
-      FixedAddendum = 12000;
-    }
-    if (this.city === '002' || this.city === '003') {
-      FixedAddendum = 10000;
-    }
-    /* 管理服务费 */
-    // TODO:这里着重测试一下；
-    if (this.fromWhere === 'yearIndex') {
-      // this.tableSix(index).ManagementServiceFee.value = (ber(Number(this.remSep(this.tableOne(index).OriginalContractFee.value)) * Number(this.getVueSigningRatio['SigningRatio' + (index - 2)]) + 12000).toFixed(2)).toLocaleString();
-      if (this.tableSix(index).ManagementServiceFee && this.department !== 'A2') {
-        this.tableSix(index).ManagementServiceFee.value = Math.round(this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio['SigningRatio' + (index - 2)]) + FixedAddendum).toLocaleString();
-      }
-    } else if (this.tableSix(index).ManagementServiceFee && this.department !== 'A2') {
-      this.tableSix(index).ManagementServiceFee.value = Math.round(this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio) + FixedAddendum).toLocaleString();
-    }
+    // let FixedAddendum;
+    // if (this.city === '001') {
+    //   FixedAddendum = 12000;
+    // }
+    // if (this.city === '002' || this.city === '003') {
+    //   FixedAddendum = 10000;
+    // }
+    // /* 管理服务费 */
+    // // TODO:这里着重测试一下；
+    // if (this.fromWhere === 'yearIndex') {
+    //   // this.tableSix(index).ManagementServiceFee.value = (ber(Number(this.remSep(this.tableOne(index).OriginalContractFee.value)) * Number(this.getVueSigningRatio['SigningRatio' + (index - 2)]) + 12000).toFixed(2)).toLocaleString();
+    //   if (this.tableSix(index).ManagementServiceFee && this.department !== 'A2') {
+    //     this.tableSix(index).ManagementServiceFee.value = Math.round(this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio['SigningRatio' + (index - 2)]) + FixedAddendum).toLocaleString();
+    //   }
+    // } else if (this.tableSix(index).ManagementServiceFee && this.department !== 'A2') {
+    //   this.tableSix(index).ManagementServiceFee.value = Math.round(this.remSep(this.tableOne(index).OriginalContractFee.value) * Number(this.VueSigningRatio) + FixedAddendum).toLocaleString();
+    // }
     // -------------------end 原来的逻辑-------------------
 
     // -----------------start 更改后的功能------------------
+    this.setQuarterlyCapAmount(index);
+    this.managementServiceFee(index);
     if (this.fromWhere === 'yearIndex') {
       if (this.tableSix(index).ManagementServiceFee && this.department !== 'A2') {
-
-      }
-    } else if (this.tableSix(index).ManagementServiceFee && this.department !== 'A2') {
-      if ((this.month + 2) % 3 === 0) {
-        this.tableSix(index).ManagementServiceFee.value = this.managementServiceFee(3) < this.quarterlyCapAmount ? this.managementServiceFee(3) : this.quarterlyCapAmount;
-      }
-      if ((this.month + 1) % 3 === 0) {
-        if (firstMonth >= this.quarterlyCapAmount) {
-          this.tableSix(index).ManagementServiceFee.value = 0;
-        } else {
-          if (firstMonth + this.managementServiceFee(3) >= this.quarterlyCapAmount) {
-            this.tableSix(index).ManagementServiceFee.value = this.quarterlyCapAmount - firstMonth;
+        if ((index - 2 + 2) % 3 === 0) {
+          this.tableSix(index).ManagementServiceFee.value = this.managementServiceFee(index) < this.quarterlyCapAmount ? this.managementServiceFee(index) : this.quarterlyCapAmount;
+        }
+        if ((index - 2 + 1) % 3 === 0) {
+          if (Number(this.getF1_El(index - 1).value) >= this.quarterlyCapAmount) {
+            this.tableSix(index).ManagementServiceFee.value = 0;
+          } else if (Number(this.getF1_El(index - 1).value) + this.managementServiceFee(index) >= this.quarterlyCapAmount) {
+            this.tableSix(index).ManagementServiceFee.value = this.quarterlyCapAmount - Number(this.getF1_El(index - 1).value);
           } else {
-            this.tableSix(index).ManagementServiceFee.value = this.managementServiceFee(3);
+            this.tableSix(index).ManagementServiceFee.value = this.managementServiceFee(index);
+          }
+        }
+        if ((index - 2) % 3 === 0) {
+          if (Number(this.getF1_El(index - 1).value) + Number(this.getF1_El(index - 2).value) >= this.quarterlyCapAmount) {
+            this.tableSix(index).ManagementServiceFee.value = 0;
+          } else if (Number(this.getF1_El(index - 1).value) + Number(this.getF1_El(index - 2).value) + this.managementServiceFee(index) >= this.quarterlyCapAmount) {
+            this.tableSix(index).ManagementServiceFee.value = this.quarterlyCapAmount - (Number(this.getF1_El(index - 1).value) + Number(this.getF1_El(index - 2).value));
+          } else {
+            this.tableSix(index).ManagementServiceFee.value = this.managementServiceFee(index);
           }
         }
       }
-      if (this.month % 3 === 0) {
-        if (firstMonth + secondMonth >= this.quarterlyCapAmount) {
+    } else if (this.tableSix(index).ManagementServiceFee && this.department !== 'A2') {
+      if ((this.month + 2) % 3 === 0) {
+        this.tableSix(index).ManagementServiceFee.value = this.managementServiceFee(index) < this.quarterlyCapAmount ? this.managementServiceFee(index) : this.quarterlyCapAmount;
+      }
+      if ((this.month + 1) % 3 === 0 || this.month % 3 === 0) {
+        if (this.quarterData >= this.quarterlyCapAmount) {
           this.tableSix(index).ManagementServiceFee.value = 0;
+        } else if (this.quarterData + this.managementServiceFee(index) >= this.quarterlyCapAmount) {
+          this.tableSix(index).ManagementServiceFee.value = this.quarterlyCapAmount - this.quarterData;
         } else {
-          if (firstMonth + secondMonth + this.managementServiceFee(3) >= this.quarterlyCapAmount) {
-            this.tableSix(index).ManagementServiceFee.value = this.quarterlyCapAmount - (firstMonth + secondMonth);
-          } else {
-            this.tableSix(index).ManagementServiceFee.value = this.managementServiceFee(3);
-          }
+          this.tableSix(index).ManagementServiceFee.value = this.managementServiceFee(index);
         }
       }
     }
@@ -489,7 +553,7 @@ export default {
     // this.tableSeven(index).PerformanceGainsAndLosses.value = ((Number(this.remSep(this.tableSeven(index).Performance.value)) - Number(this.remSep(this.tableSix(index).ManagementServiceFee.value)) - Number(this.remSep(this.tableSix(index).OperatingExpenses.value)) - Number(this.remSep(this.tableOne(index).BusinessTax.value))).toFixed(2)).toLocaleString();
     if (this.tableSeven(index).PerformanceGainsAndLosses) {
       // 业绩损益 = 业绩 - 管理服务费 - 营业支出 - 减营业税金 - 归属费用;
-      this.tableSeven(index).PerformanceGainsAndLosses.value = (this.remSep(this.tableSeven(index).Performance.value) - this.remSep(this.tableSix(index).ManagementServiceFee ? this.tableSix(index).ManagementServiceFee.value : 0) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableOne(index).BusinessTax.value) - this.remSep(this.tableSix(index).OwnershipFee.value)).toLocaleString();
+      this.tableSeven(index).PerformanceGainsAndLosses.value = (this.remSep(this.tableSeven(index).Performance.value) - this.remSep(this.tableSix(index).ManagementServiceFee ? this.tableSix(index).ManagementServiceFee.value : 0) - this.remSep(this.tableSix(index).OperatingExpenses.value) - this.remSep(this.tableOne(index).BusinessTax.value) - this.remSep(this.tableSix(index).OwnershipFee ? this.tableSix(index).OwnershipFee.value : 0)).toLocaleString();
     }
     /* 业绩损益收益率 */
     if (this.tableSeven(index).PerformanceGainsAndLossesRate && Number(this.tableSeven(index).Performance.value) !== 0) {

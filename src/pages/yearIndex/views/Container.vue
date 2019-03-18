@@ -86,6 +86,7 @@
       <ManagementAlert :alertIndex="alertIndex"
                        :SigningRatio="SigningRatio"
                        :applyWhere="applyWhere"
+                       :City="City"
                        v-show="isAlertShow"
                        @changeAlertShow="changeShow"
                        @giveSelectedNum="getSigningRatio">
@@ -160,18 +161,18 @@ export default {
       alertIndex: null,
       applyWhere: 'yearIndex',
       SigningRatio: {
-        SigningRatio1: 0.1,
-        SigningRatio2: 0.1,
-        SigningRatio3: 0.1,
-        SigningRatio4: 0.1,
-        SigningRatio5: 0.1,
-        SigningRatio6: 0.1,
-        SigningRatio7: 0.1,
-        SigningRatio8: 0.1,
-        SigningRatio9: 0.1,
-        SigningRatio10: 0.1,
-        SigningRatio11: 0.1,
-        SigningRatio12: 0.1,
+        SigningRatio1: 0.15,
+        SigningRatio2: 0.15,
+        SigningRatio3: 0.15,
+        SigningRatio4: 0.15,
+        SigningRatio5: 0.15,
+        SigningRatio6: 0.15,
+        SigningRatio7: 0.15,
+        SigningRatio8: 0.15,
+        SigningRatio9: 0.15,
+        SigningRatio10: 0.15,
+        SigningRatio11: 0.15,
+        SigningRatio12: 0.15,
       },
       months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Total'],
       pullAllData: {},
@@ -607,7 +608,23 @@ export default {
     },
 
     currentMonthAutomaticCalculation(index) {
-      cal.allTableCalculation(index);
+      // 管理服务费变动的时候，会联动当前的季度，所以当前的一个季度都要重新计算一遍；
+      // 之前的计算逻辑是当前月变动只计算当前月，注意区别；
+      if (index % 3 === 0) {
+        for (let i = 0; i < 3; i += 1) {
+          cal.allTableCalculation(index + i);
+        }
+      }
+      if ((index - 1) % 3 === 0) {
+        for (let i = -1; i < 2; i += 1) {
+          cal.allTableCalculation(index + i);
+        }
+      }
+      if ((index - 2) % 3 === 0) {
+        for (let i = -2; i < 1; i += 1) {
+          cal.allTableCalculation(index + i);
+        }
+      }
     },
 
     commonEvent(i, className, event) {

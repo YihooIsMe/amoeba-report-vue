@@ -53,6 +53,7 @@
                        :SigningRatio="SigningRatio"
                        :applyWhere="applyWhere"
                        v-show="isAlertShow"
+                       :City="City"
                        @changeAlertShow="changeShow"
                        @giveSelectedNum="getSigningRatio">
       </ManagementAlert>
@@ -90,7 +91,7 @@ export default {
       tableDataInject: [],
       rowSort: ['preMonthActual', 'currentMonthBooking', 'currentMonthActual', 'predeterminedRatio', 'scheduledActualDiff', 'MP', 'MPRatio', 'sumMP'],
       alertIndex: null,
-      SigningRatio: 0.1,
+      SigningRatio: 0.15,
       isAlertShow: false,
       applyWhere: 'monthIndex',
       Amoeba_MonthlyPlandetails: [], // 主表的数据;
@@ -110,6 +111,7 @@ export default {
       monthViewEditorMonth: '',
       isFixedMonth: '',
       hideZero: '隐藏整行为0的数据',
+      City: '',
     };
   },
   methods: {
@@ -137,19 +139,17 @@ export default {
         params.CostCode = this.$store.state.comData.commonData.Pr0139;
         params.Years = news.injectYearAndMonth().Years;
         params.Month = news.injectYearAndMonth().Month;
-        if ((params.Month + 2) % 3 === 0) {
-
-        } else {
-          // TODO:功能待完善;
-          // this.$api.monthScheduleTable(params)
-          //   .then((res) => {
-          //     console.log(res);
-          //   })
-          //   .catch((errMsg) => {
-          //     console.log(errMsg);
-          //   });
+        if ((params.Month + 1) % 3 === 0 || params.Month % 3 === 0) {
+          this.$api.monthScheduleTable(params)
+            .then((res) => {
+              console.log(res);
+              const data = res.data;
+              cal.setQuarterData(data);
+            })
+            .catch((errMsg) => {
+              console.log(errMsg);
+            });
         }
-
         this.alertIndex = 3;
       } else if (currentEl.value !== '') {
         currentEl.value = cal.remSep(currentEl.value);
@@ -272,6 +272,7 @@ export default {
         currentEl = event.target;
       }
       cal.whereUse('monthIndex');
+      cal.setMonth(news.injectYearAndMonth().Month);
       cal.getCity(this.$store.state.comData.commonData.City);
       cal.judgeDepartment(this.$store.state.comData.commonData.Pr0111);
       cal.getVueSigningRatio(this.SigningRatio);
@@ -362,6 +363,7 @@ export default {
     watchCommonEvent(className, val) {
       document.querySelector('.mainForm>tbody>tr.' + className + '>td:nth-child(3)>input').value = Number(val).toLocaleString();
       cal.whereUse('monthIndex');
+      cal.setMonth(news.injectYearAndMonth().Month);
       cal.getCity(this.$store.state.comData.commonData.City);
       cal.judgeDepartment(this.$store.state.comData.commonData.Pr0111);
       cal.getVueSigningRatio(this.SigningRatio);
