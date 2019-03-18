@@ -480,10 +480,10 @@ export default {
     this.managementServiceFee(index);
     if (this.fromWhere === 'yearIndex') {
       if (this.tableSix(index).ManagementServiceFee && this.department !== 'A2') {
-        if ((index - 2 + 2) % 3 === 0) {
+        if (index % 3 === 0) {
           this.tableSix(index).ManagementServiceFee.value = this.managementServiceFee(index) < this.quarterlyCapAmount ? this.managementServiceFee(index) : this.quarterlyCapAmount;
         }
-        if ((index - 2 + 1) % 3 === 0) {
+        if ((index - 1) % 3 === 0) {
           if (Number(this.getF1_El(index - 1).value) >= this.quarterlyCapAmount) {
             this.tableSix(index).ManagementServiceFee.value = 0;
           } else if (Number(this.getF1_El(index - 1).value) + this.managementServiceFee(index) >= this.quarterlyCapAmount) {

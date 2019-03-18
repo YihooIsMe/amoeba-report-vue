@@ -86,12 +86,6 @@ export const monthlySummaryExport = params => axios({
   data: params,
 });
 
-export const monthlySummaryDown = params => axios({
-  url: '/MonthSummaryDownLoad',
-  method: 'GET',
-  params,
-});
-
 export default {
   searchUserID,
   monthScheduleTable,
@@ -107,5 +101,4 @@ export default {
   monthMissionList,
   summaryData,
   monthlySummaryExport,
-  monthlySummaryDown,
 };

@@ -78,7 +78,7 @@ import api from '@/http/index';
 Vue.component(MessageBox.name, MessageBox);
 Vue.use(Loading);
 Vue.use(api);
-// :value="item[rowSort[n-1]]"
+
 export default {
   name: 'monthlySummary',
   data() {
@@ -280,6 +280,7 @@ export default {
         });
     },
     monthlySummaryData() {
+      this.loadingCover();
       const params = {
         OrganizeId: this.OrganizeId,
         company: this.company,
@@ -303,7 +304,9 @@ export default {
       console.log(SummaryMonthList);
       this.$api.monthlySummaryExport(SummaryMonthList)
         .then((res) => {
-          console.log(res);
+          this.loadingCover().close();
+          console.log(res.data);
+          this.$refs.exportIframe.setAttribute('src', this.exportUrl + '?ID=' + res.data);
           // const blob = new Blob([res]);
           // const fileName = '月度汇总表';
           // const elink = document.createElement('a');
@@ -341,7 +344,8 @@ export default {
           //   });
         })
         .catch((errMsg) => {
-          console.log(errMsg);
+          this.loadingCover().close();
+          news.ElErrorMessage(errMsg);
         });
     },
     monthAuthorityJudge() {

@@ -320,7 +320,7 @@ export default {
           sums[index] = '合计';
           return;
         }
-        if (index > 1 && index < 10) {
+        if ((index > 1 && index < 10) || index === 13) {
           sums[index] = '';
           return;
         }
