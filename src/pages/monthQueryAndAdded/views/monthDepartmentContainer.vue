@@ -136,6 +136,8 @@ export default {
       loadingCover: '',
       totalCount: '',
       showTestBtn: true,
+      // 汇总核算表OrganizeId参数
+      accountOrganizeId: '',
     };
   },
   methods: {
@@ -169,7 +171,6 @@ export default {
     },
 
     getQueryVariable(variable) {
-      console.log('userID');
       const query = window.location.search.substring(1);
       const vars = query.split('&');
       for (let i = 0; i < vars.length; i += 1) {
@@ -319,15 +320,19 @@ export default {
         if (this.querySelectorArr[i] !== '') {
           switch (true) {
             case i === 3:
+              this.accountOrganizeId = this.fourthSelectStoreSelected;
               queryArguments.Store = this.fourthSelectStoreSelected;
               break;
             case i === 2:
+              this.accountOrganizeId = this.thirdSelected;
               queryArguments.department = this.thirdSelected;
               break;
             case i === 1:
+              this.accountOrganizeId = this.secondSelected;
               queryArguments.District = this.secondSelected;
               break;
             case i === 0:
+              this.accountOrganizeId = this.Pr0132;
               queryArguments.company = this.Pr0132;
               break;
             default:
@@ -371,7 +376,7 @@ export default {
     viewEditor(item) {
       if (item.IsAccountingTable === 0) {
         sessionStorage.setItem('Name', item.F_FullName);
-        window.location = 'monthlyDataSummary.html?company=' + this.Pr0132 + '&OrganizeId=' + this.OrganizeId + '&years=' + this.copyYearSelected + '&Month=' + this.copyMonthSelected + '&CreateByUser=' + item.CreateByUser;
+        window.location = 'monthlyDataSummary.html?company=' + this.Pr0132 + '&OrganizeId=' + this.accountOrganizeId + '&years=' + this.copyYearSelected + '&Month=' + this.copyMonthSelected + '&CreateByUser=' + item.CreateByUser;
       } else if (item.IsAccountingTable === 1) {
         window.location = 'monthIndex.html?monthCreateByUser=' + encodeURI(item.CreateByUser) + '&monthFromWhichBtn=1&monthViewEditorYear=' + this.copyYearSelected + '&monthViewEditorMonth=' + this.copyMonthSelected;
       }

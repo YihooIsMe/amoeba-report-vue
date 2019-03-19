@@ -65,7 +65,7 @@
             <el-row :gutter="20">
               <el-col :span="11">
                 <el-form-item prop="searchCustomer" class="searchCustomer" ref="searchCustomerForm">
-                  <el-input v-model.number="AddForm.searchCustomer" ref="searchCustomer" @blur="getQueryInfo" placeholder="请输入客户手机号" size="small" :clearable="true"></el-input>
+                  <el-input v-model.number="AddForm.searchCustomer" ref="searchCustomer" @blur="getQueryInfo" placeholder="全部手机号或后四位" size="small" :clearable="true"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="2">
@@ -371,12 +371,15 @@ export default {
       }
       const queryParams = {};
       queryParams.OwnerID = this.AddForm.broker;
+      // OrderType是后面添加进去的，之前没有的；
+      queryParams.OrderType = this.AddForm.saleAndLease;
       queryParams.CustomerType = this.AddForm.customerType;
       if (this.AddForm.customerType === 1) {
         queryParams.ObjectNo = this.AddForm.objectNum;
       } else {
         queryParams.Phone = this.AddForm.searchCustomer;
       }
+      console.log(queryParams);
       this.$api.monthOperatingAdd(queryParams)
         .then((res) => {
           console.log(JSON.parse(res.data));

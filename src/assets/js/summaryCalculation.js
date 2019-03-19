@@ -66,7 +66,7 @@ export default {
       const currentEls = document.querySelectorAll('table.' + tableClassName + ' tr.' + item.className + '>td>input');
       if ((item.className === 'F4' || item.className === 'G2') && currentEls[moleculeIndex].value !== '0%') {
         currentEls[targetIndex].value = this.addPercent(parseFloat(currentEls[denominatorIndex].value) / parseFloat(currentEls[moleculeIndex].value));
-      } else if (Number(currentEls[moleculeIndex].value) !== 0) {
+      } else if (item.className !== 'F4' && item.className !== 'G2' && Number(currentEls[moleculeIndex].value) !== 0) {
         currentEls[targetIndex].value = this.addPercent(Number(currentEls[denominatorIndex].value) / Number(currentEls[moleculeIndex].value));
       } else {
         currentEls[targetIndex].value = '0%';

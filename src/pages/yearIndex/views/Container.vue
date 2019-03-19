@@ -33,6 +33,7 @@
                      v-if="showDraftAndSubmit"
                      @click="dialogExcelImport = true"
           >Excel导入</el-button>
+          <el-button type="info" v-if="withdraw" @click="ReviewOrReject(4)">撤回</el-button>
           <el-button type="success"
                      plain
                      @click="exportAllData"
@@ -182,6 +183,7 @@ export default {
       ReviewOrRejectMPID: '',
       showReviewAndReject: false,
       showDraftAndSubmit: false,
+      withdraw: false,
       deleteBtnDisabled: '',
       currentLineZero: '',
       dialogExcelImport: false,
@@ -681,11 +683,13 @@ export default {
       // ReviewStatus = '3' 驳回
       if (this.fromWhichBtn === '0') {
         this.showReviewAndReject = false;
+        this.withdraw = this.ReviewStatus === '1';
         this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
         this.deleteBtnDisabled = this.ReviewStatus === '1' || this.ReviewStatus === '2';
         this.inputDisabled = this.ReviewStatus === '1' || this.ReviewStatus === '2';
       } else if (this.fromWhichBtn === '1' && this.userID !== this.CreateByUser) {
         this.deleteBtnDisabled = true;
+        this.withdraw = false;
         this.showDraftAndSubmit = false;
         this.inputDisabled = true;
         // TODO:跨级不能进行审核或者驳回,下面的权限判断为正确逻辑
@@ -697,12 +701,14 @@ export default {
       } else if (this.fromWhichBtn === '1' && this.userID === this.CreateByUser) {
         this.showReviewAndReject = false;
         if (process.env.VUE_APP_ISOPENAUTHORITY === '0') {
+          this.withdraw = this.ReviewStatus === '1' && Number(this.viewEditorYear) === (new Date().getFullYear() + 1);
           this.showDraftAndSubmit = (this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3') && Number(this.viewEditorYear) === (new Date().getFullYear() + 1);
           this.deleteBtnDisabled = (!(this.ReviewStatus !== '1' && this.ReviewStatus !== '2')) && Number(this.viewEditorYear) === (new Date().getFullYear() + 1);
           this.inputDisabled = (!(this.ReviewStatus !== '1' && this.ReviewStatus !== '2')) && Number(this.viewEditorYear) === (new Date().getFullYear() + 1);
         }
         if (process.env.VUE_APP_ISOPENAUTHORITY === '1') {
           this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
+          this.withdraw = this.ReviewStatus === '1';
           this.deleteBtnDisabled = !(this.ReviewStatus !== '1' && this.ReviewStatus !== '2');
           this.inputDisabled = !(this.ReviewStatus !== '1' && this.ReviewStatus !== '2');
         }
@@ -719,6 +725,10 @@ export default {
       if (index === 3) {
         selectedIndex = '驳回';
         message = '您已经驳回了';
+      }
+      if (index === 4) {
+        selectedIndex = '撤回';
+        message = '您已经撤回了';
       }
       MessageBox.confirm('您确认进行' + selectedIndex + '操作,是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -737,7 +747,9 @@ export default {
             type: 'info',
             duration: 1000,
           });
-          window.location.reload();
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
         }).catch((errMsg) => {
           console.log(errMsg);
           news.ElErrorMessage(errMsg);

@@ -27,6 +27,7 @@
           plain
           @click="hideSubjectWithZero"
         >{{hideZero}}</el-button>
+        <el-button type="info" v-if="withdraw" @click="dataSubmissionAndReview('4')">撤回</el-button>
         <el-button type="warning" v-if="true" @click="monthlySummaryData">Excel导出</el-button>
       </div>
     </div>
@@ -108,6 +109,7 @@ export default {
       showDraftAndSubmit: '',
       showReviewAndReject: '',
       IsShowBtn: false,
+      withdraw: false,
     };
   },
   methods: {
@@ -245,11 +247,21 @@ export default {
       if (index === '3') {
         selectedIndex = '驳回';
       }
+      if (index === '4') {
+        selectedIndex = '撤回';
+      }
       MessageBox.confirm('您确认进行' + selectedIndex + '操作,是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
       }).then(() => {
+        console.log({
+          userID: this.userID,
+          SupervisorID: this.SupervisorID,
+          years: this.years,
+          month: this.Month,
+          Review: index,
+        });
         this.$api.summaryData({
           userID: this.userID,
           SupervisorID: this.SupervisorID,
@@ -264,6 +276,11 @@ export default {
               message: res.data.message,
               type: res.data.result === true ? 'success' : 'error',
             });
+            if (res.data.result) {
+              setTimeout(() => {
+                window.location.reload();
+              });
+            }
           })
           .catch((errMsg) => {
             console.log(errMsg);
@@ -359,10 +376,15 @@ export default {
       if (process.env.VUE_APP_ISOPENAUTHORITY === '0') {
         this.showReviewAndReject = this.Review === '1' && this.userID === this.SupervisorID && Number(this.Month) === month && Number(this.years) === year;
         this.showDraftAndSubmit = (this.Review === '0' || this.Review === '3') && this.IsComplete === true && this.userID === this.CreateByUser && Number(this.Month) === month && Number(this.years) === year;
+        this.withdraw = this.Review === '1' && this.IsComplete === true && this.userID === this.CreateByUser && Number(this.Month) === month && Number(this.years) === year;
       }
       if (process.env.VUE_APP_ISOPENAUTHORITY === '1') {
         this.showReviewAndReject = this.Review === '1' && this.userID === this.SupervisorID;
-        this.showDraftAndSubmit = (this.Review === '0' || this.Review === '3') && this.IsComplete === true && this.userID === this.CreateByUser;
+        // this.showDraftAndSubmit = (this.Review === '0' || this.Review === '3') && this.IsComplete === true && this.userID === this.CreateByUser;
+        // this.withdraw = this.Review === '1' && this.IsComplete === true && this.userID === this.CreateByUser;
+        // TODO:note--方便测试，以下为测试代码,上两行注释的为正式代码；
+        this.showDraftAndSubmit = (this.Review === '0' || this.Review === '3') && this.userID === this.CreateByUser;
+        this.withdraw = this.Review === '1' && this.userID === this.CreateByUser;
       }
     },
   },

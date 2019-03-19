@@ -31,6 +31,7 @@
             v-if="showReviewAndReject"
             @click="reviewAndReject(3)"
           >驳回</el-button>
+          <el-button type="info" v-if="withdraw" @click="reviewAndReject(4)">撤回</el-button>
           <el-button type="warning" @click="exportMonthData" v-if="$store.state.comData.commonData.draft === 1">Excel导出</el-button>
         </div>
       </div>
@@ -133,6 +134,7 @@ export default {
       showDraftAndSubmit: false,
       reachMatchAdjustment: false,
       inputDisabled: false,
+      withdraw: false,
       identity: '',
       // isBehind: true, // 判断是否为幕僚,幕僚没有附表和营业收入
       selectTabPane: this.$store.state.comData.selectTabPane || 'mainForm',
@@ -256,7 +258,7 @@ export default {
           });
           if (type === 'success') {
             setTimeout(() => {
-              // window.location.reload();
+              window.location.reload();
             }, 1000);
           }
         })
@@ -305,11 +307,13 @@ export default {
         } else if (process.env.VUE_APP_ISOPENAUTHORITY === '1') {
           this.reachMatchAdjustment = this.ReviewStatus === '2';
         }
+        this.withdraw = this.ReviewStatus === '1';
         this.showReviewAndReject = false;
         // note:若当前月为2月,做3月的预定,那么只有等到3月本人才能执行达成匹配调整的这个操作;
         this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
         this.inputDisabled = this.ReviewStatus === '1' || this.ReviewStatus === '2';
       } else if (this.monthFromWhichBtn === '1' && this.monthUserID !== this.monthCreateByUser) {
+        this.withdraw = false;
         this.reachMatchAdjustment = false;
         this.showDraftAndSubmit = false;
         this.inputDisabled = true;
@@ -325,10 +329,12 @@ export default {
           this.reachMatchAdjustment = this.ReviewStatus === '2' && (new Date().getMonth() + 1) === Number(this.monthViewEditorMonth);
           this.showDraftAndSubmit = (this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3') && Number(this.monthViewEditorYear) === year && Number(this.monthViewEditorMonth) === month;
           this.inputDisabled = this.ReviewStatus === '1' || this.ReviewStatus === '2' || Number(this.monthViewEditorYear) !== year || Number(this.monthViewEditorMonth) !== month;
+          this.withdraw = this.ReviewStatus === '1' && Number(this.monthViewEditorYear) === year && Number(this.monthViewEditorMonth) === month;
         } else if (process.env.VUE_APP_ISOPENAUTHORITY === '1') {
           this.reachMatchAdjustment = this.ReviewStatus === '2';
           this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
           this.inputDisabled = this.ReviewStatus === '1' || this.ReviewStatus === '2';
+          this.withdraw = this.ReviewStatus === '1';
         }
         this.showReviewAndReject = false;
       }
@@ -345,6 +351,10 @@ export default {
       if (index === 3) {
         selectedIndex = '驳回';
         message = '您已经驳回了';
+      }
+      if (index === 4) {
+        selectedIndex = '撤回';
+        message = '您已经撤回';
       }
       MessageBox.confirm('您确认进行' + selectedIndex + '操作,是否继续?', '提示', {
         confirmButtonText: '确定',
