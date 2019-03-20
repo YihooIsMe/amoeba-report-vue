@@ -34,9 +34,12 @@ input[readonly]{
 .commonTable>tbody>tr>td{
     text-align: center;
     width: 6.1%;
-    height: 30px;
+    height: 43px;
     padding: 0;
     box-sizing: border-box;
+}
+.commonTable>tbody>tr.H0>td{
+    height: 64px;
 }
 .commonTable>tbody>tr>td:nth-child(1){
     width: 8% !important;
@@ -44,7 +47,7 @@ input[readonly]{
 .commonTable>tbody>tr>td>input{
     width: 100%;
     height: 100%;
-    border-color:transparent;
+    border:none;
     outline: none;
     text-indent: 5px;
     font-size: 16px;

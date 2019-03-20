@@ -4,8 +4,8 @@ export default {
   // 此时计算的是:固定工资合计人数-店主管人数-保障薪人数-秘书人数;
   calculatedPeopleNumber: '',
   // 固定工资合计人数
-  fixedSalaryTotalClass: ['FC0', 'FC12', 'FC1', 'FC2', 'FC3', 'FC4', 'FC5', 'FC6', 'FC7', 'FC7', 'FC9', 'FC10'],
-  // 点主管人数
+  fixedSalaryTotalClass: ['FC0', 'FC12', 'FC1', 'FC2', 'FC3', 'FC4', 'FC5', 'FC6', 'FC7', 'FC8', 'FC9', 'FC10'],
+  // 店主管人数
   PointSupervisorTotalClass: ['FC0'],
   // 保障薪人数
   GuaranteedSalaryClass: ['FC9'],

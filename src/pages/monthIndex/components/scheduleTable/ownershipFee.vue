@@ -95,4 +95,10 @@ table.ownershipFeeTable tr{
     width: 35% !important;
   }
 }
+table.ownershipFeeTable tr.FA0>td, table.ownershipFeeTable tr.FA2>td, table.ownershipFeeTable tr.FA4>td{
+  height: 66px;
+}
+table.ownershipFeeTable tr.FA3>td{
+  height: 87px;
+}
 </style>

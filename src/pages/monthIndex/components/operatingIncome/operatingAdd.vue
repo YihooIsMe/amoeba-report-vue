@@ -8,6 +8,24 @@
         top="5vh"
         custom-class="operate-dialog"
         @close="doClose">
+        <el-dialog
+          width="400px"
+          title="请选择客户"
+          :visible.sync="innerVisible"
+          custom-class="customerList"
+          append-to-body>
+          <template>
+            <el-radio-group v-model="customerName">
+              <el-col :span="18" :offset="3" v-for="(item, index) in customerList" :key="index" >
+                <el-radio :label="item.ID + ' ' + item.Name">{{item.Name}}</el-radio>
+              </el-col>
+            </el-radio-group>
+          </template>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="innerVisible = false" size="small">取 消</el-button>
+            <el-button type="primary" @click="innerSubmit" size="small">确定</el-button>
+          </div>
+        </el-dialog>
       <el-form ref="AddForm" :model="AddForm" :rules="rules" label-width="120px">
         <el-form-item label="经纪人" prop="broker">
           <el-row :gutter="20">
@@ -199,6 +217,9 @@ export default {
       callback();
     };
     return {
+      customerName: '',
+      customerList: [],
+      innerVisible: false,
       copyDialogTableVisible: this.dialogTableVisible,
       brokerLabel: '',
       discountTypeOption: [
@@ -294,6 +315,16 @@ export default {
           console.log('error submit!');
         }
       });
+    },
+    innerSubmit() {
+      if (this.customerName === '') {
+        this.messageInfo('请选择一位客户！');
+        return false;
+      }
+      this.AddForm.searchCustomerName = this.customerName.split(' ')[1];
+      this.AddForm.customerID = this.customerName.split(' ')[0];
+      this.innerVisible = false;
+      return '';
     },
     doNewAdd() {
       Vue.set(this.AddForm, 'type', 'newAdd');
@@ -394,6 +425,7 @@ export default {
             }
             this.AddForm.customer = JSON.parse(res.data)[0].Name + ' ' + JSON.parse(res.data)[0].PhoneNumber;
             this.AddForm.caseName = JSON.parse(res.data)[0].CaseName;
+            this.AddForm.customerID = JSON.parse(res.data)[0].ID;
             console.log(JSON.parse(res.data));
           } else {
             if (JSON.parse(res.data).length === 0) {
@@ -402,10 +434,17 @@ export default {
               this.AddForm.searchCustomerName = '';
               return false;
             }
-            this.AddForm.searchCustomerName = JSON.parse(res.data)[0].Name;
-            console.log(JSON.parse(res.data));
+            if (JSON.parse(res.data).length === 1) {
+              this.AddForm.searchCustomerName = JSON.parse(res.data)[0].Name;
+              this.AddForm.customerID = JSON.parse(res.data)[0].ID;
+              console.log(JSON.parse(res.data));
+            }
+            if (JSON.parse(res.data).length > 1) {
+              this.customerList = JSON.parse(res.data);
+              console.log(JSON.parse(res.data));
+              this.innerVisible = true;
+            }
           }
-          this.AddForm.customerID = JSON.parse(res.data)[0].ID;
           return '';
         })
         .catch((err) => {
@@ -430,7 +469,6 @@ export default {
   font-weight: bold;
   cursor: pointer;
 }
-
 </style>
 <style lang="less">
 #operating-add{
@@ -480,5 +518,13 @@ export default {
       left: 0;
     }
   }
+}
+</style>
+<style>
+.customerList>div.el-dialog__body>.el-radio-group>.el-col>.el-radio{
+  height:30px !important;
+}
+.customerList>div.el-dialog__body>.el-radio-group>.el-col>.el-radio>.el-radio__label{
+  font-size:16px;
 }
 </style>

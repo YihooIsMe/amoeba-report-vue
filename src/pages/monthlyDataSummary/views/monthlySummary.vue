@@ -264,7 +264,7 @@ export default {
           Review: index,
         });
         this.$api.summaryData({
-          userID: this.userID,
+          userID: this.CreateByUser,
           SupervisorID: this.SupervisorID,
           years: this.years,
           month: this.Month,
@@ -480,6 +480,12 @@ export default {
         padding-left: 10px;
         text-align: center;
         min-width: 140px;
+      }
+    }
+    /*兼容firefox下td下的input有缝隙*/
+    tr.E4,tr.H0{
+      td{
+        height: 45px;
       }
     }
   }

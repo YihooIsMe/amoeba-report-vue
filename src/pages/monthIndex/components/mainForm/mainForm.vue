@@ -212,6 +212,7 @@ export default {
         this.mainFormTableSource.forEach((item) => {
           const allInputEl = document.querySelectorAll('table.mainForm tr.' + item.className + ' input');
           let sumData = 0;
+          debugger;
           for (let i = 1; i < 9; i += 1) {
             sumData = Number(allInputEl[i].value) + sumData;
           }
@@ -498,7 +499,7 @@ export default {
       width: 11% !important;
     }
     td{
-      height:30px;
+      height:43px;
       input{
         width: 100%;
         height: 100%;

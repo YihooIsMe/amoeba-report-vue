@@ -16,7 +16,7 @@
         :summary-method="getSummaries"
         :row-class-name="tableRowClassName"
         @selection-change="handleSelectionChange">
-        <!--TODO:selectable可以控制复选框是否禁用-->
+        <!--note:selectable可以控制复选框是否禁用-->
         <el-table-column
           type="selection"
           :selectable="checkSelectable"
@@ -438,7 +438,6 @@ export default {
         this.$refs.performanceAdd.doNewAdd();
       }
     },
-    // TODO:后续功能添加;
     modify(change) {
       if (change === 'operate') {
         if (this.multipleSelection.length === 1) {
@@ -609,7 +608,7 @@ export default {
           formArrObj.caseName = newVal.demandContent;
         }
         formArrObj.bookType = '月预订';
-        formArrObj.status = '未达成'; // TODO:后面数据库传入数据;
+        formArrObj.status = '未达成';
         formArrObj.broker = newVal.broker;
         formArrObj.searchCustomer = newVal.searchCustomer;
         formArrObj.searchCustomerName = newVal.searchCustomerName;
@@ -620,8 +619,9 @@ export default {
         formArrObj.customerID = newVal.customerID;
         formArrObj.customerTypeSpl = (newVal.saleAndLease === 1 ? '买卖' : '租赁') + '(' + (newVal.customerType === 1 ? '业主方' : '买方') + ')';
         formArrObj.currentSituation = newVal.currentSituation;
-        formArrObj.completedPercent = newVal.completedPercent + '%'; // TODO:暂时先写死;
+        formArrObj.completedPercent = newVal.completedPercent + '%';
         formArrObj.recoveryPerformance = newVal.recoveryPerformance;
+        formArrObj.discountType = '';
         // Vue.set(formArrObj, 'discountType', 12345);
         this.addPerformanceArr.push(formArrObj);
       }
@@ -668,7 +668,7 @@ export default {
           formArrObj.caseName = newVal.demandContent;
         }
         formArrObj.bookType = '月预订';
-        formArrObj.status = '未达成'; // TODO:后面数据库传入数据;
+        formArrObj.status = '未达成';
         formArrObj.broker = newVal.broker;
         formArrObj.searchCustomer = newVal.searchCustomer;
         formArrObj.searchCustomerName = newVal.searchCustomerName;
@@ -680,11 +680,14 @@ export default {
         formArrObj.customerTypeSpl = (newVal.saleAndLease === 1 ? '买卖' : '租赁') + '(' + (newVal.customerType === 1 ? '业主方' : '买方') + ')';
 
         formArrObj.currentSituation = newVal.currentSituation;
-        formArrObj.completedPercent = newVal.completedPercent + '%'; // TODO:暂时先写死;
+        formArrObj.completedPercent = newVal.completedPercent + '%';
         formArrObj.fullCommissionSign = newVal.fullCommissionSign;
         formArrObj.discountType = newVal.discountType;
         formArrObj.discountAmount = newVal.discountAmount;
         formArrObj.estimatedContractMoney = newVal.fullCommissionSign - newVal.discountAmount;
+        formArrObj.fullCommissionSignActual = '';
+        formArrObj.discountAmountActual = '';
+        formArrObj.relContractMoney = '';
         console.log(formArrObj);
         // 预定的时候,没有实际的数据
         // Vue.set(formArrObj, 'fullCommissionSignActual', 12345);
@@ -822,7 +825,7 @@ export default {
           addFormObj.searchCustomer = '';
           addFormObj.demandContent = '';
         } else {
-          addFormObj.objectNum = '';// TODO:这里到时候应当改为el.ObjectName;
+          addFormObj.objectNum = '';
           addFormObj.caseName = '';
           addFormObj.customerName = '';
           addFormObj.customerPhone = '';
@@ -838,7 +841,7 @@ export default {
         // addFormObj.objectNum = el.CaseName;
         // addFormObj.caseName = el.ObjectName;
 
-        addFormObj.status = el.Status === 0 ? '未达成' : '达成'; // TODO:后面数据库传入数据;
+        addFormObj.status = el.Status === 0 ? '未达成' : '达成';
         addFormObj.broker = el.PersonnelID;
         addFormObj.brokerLabel = el.PersonnelName;
         addFormObj.saleAndLease = el.CaseType;
@@ -846,11 +849,11 @@ export default {
         addFormObj.customerID = el.CustomerID;
         addFormObj.customerTypeSpl = (el.CaseType === 1 ? '买卖' : '租赁') + '(' + (el.CustomerType === 1 ? '业主方' : '买方') + ')';
         addFormObj.currentSituation = el.CurrentSituation;
-        addFormObj.completedPercent = el.AchievePossibility; // TODO:暂时先写死;
+        addFormObj.completedPercent = el.AchievePossibility;
         addFormObj.fullCommissionSign = el.FullCommissionYD;
         addFormObj.discountType = el.DiscountType;
         addFormObj.discountAmount = el.DiscountGoldYD;
-        addFormObj.discountRelAmount = el.DiscountGoldSJ; // TODO:暂时先写死;
+        addFormObj.discountRelAmount = el.DiscountGoldSJ;
         addFormObj.estimatedContractMoney = el.SigningGoldYD;
         addFormObj.fullCommissionSignDiff = el.FullCommissionDifference;
         addFormObj.ContractMoneyDiff = el.SigningGoldDifference;
@@ -893,7 +896,7 @@ export default {
 
 
         addPerFormObj.status = el.Status === 0 ? '未达成' : '达成';
-        // addPerFormObj.status = '达成'; // TODO:后面数据库传入数据;
+        // addPerFormObj.status = '达成';
         addPerFormObj.broker = el.PersonnelID;
         addPerFormObj.brokerLabel = el.PersonnelName;
         addPerFormObj.saleAndLease = el.CaseType;
@@ -907,7 +910,7 @@ export default {
         // addPerFormObj.objectNum = el.CaseName;
         // addPerFormObj.caseName = el.ObjectName;
         addPerFormObj.currentSituation = el.CurrentSituation;
-        addPerFormObj.completedPercent = el.AchievePossibility; // TODO:暂时先写死;
+        addPerFormObj.completedPercent = el.AchievePossibility;
         addPerFormObj.recoveryPerformance = el.PerformanceYD;
         addPerFormObj.discountAmount = el.PerformanceDifference;
         addPerFormObj.PreordainID = el.PreordainID;
@@ -962,7 +965,6 @@ export default {
 </script>
 
 <style scoped>
-
 .operating-income {
   padding: 5px;
 }
