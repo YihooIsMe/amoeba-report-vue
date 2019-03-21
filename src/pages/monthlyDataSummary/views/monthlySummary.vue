@@ -124,7 +124,6 @@ export default {
         this.hideZero = '显示所有数据';
         this.tableDataList.forEach((item) => {
           const allInputEl = document.querySelectorAll('table.monthly-summary tr.' + item.className + ' input');
-          let sumData = 0;
           let isZero;
           for (let i = 0; i < 8; i += 1) {
             if (parseFloat(allInputEl[i].value) !== 0 && allInputEl[i].value !== '') {
@@ -132,16 +131,9 @@ export default {
               break;
             } else {
               isZero = true;
-              switch (allInputEl[i].value) {
-                case '':
-                  sumData = Number(allInputEl[i].value) + sumData;
-                  break;
-                default:
-                  sumData = parseFloat(allInputEl[i].value) + sumData;
-              }
             }
           }
-          if (isZero === true && (sumData === 0 || sumData === 0.0 || sumData === 0.00)) {
+          if (isZero) {
             document.querySelector('table.monthly-summary tr.' + item.className).classList.add('hide-zero');
           }
         });

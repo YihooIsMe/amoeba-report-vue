@@ -211,12 +211,16 @@ export default {
         this.hideZero = '显示所有数据';
         this.mainFormTableSource.forEach((item) => {
           const allInputEl = document.querySelectorAll('table.mainForm tr.' + item.className + ' input');
-          let sumData = 0;
-          debugger;
-          for (let i = 1; i < 9; i += 1) {
-            sumData = Number(allInputEl[i].value) + sumData;
+          let isZero;
+          for (let i = 0; i < 8; i += 1) {
+            if (parseFloat(allInputEl[i].value) !== 0 && allInputEl[i].value !== '') {
+              isZero = false;
+              break;
+            } else {
+              isZero = true;
+            }
           }
-          if ((sumData === 0 || sumData === 0.0 || sumData === 0.00) && (allInputEl[0].value === '0' || allInputEl[0].value === '0.0' || allInputEl[0].value === '0.00' || allInputEl[0].value === '')) {
+          if (isZero) {
             document.querySelector('table.mainForm tr.' + item.className).classList.add('hide-zero');
           }
         });

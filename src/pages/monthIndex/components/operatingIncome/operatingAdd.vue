@@ -17,7 +17,7 @@
           <template>
             <el-radio-group v-model="customerName">
               <el-col :span="18" :offset="3" v-for="(item, index) in customerList" :key="index" >
-                <el-radio :label="item.ID + ' ' + item.Name">{{item.Name}}</el-radio>
+                <el-radio :label="item.ID + ' ' + item.Name">{{`${item.Name} ${item.PhoneNumber}`}}</el-radio>
               </el-col>
             </el-radio-group>
           </template>

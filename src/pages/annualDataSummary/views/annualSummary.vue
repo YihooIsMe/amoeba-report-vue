@@ -266,11 +266,16 @@ export default {
         this.hideZero = '显示所有数据';
         this.tableSource.forEach((item) => {
           const allInputEl = document.querySelectorAll('table.KMTable1.commonTable tr.' + item.className + ' input');
-          let sumData = 0;
-          for (let i = 1; i < 13; i += 1) {
-            sumData = Number(allInputEl[i].value) + sumData;
+          let isZero;
+          for (let i = 0; i < 12; i += 1) {
+            if (parseFloat(allInputEl[i].value) !== 0 && allInputEl[i].value !== '') {
+              isZero = false;
+              break;
+            } else {
+              isZero = true;
+            }
           }
-          if ((sumData === 0 || sumData === 0.0 || sumData === 0.00) && (allInputEl[0].value === '0' || allInputEl[0].value === '0.0' || allInputEl[0].value === '0.00' || allInputEl[0].value === '')) {
+          if (isZero) {
             document.querySelector('table.KMTable1.commonTable tr.' + item.className).classList.add('hide-zero');
           }
         });
@@ -325,6 +330,12 @@ export default {
       border-collapse: collapse;
       width: 100%;
     }
+  }
+  .commonTable tr>th{
+    width: 6.1% !important;
+  }
+  .commonTable tr>th:nth-child(1){
+    width: 8% !important;
   }
   .submitBtn{
     position: relative;

@@ -185,7 +185,6 @@ export default {
       showDraftAndSubmit: false,
       withdraw: false,
       deleteBtnDisabled: '',
-      currentLineZero: '',
       dialogExcelImport: false,
       hideZero: '隐藏整行为0的数据',
       firstLoading: '',
@@ -326,18 +325,18 @@ export default {
       if (this.hideZero === '隐藏整行为0的数据') {
         this.hideZero = '显示所有数据';
         this.tableSource.forEach((item) => {
-          this.currentLineZero = '';
           const allInputEl = document.querySelectorAll('table.KMTable1.commonTable tr.' + item.className + ' input');
-          let sumData = 0;
-          for (let i = 1; i < 13; i += 1) {
-            sumData = Number(allInputEl[i].value) + sumData;
+          let isZero;
+          for (let i = 0; i < 13; i += 1) {
+            if (parseFloat(allInputEl[i].value) !== 0 && allInputEl[i].value !== '') {
+              isZero = false;
+              break;
+            } else {
+              isZero = true;
+            }
           }
-
-          if ((sumData === 0 || sumData === 0.0 || sumData === 0.00) && (allInputEl[0].value === '0' || allInputEl[0].value === '0.0' || allInputEl[0].value === '0.00' || allInputEl[0].value === '')) {
-            this.currentLineZero = true;
+          if (isZero) {
             document.querySelector('table.KMTable1.commonTable tr.' + item.className).classList.add('hide-zero');
-          } else {
-            this.currentLineZero = false;
           }
         });
       } else {
@@ -857,6 +856,12 @@ export default {
   }
   .F5{
     display: none;
+  }
+  .commonTable tr>th{
+    width: 6.1%;
+  }
+  .commonTable tr>th:nth-child(1) {
+    width: 8% !important;
   }
   .delete-btn{
     padding:5px;

@@ -376,7 +376,8 @@ export default {
     viewEditor(item) {
       if (item.IsAccountingTable === 0) {
         sessionStorage.setItem('Name', item.F_FullName);
-        window.location = 'monthlyDataSummary.html?company=' + this.Pr0132 + '&OrganizeId=' + this.accountOrganizeId + '&years=' + this.copyYearSelected + '&Month=' + this.copyMonthSelected + '&CreateByUser=' + item.CreateByUser;
+        // window.location = 'monthlyDataSummary.html?company=' + this.Pr0132 + '&OrganizeId=' + this.accountOrganizeId + '&years=' + this.copyYearSelected + '&Month=' + this.copyMonthSelected + '&CreateByUser=' + item.CreateByUser;
+        window.location = 'monthlyDataSummary.html?company=' + this.Pr0132 + '&OrganizeId=' + item.F_Id + '&years=' + this.copyYearSelected + '&Month=' + this.copyMonthSelected + '&CreateByUser=' + item.CreateByUser;
       } else if (item.IsAccountingTable === 1) {
         window.location = 'monthIndex.html?monthCreateByUser=' + encodeURI(item.CreateByUser) + '&monthFromWhichBtn=1&monthViewEditorYear=' + this.copyYearSelected + '&monthViewEditorMonth=' + this.copyMonthSelected;
       }
