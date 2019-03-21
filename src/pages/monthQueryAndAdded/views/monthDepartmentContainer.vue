@@ -1,5 +1,5 @@
 <template>
-    <div class="month-query-container">
+    <div class="month-query-container" v-show="isLoadingCompleted">
       <h2>核算表系统月度计划</h2>
       <div class="department">
       <ul class="department-list">
@@ -104,7 +104,6 @@ export default {
   data() {
     return {
       userID: '',
-      organizationListData: [],
       threeAreas: [
         { F_Id: '{19BDD92C-55A5-4284-A917-5BCC99FAC4E1}', F_FullName: '上海信义' },
         { F_Id: '{A138EF0C-7CA1-4288-8DCF-24C9583C4EB6}', F_FullName: '苏州信义' },
@@ -129,7 +128,6 @@ export default {
       page: 1,
       rows: 10,
       queryTableAllData: '',
-      otherParentId: '',
       secondSelected: '',
       thirdSelected: '',
       fourthSelectStoreSelected: '',
@@ -138,6 +136,7 @@ export default {
       showTestBtn: true,
       // 汇总核算表OrganizeId参数
       accountOrganizeId: '',
+      isLoadingCompleted: false,
     };
   },
   methods: {
@@ -349,6 +348,7 @@ export default {
           this.queryTableAllData = res.data;
           this.totalCount = res.data[0].TotalCount;
           this.loadingCover.close();
+          this.isLoadingCompleted = true;
         })
         .catch((err) => {
           console.log(err);

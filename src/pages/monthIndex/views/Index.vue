@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-show="isLoadingCompleted">
     <div class="table-container">
       <h2>阿米巴核算系统--月预定</h2>
       <div class="submitBtn" v-if="submitBtnShow">
@@ -148,11 +148,13 @@ export default {
       // isFixedMonth = '1' 表示环境变量固定死的查询月份VUE_APP_SCHEDULEDMONTH
       // isFixedMonth = '2' 表示当前月
       historicalMonth: '', // 历史数据月份
+      isLoadingCompleted: false,
     };
   },
   methods: {
     closeLoading() {
       this.loadingCover.close();
+      this.isLoadingCompleted = true;
     },
     getBaseInfo() {
       this.isFixedMonth = news.getQueryVariable('isFixedMonth');

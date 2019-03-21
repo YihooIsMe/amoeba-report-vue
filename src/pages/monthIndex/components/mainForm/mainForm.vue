@@ -134,7 +134,6 @@ export default {
     inputFocus(className, event) {
       const currentEl = event.target;
       if (className === 'F1' && this.$store.state.comData.commonData.Pr0111 !== 'A2') {
-        this.isAlertShow = true;
         const params = {};
         params.CostCode = this.$store.state.comData.commonData.Pr0139;
         params.Years = news.injectYearAndMonth().Years;
@@ -148,8 +147,10 @@ export default {
             })
             .catch((errMsg) => {
               console.log(errMsg);
+              news.ElErrorMessage(errMsg);
             });
         }
+        this.isAlertShow = true;
         this.alertIndex = 3;
       } else if (currentEl.value !== '') {
         currentEl.value = cal.remSep(currentEl.value);

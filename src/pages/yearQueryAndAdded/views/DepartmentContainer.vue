@@ -1,5 +1,5 @@
 <template>
-    <div class="year-query-container">
+    <div class="year-query-container" v-show="isLoadingCompleted">
       <h2>核算表系统年度计划</h2>
       <div class="department">
       <ul class="department-list">
@@ -127,6 +127,7 @@ export default {
       fourthSelectStoreSelected: '',
       loading: '',
       totalCount: '',
+      isLoadingCompleted: false,
     };
   },
   methods: {
@@ -139,7 +140,6 @@ export default {
       this.$api.queryAndAddedUserInfo({ userID: this.userID })
         .then((res) => {
           console.log(JSON.parse(res.data));
-          console.log(JSON.parse(res.data).Company);
           this.Pr0132 = JSON.parse(res.data).Company;
           this.District = JSON.parse(res.data).District;
           this.ParentId = JSON.parse(res.data).ParentId;
@@ -327,6 +327,7 @@ export default {
           this.queryTableAllData = res.data;
           this.totalCount = res.data[0].TotalCount;
           this.loading.close();
+          this.isLoadingCompleted = true;
         })
         .catch((err) => {
           console.log(err);

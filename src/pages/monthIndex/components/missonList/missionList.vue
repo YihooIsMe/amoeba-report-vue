@@ -102,7 +102,7 @@ export default {
       this.$store.commit('setMissionListData', this.Amoeba_TaskForm);
     },
     missionListLoading() {
-      const PreordainID = this.$store.state.comData.commonData.MPID; // TODO:如果是201812月那么就要变成201901月；后续完善；
+      const PreordainID = this.$store.state.comData.commonData.MPID;
       console.log({ PreordainID });
       this.$api.monthMissionList({ PreordainID })
         .then((res) => {
