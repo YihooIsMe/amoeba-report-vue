@@ -17,7 +17,7 @@
           <template>
             <el-radio-group v-model="customerName">
               <el-col :span="18" :offset="3" v-for="(item, index) in customerList" :key="index" >
-                <el-radio :label="item.ID + ' ' + item.Name">{{`${item.Name} ${item.PhoneNumber}`}}</el-radio>
+                <el-radio :label="item.ID + ' ' + item.Name + ' ' + item.PhoneNumber">{{`${item.Name} ${item.PhoneNumber.slice(0,3)}****${item.PhoneNumber.slice(7)}`}}</el-radio>
               </el-col>
             </el-radio-group>
           </template>
@@ -154,6 +154,7 @@
             <el-col :span="11">元</el-col>
           </el-row>
         </el-form-item>
+        <el-input type="hidden" v-model="AddForm.PhoneNumber" autocomplete="off" disabled></el-input>
         <div class="submit-btn">
           <el-button type="warning" @click="onSubmit('AddForm')">确认</el-button>
           <el-button @click="copyDialogTableVisible = false">取消</el-button>
@@ -200,7 +201,6 @@ export default {
   data() {
     const checkDiscountAmount = (rule, value, callback) => {
       if (value !== '') {
-        console.log(value);
         if (!/^[0-9]+([.]{1}[0-9]+){0,1}$/.test(value)) {
           callback(new Error('请输入有效数字'));
         }
@@ -253,6 +253,7 @@ export default {
         discountType: '',
         discountAmount: '',
         brokerLabel: '',
+        PhoneNumber: '',
       },
       rules: {
         broker: [
@@ -323,6 +324,7 @@ export default {
       }
       this.AddForm.searchCustomerName = this.customerName.split(' ')[1];
       this.AddForm.customerID = this.customerName.split(' ')[0];
+      this.AddForm.PhoneNumber = this.customerName.split(' ')[2];
       this.innerVisible = false;
       return '';
     },
@@ -340,6 +342,9 @@ export default {
         arrList.forEach((el) => {
           this.AddForm[el] = data[el];
         });
+        if (data.customerType === 2) {
+          this.AddForm.PhoneNumber = data.searchCustomer;
+        }
       });
     },
     selectCustomerType() {
@@ -437,6 +442,7 @@ export default {
             if (JSON.parse(res.data).length === 1) {
               this.AddForm.searchCustomerName = JSON.parse(res.data)[0].Name;
               this.AddForm.customerID = JSON.parse(res.data)[0].ID;
+              this.AddForm.PhoneNumber = this.customerName.split(' ')[2];
               console.log(JSON.parse(res.data));
             }
             if (JSON.parse(res.data).length > 1) {
