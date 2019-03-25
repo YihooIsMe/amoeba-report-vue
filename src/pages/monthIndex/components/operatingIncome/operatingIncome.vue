@@ -497,14 +497,16 @@ export default {
           if (selectedFormPer.customerType === 1) {
             perFormData.objectNum = selectedFormPer.objectNum;
             perFormData.caseName = selectedFormPer.caseName;
-            perFormData.customer = selectedFormPer.customerNameSpl.split('<br>').join(' ');
+            // perFormData.customer = selectedFormPer.customerNameSpl.split('<br>').join(' ');
+            perFormData.customer = selectedFormPer.customerName + ' ' + selectedFormPer.PhoneNumber;
           } else {
             perFormData.objectNum = '';
             perFormData.caseName = '';
             perFormData.customer = '';
           }
           if (selectedFormPer.customerType === 2) {
-            perFormData.searchCustomer = Number(selectedFormPer.searchCustomer);
+            // perFormData.searchCustomer = Number(selectedFormPer.searchCustomer);
+            perFormData.searchCustomer = Number(selectedFormPer.PhoneNumber);
             perFormData.searchCustomerName = selectedFormPer.searchCustomerName;
             perFormData.demandContent = selectedFormPer.demandContent;
           } else {
@@ -595,19 +597,21 @@ export default {
       if (newVal.type === 'newAdd') {
         const formArrObj = {};
         if (newVal.customerType === 1) {
-          formArrObj.customerNameSpl = newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1];
+          formArrObj.customerNameSpl = newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1].slice(0, 3) + '****' + newVal.customer.split(' ')[1].slice(7);
           formArrObj.customerName = newVal.customer.split(' ')[0];
-          formArrObj.customerPhone = newVal.customer.split(' ')[1];
+          formArrObj.customerPhone = newVal.customer.split(' ')[1].slice(0, 3) + '****' + newVal.customer.split(' ').slice(7);
           formArrObj.objectNameDes = newVal.objectNum + '<br>' + newVal.caseName;
           formArrObj.objectNum = newVal.objectNum;
           formArrObj.caseName = newVal.caseName;
+          formArrObj.PhoneNumber = newVal.customer.split(' ')[1];
         } else {
-          formArrObj.customerNameSpl = newVal.searchCustomerName + '<br>' + newVal.searchCustomer;
+          formArrObj.customerNameSpl = newVal.searchCustomerName + '<br>' + newVal.PhoneNumber.slice(0, 3) + '****' + newVal.PhoneNumber.slice(7);
           formArrObj.customerName = newVal.searchCustomerName;
-          formArrObj.customerPhone = newVal.searchCustomer;
+          formArrObj.customerPhone = newVal.PhoneNumber.slice(0, 3) + '****' + newVal.PhoneNumber.slice(7);
           formArrObj.objectNameDes = newVal.demandContent;
           formArrObj.objectNum = '';
           formArrObj.caseName = newVal.demandContent;
+          formArrObj.PhoneNumber = newVal.PhoneNumber;
         }
         formArrObj.bookType = '月预订';
         formArrObj.status = '未达成';
@@ -633,19 +637,21 @@ export default {
           Vue.set(this.addPerformanceArr[newVal.index], el, newVal[el]);
         });
         if (newVal.customerType === 1) {
-          Vue.set(this.addPerformanceArr[newVal.index], 'customerNameSpl', newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1]);
+          Vue.set(this.addPerformanceArr[newVal.index], 'customerNameSpl', newVal.customer.split(' ')[0] + '<br>' + newVal.customer.split(' ')[1].slice(0, 3) + '****' + newVal.customer.split(' ')[1].slice(7));
           Vue.set(this.addPerformanceArr[newVal.index], 'customerName', newVal.customer.split(' ')[0]);
-          Vue.set(this.addPerformanceArr[newVal.index], 'customerPhone', newVal.customer.split(' ')[1]);
+          Vue.set(this.addPerformanceArr[newVal.index], 'customerPhone', newVal.customer.split(' ')[1].slice(0, 3) + '****' + newVal.customer.split(' ')[1].slice(7));
           Vue.set(this.addPerformanceArr[newVal.index], 'objectNameDes', newVal.objectNum + '<br>' + newVal.caseName);
           Vue.set(this.addPerformanceArr[newVal.index], 'objectNum', newVal.objectNum);
           Vue.set(this.addPerformanceArr[newVal.index], 'caseName', newVal.caseName);
+          Vue.set(this.addPerformanceArr[newVal.index], 'PhoneNumber', newVal.customer.split(' ')[1]);
         } else {
-          Vue.set(this.addPerformanceArr[newVal.index], 'customerNameSpl', newVal.searchCustomerName + '<br>' + newVal.searchCustomer);
+          Vue.set(this.addPerformanceArr[newVal.index], 'customerNameSpl', newVal.searchCustomerName + '<br>' + newVal.PhoneNumber.toString().slice(0, 3) + '****' + newVal.PhoneNumber.toString().slice(7));
           Vue.set(this.addPerformanceArr[newVal.index], 'customerName', newVal.searchCustomerName);
-          Vue.set(this.addPerformanceArr[newVal.index], 'customerPhone', newVal.searchCustomer);
+          Vue.set(this.addPerformanceArr[newVal.index], 'customerPhone', newVal.PhoneNumber.toString().slice(0, 3) + '****' + newVal.PhoneNumber.toString().slice(7));
           Vue.set(this.addPerformanceArr[newVal.index], 'objectNameDes', newVal.demandContent);
           Vue.set(this.addPerformanceArr[newVal.index], 'objectNum', '');
           Vue.set(this.addPerformanceArr[newVal.index], 'caseName', newVal.demandContent);
+          Vue.set(this.addPerformanceArr[newVal.index], 'PhoneNumber', newVal.PhoneNumber);
         }
         Vue.set(this.addPerformanceArr[newVal.index], 'customerTypeSpl', (newVal.saleAndLease === 1 ? '买卖' : '租赁') + '(' + (newVal.customerType === 1 ? '业主方' : '买方') + ')');
         Vue.set(this.addPerformanceArr[newVal.index], 'completedPercent', newVal.completedPercent + '%');
@@ -716,6 +722,7 @@ export default {
           Vue.set(this.addFormArr[newVal.index], 'objectNameDes', newVal.objectNum + '<br>' + newVal.caseName);
           Vue.set(this.addFormArr[newVal.index], 'objectNum', newVal.objectNum);
           Vue.set(this.addFormArr[newVal.index], 'caseName', newVal.caseName);
+          Vue.set(this.addFormArr[newVal.index], 'PhoneNumber', newVal.customer.split(' ')[1]);
         } else {
           // note:slice()方法是针对字符串的截取，Number类型执行此方法时会报错；
           Vue.set(this.addFormArr[newVal.index], 'customerNameSpl', newVal.searchCustomerName + '<br>' + newVal.PhoneNumber.toString().slice(0, 3) + '****' + newVal.PhoneNumber.toString().slice(7));
@@ -724,6 +731,7 @@ export default {
           Vue.set(this.addFormArr[newVal.index], 'objectNameDes', newVal.demandContent);
           Vue.set(this.addFormArr[newVal.index], 'objectNum', '');
           Vue.set(this.addFormArr[newVal.index], 'caseName', newVal.demandContent);
+          Vue.set(this.addFormArr[newVal.index], 'PhoneNumber', newVal.PhoneNumber);
         }
         Vue.set(this.addFormArr[newVal.index], 'customerTypeSpl', (newVal.saleAndLease === 1 ? '买卖' : '租赁') + '(' + (newVal.customerType === 1 ? '业主方' : '买方') + ')');
         Vue.set(this.addFormArr[newVal.index], 'completedPercent', newVal.completedPercent + '%');
@@ -794,10 +802,12 @@ export default {
           addPerFormData.CaseName = el.objectNum;
           addPerFormData.ObjectName = el.caseName;
           addPerFormData.CustomerName = el.customerName;
-          addPerFormData.CustomerPhone = el.customerPhone;
+          // addPerFormData.CustomerPhone = el.customerPhone;
+          addPerFormData.CustomerPhone = el.PhoneNumber;
         } else {
           addPerFormData.CustomerName = el.searchCustomerName;
-          addPerFormData.CustomerPhone = el.searchCustomer;
+          // addPerFormData.CustomerPhone = el.searchCustomer;
+          addPerFormData.CustomerPhone = el.PhoneNumber;
           addPerFormData.CaseName = el.demandContent;
           addPerFormData.ObjectName = '';
         }
@@ -895,20 +905,25 @@ export default {
           addPerFormObj.objectNum = el.CaseName;
           addPerFormObj.caseName = el.ObjectName;
           addPerFormObj.customerName = el.CustomerName;
-          addPerFormObj.customerPhone = el.customerPhone;
+          addPerFormObj.customerPhone = el.CustomerPhone;
 
           addPerFormObj.searchCustomerName = '';
           addPerFormObj.searchCustomer = '';
           addPerFormObj.demandContent = '';
+
+          addPerFormObj.PhoneNumber = el.CustomerPhone;
         } else {
           addPerFormObj.searchCustomerName = el.CustomerName;
-          addPerFormObj.searchCustomer = el.CustomerPhone;
+          // addPerFormObj.searchCustomer = el.CustomerPhone;
+          addPerFormObj.searchCustomer = el.CustomerPhone.slice(0, 3) + '****' + el.CustomerPhone.slice(7);
           addPerFormObj.demandContent = el.CaseName;
 
           addPerFormObj.objectNum = '';
           addPerFormObj.caseName = '';
           addPerFormObj.customerName = '';
           addPerFormObj.customerPhone = '';
+
+          addPerFormObj.PhoneNumber = el.CustomerPhone;
         }
 
 
@@ -920,7 +935,7 @@ export default {
         addPerFormObj.customerType = el.CustomerType;
         addPerFormObj.customerID = el.CustomerID;
         addPerFormObj.customerTypeSpl = (el.CaseType === 1 ? '买卖' : '租赁') + '(' + (el.CustomerType === 1 ? '业主方' : '买方') + ')';
-        addPerFormObj.customerNameSpl = el.CustomerName + '<br>' + el.CustomerPhone;
+        addPerFormObj.customerNameSpl = el.CustomerName + '<br>' + el.CustomerPhone.slice(0, 3) + '****' + el.CustomerPhone.slice(7);
         // addPerFormObj.customerName = el.CustomerName;
         // addPerFormObj.customerPhone = el.CustomerPhone;
         addPerFormObj.objectNameDes = el.CaseName + '<br>' + el.ObjectName;

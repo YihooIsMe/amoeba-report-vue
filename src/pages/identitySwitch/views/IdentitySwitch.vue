@@ -63,7 +63,7 @@
       </el-tab-pane>
     </el-tabs>
   </div>
-  <h4 class="red">注意：此页面只为方便演示而用！</h4>
+  <h4 class="red">注意：此页面只为本地测试或者方便演示而用！</h4>
 </div>
 </template>
 

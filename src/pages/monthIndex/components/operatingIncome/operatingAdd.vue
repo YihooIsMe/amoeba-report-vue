@@ -1,7 +1,7 @@
 <template>
     <div id="operating-add">
       <el-dialog
-        title="营业收入预定 - 新增"
+        :title="`营业收入预定 - ${titleContent}`"
         center
         :visible.sync="copyDialogTableVisible"
         width="600px"
@@ -217,6 +217,7 @@ export default {
       callback();
     };
     return {
+      titleContent: '',
       customerName: '',
       customerList: [],
       innerVisible: false,
@@ -304,6 +305,14 @@ export default {
     };
   },
   methods: {
+    loadingCover() {
+      return this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)',
+      });
+    },
     onSubmit(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
@@ -330,6 +339,7 @@ export default {
     },
     doNewAdd() {
       Vue.set(this.AddForm, 'type', 'newAdd');
+      this.titleContent = '新增';
     },
     doModify(data) {
       console.log(data);
@@ -346,6 +356,7 @@ export default {
           this.AddForm.PhoneNumber = data.searchCustomer;
         }
       });
+      this.titleContent = '修改';
     },
     selectCustomerType() {
       if (this.AddForm.customerType === 1) {
@@ -385,7 +396,7 @@ export default {
     messageInfo(msg) {
       Message({
         message: msg,
-        duration: 2000,
+        duration: 3000,
         type: 'warning',
       });
     },
@@ -405,6 +416,7 @@ export default {
         // this.$refs.searchCustomer.focus();
         return false;
       }
+      this.loadingCover();
       const queryParams = {};
       queryParams.OwnerID = this.AddForm.broker;
       // OrderType是后面添加进去的，之前没有的；
@@ -418,8 +430,8 @@ export default {
       console.log(queryParams);
       this.$api.monthOperatingAdd(queryParams)
         .then((res) => {
+          this.loadingCover().close();
           console.log(JSON.parse(res.data));
-          console.log(JSON.parse(res.data).length);
           if (this.AddForm.customerType === 1) {
             if (JSON.parse(res.data).length === 0) {
               this.messageInfo('查询无结果,请确认物件编号正确');
@@ -442,7 +454,7 @@ export default {
             if (JSON.parse(res.data).length === 1) {
               this.AddForm.searchCustomerName = JSON.parse(res.data)[0].Name;
               this.AddForm.customerID = JSON.parse(res.data)[0].ID;
-              this.AddForm.PhoneNumber = this.customerName.split(' ')[2];
+              this.AddForm.PhoneNumber = JSON.parse(res.data)[0].PhoneNumber;
               console.log(JSON.parse(res.data));
             }
             if (JSON.parse(res.data).length > 1) {
@@ -455,6 +467,7 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          this.loadingCover().close();
           news.ElErrorMessage(err);
         });
       return '';

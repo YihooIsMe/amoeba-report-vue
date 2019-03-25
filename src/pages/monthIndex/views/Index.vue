@@ -189,7 +189,7 @@ export default {
       this.$refs.missionList.editorSubmission();
       this.setAllSubmissionData(index);
     },
-    commonSubmissionData() {
+    commonSubmissionData(i) {
       this.allSubmissionData = {};
       const storeCommonData = this.$store.state.comData.commonData;
       // TODO:NOTE3正式环境更改;
@@ -258,9 +258,9 @@ export default {
             message: res.data.errorMessage,
             type,
           });
-          if (type === 'success') {
+          if (type === 'success' && i !== 0) {
             setTimeout(() => {
-              // window.location.reload();
+              window.location.reload();
             }, 1000);
           }
         })
@@ -272,14 +272,14 @@ export default {
     },
     setAllSubmissionData(i) {
       if (i === 0) {
-        this.commonSubmissionData();
+        this.commonSubmissionData(i);
       } else if (i === 1) {
         MessageBox.confirm('此操作后所有的数据将锁定，无法再修改，若数据只是暂时保存，请点击保存草稿！', '提示', {
           confirmButtonText: '继续提交数据',
           cancelButtonText: '取消',
           type: 'warning',
         }).then(() => {
-          this.commonSubmissionData();
+          this.commonSubmissionData(i);
         }).catch(() => {
           Message({
             message: '已经取消数据提交',

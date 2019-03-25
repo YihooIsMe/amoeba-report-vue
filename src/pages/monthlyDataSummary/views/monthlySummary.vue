@@ -271,7 +271,7 @@ export default {
             });
             if (res.data.result) {
               setTimeout(() => {
-                // window.location.reload();
+                window.location.reload();
               }, 1000);
             }
           })
@@ -375,7 +375,7 @@ export default {
         this.showReviewAndReject = this.Review === '1' && this.userID === this.SupervisorID;
         // this.showDraftAndSubmit = (this.Review === '0' || this.Review === '3') && this.IsComplete === true && this.userID === this.CreateByUser;
         // this.withdraw = this.Review === '1' && this.IsComplete === true && this.userID === this.CreateByUser;
-        // TODO:note--方便测试，下面两行为测试代码,上两行注释的为正式代码；
+        // TODO:note--方便测试，下面两行为测试代码,上两行为正式环境代码；
         this.showDraftAndSubmit = (this.Review === '0' || this.Review === '3') && this.userID === this.CreateByUser;
         this.withdraw = this.Review === '1' && this.userID === this.CreateByUser;
       }

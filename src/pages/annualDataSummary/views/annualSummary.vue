@@ -4,7 +4,6 @@
       <h2>阿米巴{{years}}年年度汇总表</h2>
       <div class="submitBtn" v-if="submitBtnShow">
         <div class="top-left">
-          <!-- TODO:fixedYear更改回来 -->
           {{`${yearStoreName}${years}年年度汇总表`}}
         </div>
         <div class="top-right">
@@ -25,6 +24,7 @@
           <el-button type="warning"
                      @click="hideSubjectWithZero"
           >{{hideZero}}</el-button>
+          <el-button type="info" v-if="withdraw" @click="dataSubmissionAndReview('4')">撤回</el-button>
           <el-button type="success"
                      plain
                      @click="exportAllData"
@@ -83,9 +83,6 @@ export default {
   data() {
     return {
       userID: '',
-      // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 权限大
-      // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 权限小
-      /* TODO:地址要改成正式的环境 */
       exportUrl: process.env.VUE_APP_APIRELEASEADDRESS + '/AnnualSummaryExport',
       years: '',
       submitBtnShow: false,
@@ -109,6 +106,7 @@ export default {
       Review: '',
       SupervisorID: '',
       OrganizeId: '',
+      withdraw: false,
     };
   },
   methods: {
@@ -133,13 +131,17 @@ export default {
       if (index === '3') {
         selectedIndex = '驳回';
       }
+      if (index === '4') {
+        selectedIndex = '撤回';
+      }
       MessageBox.confirm('您确认进行' + selectedIndex + '操作,是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
       }).then(() => {
         this.$api.summaryData({
-          userID: this.userID,
+          // userID: this.userID,
+          userID: this.CreateByUser,
           SupervisorID: this.SupervisorID,
           years: this.years,
           Review: index,
@@ -151,6 +153,11 @@ export default {
               message: res.data.message,
               type: res.data.result === true ? 'success' : 'error',
             });
+            if (res.data.result) {
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
+            }
           })
           .catch((errMsg) => {
             console.log(errMsg);
@@ -297,10 +304,15 @@ export default {
       if (process.env.VUE_APP_ISOPENAUTHORITY === '0') {
         this.showDraftAndSubmit = this.userID === this.CreateByUser && this.IsComplete === true && (this.Review === '0' || this.Review === '3') && Number(this.years) === (new Date().getFullYear() + 1);
         this.showReviewAndReject = this.userID === this.SupervisorID && this.Review === '1' && Number(this.years) === (new Date().getFullYear() + 1);
+        this.withdraw = this.Review === '1' && this.IsComplete === true && this.userID === this.CreateByUser && Number(this.years) === (new Date().getFullYear() + 1);
       }
       if (process.env.VUE_APP_ISOPENAUTHORITY === '1') {
-        this.showDraftAndSubmit = this.userID === this.CreateByUser && this.IsComplete === true && (this.Review === '0' || this.Review === '3');
         this.showReviewAndReject = this.userID === this.SupervisorID && this.Review === '1';
+        // this.showDraftAndSubmit = this.userID === this.CreateByUser && this.IsComplete === true && (this.Review === '0' || this.Review === '3');
+        // this.withdraw = this.Review === '1' && this.IsComplete === true && this.userID === this.CreateByUser;
+        // note:方便测试，下面两行为测试代码,上两行为正式环境代码；
+        this.showDraftAndSubmit = this.userID === this.CreateByUser && (this.Review === '0' || this.Review === '3');
+        this.withdraw = this.Review === '1' && this.userID === this.CreateByUser;
       }
     },
   },

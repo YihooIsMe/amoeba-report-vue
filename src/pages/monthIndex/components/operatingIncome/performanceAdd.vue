@@ -1,7 +1,7 @@
 <template>
     <div id="performance-add">
       <el-dialog
-        title="业绩收入 - 预定"
+        :title="`业绩收入 - ${titleContent}`"
         center
         :visible.sync="copyDialogPerformance"
         width="600px"
@@ -18,7 +18,7 @@
           <template>
             <el-radio-group v-model="customerName">
               <el-col :span="18" :offset="3" v-for="(item, index) in customerList" :key="index" >
-                <el-radio :label="item.ID + ' ' + item.Name">{{item.Name}}</el-radio>
+                <el-radio :label="item.ID + ' ' + item.Name + ' ' + item.PhoneNumber">{{`${item.Name} ${item.PhoneNumber.slice(0,3)}****${item.PhoneNumber.slice(7)}`}}</el-radio>
               </el-col>
             </el-radio-group>
           </template>
@@ -133,6 +133,7 @@
               <el-col :span="11">元</el-col>
             </el-row>
           </el-form-item>
+          <el-input type="hidden" v-model="performanceAddForm.PhoneNumber" autocomplete="off" disabled></el-input>
           <div class="submit-btn">
             <el-button type="warning" @click="onSubmit('performanceAddForm')">确认</el-button>
             <el-button @click="copyDialogPerformance = false">取消</el-button>
@@ -163,6 +164,7 @@ export default {
       callback();
     };
     return {
+      titleContent: '',
       customerName: '',
       customerList: [],
       innerVisible: false,
@@ -184,6 +186,7 @@ export default {
         completedPercent: '',
         recoveryPerformance: '',
         brokerLabel: '',
+        PhoneNumber: '',
       },
       rules: {
         broker: [
@@ -259,11 +262,13 @@ export default {
       }
       this.performanceAddForm.searchCustomerName = this.customerName.split(' ')[1];
       this.performanceAddForm.customerID = this.customerName.split(' ')[0];
+      this.performanceAddForm.PhoneNumber = this.customerName.split(' ')[2];
       this.innerVisible = false;
       return '';
     },
     doNewAdd() {
       Vue.set(this.performanceAddForm, 'type', 'newAdd');
+      this.titleContent = '新增';
     },
     doModify(data) {
       console.log(data);
@@ -275,7 +280,12 @@ export default {
         arrList.forEach((el) => {
           this.performanceAddForm[el] = data[el];
         });
+        if (data.customerType === 2) {
+          // TODO: ?为什么是searchCustomer;
+          this.performanceAddForm.PhoneNumber = data.searchCustomer;
+        }
       });
+      this.titleContent = '修改';
     },
     selectCustomerType() {
       if (this.performanceAddForm.customerType === 1) {
@@ -303,7 +313,7 @@ export default {
     messageInfo(msg) {
       Message({
         message: msg,
-        duration: 2000,
+        duration: 3000,
         type: 'warning',
       });
     },
@@ -343,6 +353,7 @@ export default {
             }
             this.performanceAddForm.customer = JSON.parse(res.data)[0].Name + ' ' + JSON.parse(res.data)[0].PhoneNumber;
             this.performanceAddForm.caseName = JSON.parse(res.data)[0].CaseName;
+            this.performanceAddForm.customerID = JSON.parse(res.data)[0].ID;
             console.log(JSON.parse(res.data));
           } else {
             if (JSON.parse(res.data).length === 0) {
@@ -354,6 +365,7 @@ export default {
             if (JSON.parse(res.data).length === 1) {
               this.performanceAddForm.searchCustomerName = JSON.parse(res.data)[0].Name;
               this.performanceAddForm.customerID = JSON.parse(res.data)[0].ID;
+              this.performanceAddForm.PhoneNumber = JSON.parse(res.data)[0].PhoneNumber;
               console.log(JSON.parse(res.data));
             }
             if (JSON.parse(res.data).length > 1) {
