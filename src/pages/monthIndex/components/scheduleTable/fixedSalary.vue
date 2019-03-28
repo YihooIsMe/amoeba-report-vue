@@ -76,7 +76,6 @@ export default {
       sch.scheduleHandleInputNum(f);
       sch.setCalculatedPeopleNumber();
       this.commonCalculation(a, b, c, d, e);
-      // 下面两行代码必须在下面;否则的话计算公积金和社会保险金会漏算最后一次的;
       this.socialOrProvidentTotal('social');
       this.socialOrProvidentTotal('provident');
     },
@@ -92,7 +91,6 @@ export default {
   watch: {
     isLoadCompleted() {
       this.commonCalculation(this.fixedSalaryData, '.fixedSalaryTable', 0, 1, 2);
-      // 下面两行代码不能放到this.commonCalculation()前面;因为取的是预估值这一栏,必须要先计算,否则的话就为0;this.commonCalculation()方法中有计算必须放在前面;
       this.socialOrProvidentTotal('social');
       this.socialOrProvidentTotal('provident');
     },

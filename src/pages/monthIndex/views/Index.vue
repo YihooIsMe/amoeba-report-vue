@@ -136,18 +136,12 @@ export default {
       inputDisabled: false,
       withdraw: false,
       identity: '',
-      // isBehind: true, // 判断是否为幕僚,幕僚没有附表和营业收入
       selectTabPane: this.$store.state.comData.selectTabPane || 'mainForm',
       mainFormTableSource: '',
       ReviewStatus: '',
       SupervisorID: '',
-      // monthFromWhichBtn = '0' 代表从新增按钮过来的
-      // monthFromWhichBtn = '1' 代表从查看编辑过来的
-      isFixedMonth: '', // 此数据只为了方便测试数据所用
-      // isFixedMonth = '0' 表示当前月+1
-      // isFixedMonth = '1' 表示环境变量固定死的查询月份VUE_APP_SCHEDULEDMONTH
-      // isFixedMonth = '2' 表示当前月
-      historicalMonth: '', // 历史数据月份
+      isFixedMonth: '',
+      historicalMonth: '',
       isLoadingCompleted: false,
     };
   },
@@ -192,7 +186,6 @@ export default {
     commonSubmissionData(i) {
       this.allSubmissionData = {};
       const storeCommonData = this.$store.state.comData.commonData;
-      // TODO:NOTE3正式环境更改;
       if (this.monthFromWhichBtn === '0') {
         if (this.isFixedMonth === '0') {
           this.allSubmissionData.Years = news.yearAndMonthChange().year;
@@ -219,7 +212,7 @@ export default {
       this.allSubmissionData.District = storeCommonData.District;
       this.allSubmissionData.department = storeCommonData.DepartmentAttribute;
       this.allSubmissionData.City = storeCommonData.City;
-      this.allSubmissionData.Review = this.review;// 保存草稿为0；数据提交为1；
+      this.allSubmissionData.Review = this.review;
       this.allSubmissionData.CreateByUser = storeCommonData.userID;
       this.allSubmissionData.F_RealName = storeCommonData.F_RealName;
       this.allSubmissionData.OrganizeName = storeCommonData.UnitName;
@@ -290,17 +283,6 @@ export default {
       }
     },
     monthJudgeInputDisabled() {
-      // ReviewStatus = '' 未填写
-      // ReviewStatus = '0' 填写中
-      // ReviewStatus = '1' 待审核
-      // ReviewStatus = '2' 审核通过
-      // ReviewStatus = '3' 驳回
-      // monthFromWhichBtn = '0' 表示是新增的；
-      // monthFromWhichBtn = '１' 表示是查询编辑的；
-      // showReviewAndReject审核或者驳回权限；
-      // reachMatchAdjustment达成匹配调整;
-      // showDraftAndSubmit保存草稿或者提交;
-      // inputDisabled输入框是否可输入;
       const year = news.yearAndMonthChange().year;
       const month = news.yearAndMonthChange().month;
       if (this.monthFromWhichBtn === '0') {
@@ -311,7 +293,6 @@ export default {
         }
         this.withdraw = this.ReviewStatus === '1';
         this.showReviewAndReject = false;
-        // note:若当前月为2月,做3月的预定,那么只有等到3月本人才能执行达成匹配调整的这个操作;
         this.showDraftAndSubmit = this.ReviewStatus === '' || this.ReviewStatus === '0' || this.ReviewStatus === '3';
         this.inputDisabled = this.ReviewStatus === '1' || this.ReviewStatus === '2';
       } else if (this.monthFromWhichBtn === '1' && this.monthUserID !== this.monthCreateByUser) {
@@ -319,7 +300,6 @@ export default {
         this.reachMatchAdjustment = false;
         this.showDraftAndSubmit = false;
         this.inputDisabled = true;
-        // note:跨级不能审核,只有直属上级才能审核,跨月份也不能审核，若2月份做3月份的数据，那么就只有2月份能审核；
         // TODO:权限先放开,后面正式环境更改
         if (process.env.VUE_APP_ISOPENAUTHORITY === '0') {
           this.showReviewAndReject = this.ReviewStatus === '1' && Number(this.monthViewEditorMonth) === month && this.monthUserID === this.SupervisorID && Number(this.monthViewEditorYear) === year;
@@ -458,9 +438,6 @@ export default {
       comDataObj.draft = this.responseData.draft;
       comDataObj.ReviewStatus = this.responseData.ReviewStatus;
       comDataObj.SupervisorID = this.responseData.SupervisorID;
-      // Pr0111为'A1'或者'C1'或者'B0'的时候为门店；
-      // Pr0111为'A2'的时候为业务区；
-      // 其他的情况就相当于是幕僚;
       switch (true) {
         case this.responseData.Pr0111 === 'A1' || this.responseData.Pr0111 === 'C1' || this.responseData.Pr0111 === 'B0':
           this.identity = 'store';

@@ -83,7 +83,7 @@
             <el-row :gutter="20">
               <el-col :span="11">
                 <el-form-item prop="searchCustomer" class="searchCustomer" ref="searchCustomerForm">
-                  <el-input v-model.number="AddForm.searchCustomer" ref="searchCustomer" @blur="getQueryInfo" placeholder="全部手机号或后四位" size="small" :clearable="true"></el-input>
+                  <el-input v-model="AddForm.searchCustomer" ref="searchCustomer" @blur="getQueryInfo" placeholder="全部手机号或后四位" size="small" :clearable="true"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="2">
@@ -216,6 +216,15 @@ export default {
       }
       callback();
     };
+    const checkSearchCustomer = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('手机号码不能为空'));
+      }
+      if (!/^\d+$/.test(value)) {
+        callback(new Error('请输入有效的电话号码'));
+      }
+      callback();
+    };
     return {
       titleContent: '',
       customerName: '',
@@ -295,8 +304,9 @@ export default {
           { required: true, message: '请填写需求内容' },
         ],
         searchCustomer: [
-          { required: true, message: '请输入手机号', trigger: 'blur' },
-          { type: 'number', message: '手机号必须为数字值', trigger: 'blur' },
+          // { required: true, message: '请输入手机号', trigger: 'blur' },
+          // { type: 'number', message: '手机号必须为数字值', trigger: 'blur' },
+          { validator: checkSearchCustomer, trigger: 'blur' },
         ],
         searchCustomerName: [
           { required: true, message: '请根据手机号查询客户信息' },
@@ -343,7 +353,6 @@ export default {
     },
     doModify(data) {
       console.log(data);
-      // DOM加载完成后执行，否则获取不到this.$refs.AddForm元素，报错；
       this.$nextTick(() => {
         this.$refs.AddForm.resetFields();
         this.AddForm.caseName = '';
@@ -497,9 +506,6 @@ export default {
   .submit-btn{
     text-align: center;
     margin-top: 10px;
-  }
-  .el-form-item{
-    /*margin-bottom: 0;*/
   }
   .el-dialog--center .el-dialog__body{
     padding-top: 0;

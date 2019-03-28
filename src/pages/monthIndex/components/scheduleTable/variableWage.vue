@@ -76,7 +76,6 @@ export default {
     recoveryPerformance() {
       return this.$store.state.operatingForm.performanceSum;
     },
-    /* 当固定工资变动的时候，此时的变动工资也随之变化 */
     isSumFixedSalary() {
       return this.$store.state.scheduleForm.sumScheduleForm.sumFixedSalary;
     },

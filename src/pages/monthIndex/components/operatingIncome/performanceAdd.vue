@@ -84,7 +84,7 @@
               <el-row :gutter="20">
                 <el-col :span="11">
                   <el-form-item prop="searchCustomer" class="searchCustomer" ref="searchCustomerForm">
-                    <el-input v-model.number="performanceAddForm.searchCustomer" @blur="getQueryInfo" ref="searchCustomer" placeholder="请输入客户手机号" size="small" :clearable="true"></el-input>
+                    <el-input v-model="performanceAddForm.searchCustomer" @blur="getQueryInfo" ref="searchCustomer" placeholder="请输入客户手机号" size="small" :clearable="true"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="2">
@@ -163,6 +163,15 @@ export default {
       }
       callback();
     };
+    const checkSearchCustomer = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('手机号码不能为空'));
+      }
+      if (!/^\d+$/.test(value)) {
+        callback(new Error('请输入有效的电话号码'));
+      }
+      callback();
+    };
     return {
       titleContent: '',
       customerName: '',
@@ -220,8 +229,9 @@ export default {
           { required: true, message: '请填写需求内容' },
         ],
         searchCustomer: [
-          { required: true, message: '请输入手机号', trigger: 'blur' },
-          { type: 'number', message: '手机号必须为数字值', trigger: 'blur' },
+          // { required: true, message: '请输入手机号', trigger: 'blur' },
+          // { type: 'number', message: '手机号必须为数字值', trigger: 'blur' },
+          { validator: checkSearchCustomer, trigger: 'blur' },
         ],
         searchCustomerName: [
           { required: true, message: '请根据手机号查询客户信息' },

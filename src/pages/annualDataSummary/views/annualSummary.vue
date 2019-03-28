@@ -89,14 +89,14 @@ export default {
       draft: '',
       tableSource: [],
       responseData: {},
-      tableDataSource0: [], // Type类型为0的数据;
-      tableDataSource1: [], // Type类型为1的数据;
-      tableDataSource2: [], // Type类型为2的数据;
-      tableDataSource3: [], // Type类型为3的数据;
-      tableDataSource4: [], // Type类型为4的数据;
-      tableDataSource5: [], // Type类型为5的数据;
-      tableDataSource6: [], // Type类型为6的数据;
-      tableDataSource7: [], // Type类型为7的数据;
+      tableDataSource0: [],
+      tableDataSource1: [],
+      tableDataSource2: [],
+      tableDataSource3: [],
+      tableDataSource4: [],
+      tableDataSource5: [],
+      tableDataSource6: [],
+      tableDataSource7: [],
       tableDataInject: [],
       months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Total'],
       showReviewAndReject: false,
@@ -117,9 +117,6 @@ export default {
       cal.toggleSubject(event);
     },
     dataSubmissionAndReview(index) {
-      // 1数据提交
-      // 2审核通过
-      // 3驳回
       this.firstLoadingCover('Loading...');
       let selectedIndex;
       if (index === '1') {
@@ -308,11 +305,11 @@ export default {
       }
       if (process.env.VUE_APP_ISOPENAUTHORITY === '1') {
         this.showReviewAndReject = this.userID === this.SupervisorID && this.Review === '1';
-        // this.showDraftAndSubmit = this.userID === this.CreateByUser && this.IsComplete === true && (this.Review === '0' || this.Review === '3');
-        // this.withdraw = this.Review === '1' && this.IsComplete === true && this.userID === this.CreateByUser;
+        this.showDraftAndSubmit = this.userID === this.CreateByUser && this.IsComplete === true && (this.Review === '0' || this.Review === '3');
+        this.withdraw = this.Review === '1' && this.IsComplete === true && this.userID === this.CreateByUser;
         // note:方便测试，下面两行为测试代码,上两行为正式环境代码；
-        this.showDraftAndSubmit = this.userID === this.CreateByUser && (this.Review === '0' || this.Review === '3');
-        this.withdraw = this.Review === '1' && this.userID === this.CreateByUser;
+        // this.showDraftAndSubmit = this.userID === this.CreateByUser && (this.Review === '0' || this.Review === '3');
+        // this.withdraw = this.Review === '1' && this.userID === this.CreateByUser;
       }
     },
   },

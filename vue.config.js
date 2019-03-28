@@ -8,6 +8,12 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 module.exports = {
   // baseUrl: './',
   pages: {
+    identitySwitch: {
+      entry: 'src/pages/identitySwitch/main.js',
+      template: 'public/index.html',
+      filename: 'identitySwitch.html',
+      title: '权限选择',
+    },
     yearIndex: {
       entry: 'src/pages/yearIndex/main.js',
       template: 'public/index.html',
@@ -24,19 +30,13 @@ module.exports = {
       entry: 'src/pages/monthQueryAndAdded/main.js',
       template: 'public/index.html',
       filename: 'monthQueryAndAdded.html',
-      title: '核算表系统年度计划查询及新增',
+      title: '核算表系统月度计划查询及新增',
     },
-    monthQueryAndAdded: {
+    monthIndex: {
       entry: 'src/pages/monthIndex/main.js',
       template: 'public/index.html',
       filename: 'monthIndex.html',
       title: '阿米巴月度统计报表',
-    },
-    identitySwitch: {
-      entry: 'src/pages/identitySwitch/main.js',
-      template: 'public/index.html',
-      filename: 'identitySwitch.html',
-      title: '权限选择',
     },
     annualDataSummary: {
       entry: 'src/pages/annualDataSummary/main.js',
@@ -95,5 +95,5 @@ module.exports = {
   //   config.resolve.alias
   //     .set('@', resolve('src'));
   // },
-  // vue-cli 3默认的alias的路径为则按照上面的这种方式@/替代src/,如果需要修改,则按照上面的这种形式进行更改;
+  // vue-cli 3默认的alias的路径为@/替代src/,如果需要修改,则按照上面的这种形式进行更改;
 };

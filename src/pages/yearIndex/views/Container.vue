@@ -63,7 +63,6 @@
               <td><input type="text" readonly :value="historyData(item)"></td>
               <td v-for="n in 12"
                   :key="n">
-                <!--执行顺序 onChange > onBlur-->
                 <input type="text"
                        :readonly="item.ReadOnly === 1?true:false"
                        v-on="item.ReadOnly === 0 ? { focus : ($event) => inputFocus(n+2,item.className, $event), blur : ($event) => addSep($event) } : {}"
@@ -135,9 +134,6 @@ export default {
     return {
       isReadOnly: '',
       userID: '',
-      // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 权限大
-      // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 权限小
-      // 0代表年,1代表月;
       IsYM: 0,
       OrganizeId: '',
       exportUrl: process.env.VUE_APP_APIRELEASEADDRESS + '/DownLoad',
@@ -149,14 +145,14 @@ export default {
       City: '',
       tableSource: [],
       responseData: {},
-      tableDataSource0: [], // Type类型为0的数据;
-      tableDataSource1: [], // Type类型为1的数据;
-      tableDataSource2: [], // Type类型为2的数据;
-      tableDataSource3: [], // Type类型为3的数据;
-      tableDataSource4: [], // Type类型为4的数据;
-      tableDataSource5: [], // Type类型为5的数据;
-      tableDataSource6: [], // Type类型为6的数据;
-      tableDataSource7: [], // Type类型为7的数据;
+      tableDataSource0: [],
+      tableDataSource1: [],
+      tableDataSource2: [],
+      tableDataSource3: [],
+      tableDataSource4: [],
+      tableDataSource5: [],
+      tableDataSource6: [],
+      tableDataSource7: [],
       tableDataInject: [],
       isAlertShow: false,
       alertIndex: null,
@@ -272,7 +268,6 @@ export default {
       return '';
     },
     oneToTwelveSum() {
-      // 全部行自动计算;
       this.tableSource.forEach((el) => {
         const currentLine = document.querySelectorAll('table.KMTable1.commonTable tr.' + el.className + ' input');
         let baseNum = 0;
@@ -463,7 +458,7 @@ export default {
 
     commonSubmissionData(DZIndex) {
       this.firstLoadingCover('数据正在提交中，请稍后');
-      const getSubmitData = this.tableSource;// LIST下的86个数据
+      const getSubmitData = this.tableSource;
       const submitListsArr = [];
       console.log(getSubmitData);
       for (let i = 0; i < getSubmitData.length; i += 1) {
@@ -486,7 +481,7 @@ export default {
         }
         submitListsArr.push(submitObj);
       }
-      Vue.set(this.pullAllData, 'DZ', DZIndex); // 0表示保存草稿  1表示提交审核
+      Vue.set(this.pullAllData, 'DZ', DZIndex);
       Vue.set(this.pullAllData, 'list', submitListsArr);
       console.log(this.pullAllData);
       this.$api.yearDataSubmission(this.pullAllData)
@@ -526,6 +521,7 @@ export default {
       this.$api.yearLoadingData({
         Pr0139: this.Pr0139,
         years: this.years,
+        City: this.City,
       }).then((response) => {
         this.firstLoading.close();
         this.DraftData = JSON.parse(response.data);
@@ -568,7 +564,6 @@ export default {
       });
     },
 
-    /* 判断当前行是否已经有数据填写 */
     isCurrentLineEmpty(className) {
       this.isInputValEmpty = true;
       const currentLineInput = document.querySelectorAll('table.commonTable .' + className + ' input');
@@ -592,7 +587,6 @@ export default {
         this.oneToTwelveSum();
       }
     },
-    /* 当前行没有数据的时候，任一月份输入数据，12个月均会填充此数据 */
     autoFillTwelveMonthData(index, className) {
       const currentInputValue = document.querySelector('table.commonTable .' + className + '>td:nth-child(' + index + ') input').value;
       const currentLineTr = document.querySelectorAll('table.commonTable .' + className + '>td>input');
@@ -609,8 +603,6 @@ export default {
     },
 
     currentMonthAutomaticCalculation(index) {
-      // 管理服务费变动的时候，会联动当前的季度，所以当前的一个季度都要重新计算一遍；
-      // 之前的计算逻辑是当前月变动只计算当前月，注意区别；
       if (index % 3 === 0) {
         for (let i = 0; i < 3; i += 1) {
           cal.allTableCalculation(index + i);
@@ -657,7 +649,6 @@ export default {
 
     AutomaticCalculation(i, className, event) {
       if (className !== 'F1') {
-        // 首先判断输入数据是否是合法有效的（整数或者小数，包括负数）；
         if (!/^-?[0-9]+([.]{1}[0-9]+){0,1}$/.test(event.target.value)) {
           Message({
             message: '请输入有效数字!',
@@ -675,11 +666,6 @@ export default {
     },
 
     judgeInputDisabled() {
-      // ReviewStatus = '' 未填写
-      // ReviewStatus = '0' 填写中
-      // ReviewStatus = '1' 待审核
-      // ReviewStatus = '2' 审核通过
-      // ReviewStatus = '3' 驳回
       if (this.fromWhichBtn === '0') {
         this.showReviewAndReject = false;
         this.withdraw = this.ReviewStatus === '1';
@@ -691,7 +677,6 @@ export default {
         this.withdraw = false;
         this.showDraftAndSubmit = false;
         this.inputDisabled = true;
-        // TODO:跨级不能进行审核或者驳回,下面的权限判断为正确逻辑
         if (process.env.VUE_APP_ISOPENAUTHORITY === '0') {
           this.showReviewAndReject = this.ReviewStatus === '1' && Number(this.viewEditorYear) === (new Date().getFullYear() + 1) && this.userID === this.SupervisorID;
         } else if (process.env.VUE_APP_ISOPENAUTHORITY === '1') {

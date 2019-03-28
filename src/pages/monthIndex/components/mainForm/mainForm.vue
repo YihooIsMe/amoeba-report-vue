@@ -18,8 +18,6 @@
           <tr>
             <th><i class="el-icon-arrow-down" @click="toggleSubject($event)" id="toggle-icon">科目</i></th>
             <th>{{historicalMonth}}月实际</th>
-            <!--TODO:待确定-->
-            <!--TODO:新增情况下,若当前月为2月,预定为3月,1月实际出来那就是1月,1月实际不出来就是12月-->
             <th>{{scheduledMonth}}月预定</th>
             <th>{{scheduledMonth}}月实际</th>
             <th>预定比</th>
@@ -78,23 +76,21 @@ export default {
   components: { ManagementAlert },
   data() {
     return {
-      // userID: '{85811A95-BB15-4914-8926-82E88F5E6E78}', // 瑞虹一店;
-      // userID: '{8F5FF78A-E0C0-40EE-91ED-88B32A247DE9}', // 咨询部;
-      tableDataSource0: [], // Type类型为0的数据;
-      tableDataSource1: [], // Type类型为1的数据;
-      tableDataSource2: [], // Type类型为2的数据;
-      tableDataSource3: [], // Type类型为3的数据;
-      tableDataSource4: [], // Type类型为4的数据;
-      tableDataSource5: [], // Type类型为5的数据;
-      tableDataSource6: [], // Type类型为6的数据;
-      tableDataSource7: [], // Type类型为7的数据;
+      tableDataSource0: [],
+      tableDataSource1: [],
+      tableDataSource2: [],
+      tableDataSource3: [],
+      tableDataSource4: [],
+      tableDataSource5: [],
+      tableDataSource6: [],
+      tableDataSource7: [],
       tableDataInject: [],
       rowSort: ['preMonthActual', 'currentMonthBooking', 'currentMonthActual', 'predeterminedRatio', 'scheduledActualDiff', 'MP', 'MPRatio', 'sumMP'],
       alertIndex: null,
       SigningRatio: 0.15,
       isAlertShow: false,
       applyWhere: 'monthIndex',
-      Amoeba_MonthlyPlandetails: [], // 主表的数据;
+      Amoeba_MonthlyPlandetails: [],
       watObject: {
         sumCarSticker: 0,
         sumFixedSalary: 0,
@@ -129,7 +125,6 @@ export default {
       this.isAlertShow = false;
 
       this.AutomaticCalculation(3, 'F1', '');
-      // this.AutomaticCalculation(this.alertIndex, 'F1', '');
     },
     inputFocus(className, event) {
       const currentEl = event.target;
@@ -170,7 +165,6 @@ export default {
     dataInjection(data, draft) {
       data.forEach((el) => {
         const elInput = document.querySelectorAll('table.commonTable tr.' + el.className + ' input');
-        // F4,G2行都是百分数;
         if (el.className === 'F4' || el.className === 'G2') {
           elInput[0].value = cal.addPercent(el.Amount);
           elInput[2].value = cal.addPercent(el.TheMonthAmount);
@@ -197,8 +191,6 @@ export default {
           }
         }
       });
-      // 处于非门店的时候,数据加载完成后需要计算一遍,门店能自动计算是因为监听到数据改动
-      // TODO:测试环境需要区部也计算一边,这是原始逻辑 this.$store.state.comData.commonData.identity === 'other'
       if (this.$store.state.comData.commonData.identity !== 'store') {
         cal.whereUse('monthIndex');
         cal.getCity(this.$store.state.comData.commonData.City);
@@ -260,7 +252,6 @@ export default {
     },
     calculatePredeterminedRatio() {
       this.mainFormTableSource.forEach((el) => {
-        // TODO:为什么cal.allInputEl(el)[1].value === 'NaN'会有这种情况出现； && cal.allInputEl(el)[1].value !== 'NaN'
         if (cal.allInputEl(el)[1].value !== '' && cal.allInputEl(el)[1].value !== '0' && cal.allInputEl(el)[1].value !== '0%') {
           if (el.className === 'F4' || el.className === 'G2') {
             cal.allInputEl(el)[3].value = cal.addPercent((cal.remPercent(cal.allInputEl(el)[2].value) / cal.remPercent(cal.allInputEl(el)[1].value)).toFixed(2));
@@ -336,7 +327,6 @@ export default {
       this.$store.commit('setMainFormData', this.Amoeba_MonthlyPlandetails);
     },
     isReadOnly(item, n) {
-      // 门店从附表带过来的数据,不能输入
       if (this.$store.state.comData.commonData.identity === 'store') {
         return item.ReadOnly === 1
           || n !== 2
@@ -350,7 +340,6 @@ export default {
           || item.className === 'G0'
           || item.className === 'B10';
       }
-      // 区部不能输入的数据
       if (this.$store.state.comData.commonData.identity === 'district') {
         return item.ReadOnly === 1
           || n !== 2
@@ -420,13 +409,11 @@ export default {
     sumDistrictWelfareFee() {
       return this.districtScheduleSum.sumWelfareFee;
     },
-    // 预定月份
     scheduledMonth() {
       return news.injectYearAndMonth().Month;
     },
   },
   watch: {
-    // 店附表数据回填;
     estimatedContractMoneySum(newVal) {
       this.$nextTick(() => {
         this.watchCommonEvent('A0', newVal);
@@ -445,7 +432,6 @@ export default {
     },
     sumFixedSalary(newVal) {
       this.watchCommonEvent('B1', newVal);
-      // TODO:此时应当还要计算社会保险金和公积金
     },
     sumLinkageIncome(newVal) {
       this.watchCommonEvent('A2', newVal);
@@ -459,7 +445,6 @@ export default {
     sumWorkingMeal(newVal) {
       this.watchCommonEvent('B8', newVal);
     },
-    // 区部附表数据回填到主表;
     sumDistrictSigningFeeAdjustment(val) {
       this.$nextTick(() => {
         this.watchCommonEvent('A0', -val);

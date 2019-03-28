@@ -56,7 +56,7 @@ export default {
   props: ['carStickerData'],
   data() {
     return {
-      seniorDirectorClassName: ['FC12', 'FC1', 'FC2', 'FC3', 'FC4', 'FC5'], // 高级主任的className
+      seniorDirectorClassName: ['FC12', 'FC1', 'FC2', 'FC3', 'FC4', 'FC5'],
       currentDisabled: true,
     };
   },
@@ -70,10 +70,7 @@ export default {
       this.commonCalculation(a, b, c, d, e);
     },
     setCarStickerPeople() {
-      //  因为三地高级主任和主任的类别都一样,直接写死了,如果后面有变动需要重新手动调整代码;
-      //  固定工资店主管人数
       const fixedSalaryStoreManager = Number(document.querySelector('.fixedSalaryTable>tbody>tr.FC0>td:nth-child(3)>input').value);
-      //  固定工资高级主任人数
       let fixedSalarySeniorDirector = 0;
       this.seniorDirectorClassName.forEach((el) => {
         fixedSalarySeniorDirector = Number(document.querySelector('.fixedSalaryTable>tbody>tr.' + el + '>td:nth-child(3)>input').value) + fixedSalarySeniorDirector;
@@ -89,10 +86,6 @@ export default {
     inputDisabled() {
       return this.$store.state.comData.inputDisabled;
     },
-    // scheduleTabIndex() {
-    //   return this.$store.state.scheduleForm.scheduleTabIndex;
-    // },
-    /* 当固定工资变动的时候，此时的车贴费用也应当变化 */
     isSumFixedSalary() {
       return this.$store.state.scheduleForm.sumScheduleForm.sumFixedSalary;
     },
@@ -101,12 +94,6 @@ export default {
     isLoadCompleted() {
       this.commonCalculation(this.carStickerData, '.carStickerTable', 0, 1, 2);
     },
-    // scheduleTabIndex(val) {
-    //   if (val === 6) {
-    //     this.setCarStickerPeople();
-    //     this.commonCalculation(this.carStickerData, '.carStickerTable', 0, 1, 2);
-    //   }
-    // },
     isSumFixedSalary() {
       this.setCarStickerPeople();
       this.commonCalculation(this.carStickerData, '.carStickerTable', 0, 1, 2);

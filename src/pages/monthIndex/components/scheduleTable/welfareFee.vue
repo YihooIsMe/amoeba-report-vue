@@ -66,19 +66,14 @@ export default {
     },
     setStoreNumOfPeople() {
       let sum = 0;
-      // IsFixedSalary表示固定工资人数合计;
       this.fixedSalaryData.forEach((el) => {
         if (el.IsFixedSalary === 1) {
           sum = Number(document.querySelector('.fixedSalaryTable>tbody>tr.' + el.className + '>td:nth-child(3)>input').value) + sum;
         }
       });
-      // 店主管人数
       const storeManager = Number(document.querySelector('.fixedSalaryTable>tbody>tr.FC0>td:nth-child(3)>input').value);
-      // 保障薪人数
       const guaranteedSalary = Number(document.querySelector('.fixedSalaryTable>tbody>tr.FC9>td:nth-child(3)>input').value);
-      // 秘书人数
       const secretary = Number(document.querySelector('.fixedSalaryTable>tbody>tr.FC10>td:nth-child(3)>input').value);
-      // 计算门店福利金人数
       document.querySelector('.welfareFeeTable>tbody>tr.FE0>td:nth-child(3)>input').value = sum - storeManager - guaranteedSalary - secretary + 1;
     },
   },
@@ -92,10 +87,6 @@ export default {
     recoveryPerformance() {
       return this.$store.state.operatingForm.performanceSum;
     },
-    // scheduleTabIndex() {
-    //   return this.$store.state.scheduleForm.scheduleTabIndex;
-    // },
-    /* 当固定工资变动的时候，此时的福利费用也应当变化 */
     isSumFixedSalary() {
       return this.$store.state.scheduleForm.sumScheduleForm.sumFixedSalary;
     },
@@ -104,12 +95,6 @@ export default {
     isLoadCompleted() {
       this.commonCalculation(this.welfareFeeTableData, '.welfareFeeTable', 0, 1, 2);
     },
-    // scheduleTabIndex(newVal) {
-    //   if (newVal === 4) {
-    //     this.setStoreNumOfPeople();
-    //     this.commonCalculation(this.welfareFeeTableData, '.welfareFeeTable', 0, 1, 2);
-    //   }
-    // },
     recoveryPerformance(newVal) {
       this.$nextTick(() => {
         document.querySelector('.welfareFeeTable>tbody>tr.FE0>td:nth-child(2)>input').value = Number(newVal) * 0.03;

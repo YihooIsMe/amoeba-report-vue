@@ -356,7 +356,8 @@ export default {
       if (item.IsAccountingTable === 0) {
         console.log(item.F_FullName);
         sessionStorage.setItem('yearStoreName', item.F_FullName);
-        window.location = 'annualDataSummary.html?OrganizeId=' + this.OrganizeId + '&years=' + this.copyYearSelected + '&CreateByUser=' + encodeURI(item.CreateByUser);
+        // window.location = 'annualDataSummary.html?OrganizeId=' + this.OrganizeId + '&years=' + this.copyYearSelected + '&CreateByUser=' + encodeURI(item.CreateByUser);
+        window.location = 'annualDataSummary.html?OrganizeId=' + item.F_Id + '&years=' + this.copyYearSelected + '&CreateByUser=' + encodeURI(item.CreateByUser);
       } else if (item.IsAccountingTable === 1) {
         window.location = 'yearIndex.html?CreateByUser=' + encodeURI(item.CreateByUser) + '&fromWhichBtn=1&viewEditorYear=' + this.copyYearSelected;
       }

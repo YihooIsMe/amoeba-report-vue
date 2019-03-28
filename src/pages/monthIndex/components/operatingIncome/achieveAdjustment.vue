@@ -185,10 +185,6 @@ export default {
 }
 </style>
 <style>
-  .achieve-dialog .el-dialog__body{
-    /*max-height: 250px;*/
-    /*overflow: scroll;*/
-  }
   .achieve-dialog-content div.el-col.el-col-12:last-child{
     margin-bottom: 10px;
   }

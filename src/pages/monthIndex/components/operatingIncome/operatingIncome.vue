@@ -16,7 +16,6 @@
         :summary-method="getSummaries"
         :row-class-name="tableRowClassName"
         @selection-change="handleSelectionChange">
-        <!--note:selectable可以控制复选框是否禁用-->
         <el-table-column
           type="selection"
           :selectable="checkSelectable"
@@ -857,11 +856,19 @@ export default {
 
           addFormObj.searchCustomerName = el.CustomerName;
           // addFormObj.searchCustomer = el.CustomerPhone;
-          addFormObj.searchCustomer = el.CustomerPhone.slice(0, 3) + '****' + el.CustomerPhone.slice(7);
+          if (el.CustomerPhone === '') {
+            addFormObj.searchCustomer = '';
+          } else {
+            addFormObj.searchCustomer = el.CustomerPhone.slice(0, 3) + '****' + el.CustomerPhone.slice(7);
+          }
           addFormObj.demandContent = el.CaseName;
           addFormObj.PhoneNumber = el.CustomerPhone;
         }
-        addFormObj.customerNameSpl = el.CustomerName + '<br>' + el.CustomerPhone.slice(0, 3) + '****' + el.CustomerPhone.slice(7);
+        if (el.CustomerPhone === '') {
+          addFormObj.customerNameSpl = el.CustomerName;
+        } else {
+          addFormObj.customerNameSpl = el.CustomerName + '<br>' + el.CustomerPhone.slice(0, 3) + '****' + el.CustomerPhone.slice(7);
+        }
         // addFormObj.customerName = el.CustomerName;
         // addFormObj.customerPhone = el.CustomerPhone;
         addFormObj.objectNameDes = el.CaseName + '<br>' + el.ObjectName;
@@ -915,7 +922,11 @@ export default {
         } else {
           addPerFormObj.searchCustomerName = el.CustomerName;
           // addPerFormObj.searchCustomer = el.CustomerPhone;
-          addPerFormObj.searchCustomer = el.CustomerPhone.slice(0, 3) + '****' + el.CustomerPhone.slice(7);
+          if (el.CustomerPhone === '') {
+            addPerFormObj.searchCustomer = '';
+          } else {
+            addPerFormObj.searchCustomer = el.CustomerPhone.slice(0, 3) + '****' + el.CustomerPhone.slice(7);
+          }
           addPerFormObj.demandContent = el.CaseName;
 
           addPerFormObj.objectNum = '';
@@ -935,7 +946,11 @@ export default {
         addPerFormObj.customerType = el.CustomerType;
         addPerFormObj.customerID = el.CustomerID;
         addPerFormObj.customerTypeSpl = (el.CaseType === 1 ? '买卖' : '租赁') + '(' + (el.CustomerType === 1 ? '业主方' : '买方') + ')';
-        addPerFormObj.customerNameSpl = el.CustomerName + '<br>' + el.CustomerPhone.slice(0, 3) + '****' + el.CustomerPhone.slice(7);
+        if (el.CustomerPhone === '') {
+          addPerFormObj.customerNameSpl = el.CustomerName;
+        } else {
+          addPerFormObj.customerNameSpl = el.CustomerName + '<br>' + el.CustomerPhone.slice(0, 3) + '****' + el.CustomerPhone.slice(7);
+        }
         // addPerFormObj.customerName = el.CustomerName;
         // addPerFormObj.customerPhone = el.CustomerPhone;
         addPerFormObj.objectNameDes = el.CaseName + '<br>' + el.ObjectName;

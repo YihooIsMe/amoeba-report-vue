@@ -156,7 +156,6 @@ export default {
       const Month = news.injectYearAndMonth().Month;
       this.scheduleSubmitData.ScheduleSubject.forEach((item) => {
         const sObj = {};
-        // 如果没有草稿,也就是第一次提交的时候,不用传ID;
         if (this.$store.state.comData.commonData.draft === 1) {
           sObj.ID = item.ID;
         }
