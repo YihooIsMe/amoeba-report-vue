@@ -301,12 +301,6 @@ export default {
     checkSelectable(row) {
       return row.PreordainID !== '';
     },
-    getROwIndex(row) {
-      return this.addFormArr.lastIndexOf(row);
-    },
-    getROwIndexPer(row) {
-      return this.addPerformanceArr.lastIndexOf(row);
-    },
     // 如果想要合计的数据,另外写方法,如果写在当前方法中,会引起数据变化,变化之后会重复执行,最后会报错;
     getSummaries(param) {
       const { columns, data } = param;
@@ -627,6 +621,8 @@ export default {
         formArrObj.completedPercent = newVal.completedPercent + '%';
         formArrObj.recoveryPerformance = newVal.recoveryPerformance;
         formArrObj.discountType = '';
+        // note：避免提交已经成交的重复数据；
+        formArrObj.PreordainID = this.$store.state.comData.commonData.MPID;
         // Vue.set(formArrObj, 'discountType', 12345);
         this.addPerformanceArr.push(formArrObj);
       }
@@ -701,6 +697,8 @@ export default {
         formArrObj.fullCommissionSignActual = '';
         formArrObj.discountAmountActual = '';
         formArrObj.relContractMoney = '';
+        // note:防止提交已经成交的重复数据；
+        formArrObj.PreordainID = this.$store.state.comData.commonData.MPID;
         console.log(formArrObj);
         // 预定的时候,没有实际的数据
         // Vue.set(formArrObj, 'fullCommissionSignActual', 12345);
@@ -756,73 +754,77 @@ export default {
     getOperateSubmissionData() {
       this.MonthSigningGoldYD = [];
       this.addFormArr.forEach((el) => {
-        const addFormObj = {};
-        if (el.customerType === 1) {
-          addFormObj.CaseName = el.objectNum;
-          addFormObj.ObjectName = el.caseName;
-          addFormObj.CustomerName = el.customerName;
-          // addFormObj.CustomerPhone = el.customerPhone;
-          // note:同理，此时回传数据为全部电话号码；
-          addFormObj.CustomerPhone = el.PhoneNumber;
-        } else {
-          addFormObj.CustomerName = el.searchCustomerName;
-          // addFormObj.CustomerPhone = el.searchCustomer;
-          // note:此时回传给数据库应当是全部的电话号码；
-          addFormObj.CustomerPhone = el.PhoneNumber;
-          addFormObj.CaseName = el.demandContent;
-          addFormObj.ObjectName = '';
+        if (el.PreordainID !== '') {
+          const addFormObj = {};
+          if (el.customerType === 1) {
+            addFormObj.CaseName = el.objectNum;
+            addFormObj.ObjectName = el.caseName;
+            addFormObj.CustomerName = el.customerName;
+            // addFormObj.CustomerPhone = el.customerPhone;
+            // note:同理，此时回传数据为全部电话号码；
+            addFormObj.CustomerPhone = el.PhoneNumber;
+          } else {
+            addFormObj.CustomerName = el.searchCustomerName;
+            // addFormObj.CustomerPhone = el.searchCustomer;
+            // note:此时回传给数据库应当是全部的电话号码；
+            addFormObj.CustomerPhone = el.PhoneNumber;
+            addFormObj.CaseName = el.demandContent;
+            addFormObj.ObjectName = '';
+          }
+          addFormObj.PreordainID = this.$store.state.comData.commonData.MPID;
+          addFormObj.Status = el.status;
+          addFormObj.PersonnelID = el.broker;
+          addFormObj.PersonnelName = el.brokerLabel;
+          addFormObj.CaseType = el.saleAndLease;
+          addFormObj.CustomerType = el.customerType;
+          addFormObj.CustomerID = el.customerID;
+          addFormObj.CurrentSituation = el.currentSituation;
+          addFormObj.AchievePossibility = el.completedPercent;
+          addFormObj.SigningGoldYD = el.estimatedContractMoney;
+          addFormObj.SigningGoldSJ = el.relContractMoney;
+          addFormObj.DiscountType = el.discountType;
+          addFormObj.DiscountGoldYD = el.discountAmount;
+          addFormObj.DiscountGoldSJ = el.discountAmountActual;
+          addFormObj.FullCommissionYD = el.fullCommissionSign;
+          addFormObj.FullCommissionSJ = el.fullCommissionSignActual;
+          addFormObj.OrganizationID = this.$store.state.comData.commonData.OrganizationID;
+          this.MonthSigningGoldYD.push(addFormObj);
         }
-        addFormObj.PreordainID = this.$store.state.comData.commonData.MPID;
-        addFormObj.Status = el.status;
-        addFormObj.PersonnelID = el.broker;
-        addFormObj.PersonnelName = el.brokerLabel;
-        addFormObj.CaseType = el.saleAndLease;
-        addFormObj.CustomerType = el.customerType;
-        addFormObj.CustomerID = el.customerID;
-        addFormObj.CurrentSituation = el.currentSituation;
-        addFormObj.AchievePossibility = el.completedPercent;
-        addFormObj.SigningGoldYD = el.estimatedContractMoney;
-        addFormObj.SigningGoldSJ = el.relContractMoney;
-        addFormObj.DiscountType = el.discountType;
-        addFormObj.DiscountGoldYD = el.discountAmount;
-        addFormObj.DiscountGoldSJ = el.discountAmountActual;
-        addFormObj.FullCommissionYD = el.fullCommissionSign;
-        addFormObj.FullCommissionSJ = el.fullCommissionSignActual;
-        addFormObj.OrganizationID = this.$store.state.comData.commonData.OrganizationID;
-        this.MonthSigningGoldYD.push(addFormObj);
       });
       this.$store.commit('setOperatingForm', this.MonthSigningGoldYD);
     },
     getPerformanceSubmissionData() {
       this.MonthPerformanceYD = [];
       this.addPerformanceArr.forEach((el) => {
-        const addPerFormData = {};
-        if (el.customerType === 1) {
-          addPerFormData.CaseName = el.objectNum;
-          addPerFormData.ObjectName = el.caseName;
-          addPerFormData.CustomerName = el.customerName;
-          // addPerFormData.CustomerPhone = el.customerPhone;
-          addPerFormData.CustomerPhone = el.PhoneNumber;
-        } else {
-          addPerFormData.CustomerName = el.searchCustomerName;
-          // addPerFormData.CustomerPhone = el.searchCustomer;
-          addPerFormData.CustomerPhone = el.PhoneNumber;
-          addPerFormData.CaseName = el.demandContent;
-          addPerFormData.ObjectName = '';
+        if (el.PreordainID !== '') {
+          const addPerFormData = {};
+          if (el.customerType === 1) {
+            addPerFormData.CaseName = el.objectNum;
+            addPerFormData.ObjectName = el.caseName;
+            addPerFormData.CustomerName = el.customerName;
+            // addPerFormData.CustomerPhone = el.customerPhone;
+            addPerFormData.CustomerPhone = el.PhoneNumber;
+          } else {
+            addPerFormData.CustomerName = el.searchCustomerName;
+            // addPerFormData.CustomerPhone = el.searchCustomer;
+            addPerFormData.CustomerPhone = el.PhoneNumber;
+            addPerFormData.CaseName = el.demandContent;
+            addPerFormData.ObjectName = '';
+          }
+          addPerFormData.PreordainID = this.$store.state.comData.commonData.MPID;
+          addPerFormData.CustomerID = el.customerID;
+          addPerFormData.Status = el.status;
+          addPerFormData.CaseType = el.saleAndLease;
+          addPerFormData.CustomerType = el.customerType;
+          addPerFormData.CurrentSituation = el.currentSituation;
+          addPerFormData.AchievePossibility = el.completedPercent;
+          addPerFormData.PersonnelID = el.broker;
+          addPerFormData.PersonnelName = el.brokerLabel;
+          addPerFormData.PerformanceYD = el.recoveryPerformance;
+          addPerFormData.PerformanceSJ = el.discountType;
+          addPerFormData.OrganizationID = this.$store.state.comData.commonData.OrganizationID;
+          this.MonthPerformanceYD.push(addPerFormData);
         }
-        addPerFormData.PreordainID = this.$store.state.comData.commonData.MPID;
-        addPerFormData.CustomerID = el.customerID;
-        addPerFormData.Status = el.status;
-        addPerFormData.CaseType = el.saleAndLease;
-        addPerFormData.CustomerType = el.customerType;
-        addPerFormData.CurrentSituation = el.currentSituation;
-        addPerFormData.AchievePossibility = el.completedPercent;
-        addPerFormData.PersonnelID = el.broker;
-        addPerFormData.PersonnelName = el.brokerLabel;
-        addPerFormData.PerformanceYD = el.recoveryPerformance;
-        addPerFormData.PerformanceSJ = el.discountType;
-        addPerFormData.OrganizationID = this.$store.state.comData.commonData.OrganizationID;
-        this.MonthPerformanceYD.push(addPerFormData);
       });
       this.$store.commit('setPerformanceForm', this.MonthPerformanceYD);
     },
@@ -856,7 +858,7 @@ export default {
 
           addFormObj.searchCustomerName = el.CustomerName;
           // addFormObj.searchCustomer = el.CustomerPhone;
-          if (el.CustomerPhone === '') {
+          if (el.CustomerPhone === '' || el.CustomerPhone === null) {
             addFormObj.searchCustomer = '';
           } else {
             addFormObj.searchCustomer = el.CustomerPhone.slice(0, 3) + '****' + el.CustomerPhone.slice(7);
@@ -864,7 +866,7 @@ export default {
           addFormObj.demandContent = el.CaseName;
           addFormObj.PhoneNumber = el.CustomerPhone;
         }
-        if (el.CustomerPhone === '') {
+        if (el.CustomerPhone === '' || el.CustomerPhone === null) {
           addFormObj.customerNameSpl = el.CustomerName;
         } else {
           addFormObj.customerNameSpl = el.CustomerName + '<br>' + el.CustomerPhone.slice(0, 3) + '****' + el.CustomerPhone.slice(7);
@@ -922,7 +924,7 @@ export default {
         } else {
           addPerFormObj.searchCustomerName = el.CustomerName;
           // addPerFormObj.searchCustomer = el.CustomerPhone;
-          if (el.CustomerPhone === '') {
+          if (el.CustomerPhone === '' || el.CustomerPhone === null) {
             addPerFormObj.searchCustomer = '';
           } else {
             addPerFormObj.searchCustomer = el.CustomerPhone.slice(0, 3) + '****' + el.CustomerPhone.slice(7);
@@ -946,7 +948,7 @@ export default {
         addPerFormObj.customerType = el.CustomerType;
         addPerFormObj.customerID = el.CustomerID;
         addPerFormObj.customerTypeSpl = (el.CaseType === 1 ? '买卖' : '租赁') + '(' + (el.CustomerType === 1 ? '业主方' : '买方') + ')';
-        if (el.CustomerPhone === '') {
+        if (el.CustomerPhone === '' || el.CustomerPhone === null) {
           addPerFormObj.customerNameSpl = el.CustomerName;
         } else {
           addPerFormObj.customerNameSpl = el.CustomerName + '<br>' + el.CustomerPhone.slice(0, 3) + '****' + el.CustomerPhone.slice(7);
