@@ -154,6 +154,7 @@ export default {
     getScheduleSubmissionData() {
       const Years = news.injectYearAndMonth().Years;
       const Month = news.injectYearAndMonth().Month;
+      this.Amoeba_MonthlySSDetail = [];// 提交时重复数据bug修复；
       this.scheduleSubmitData.ScheduleSubject.forEach((item) => {
         const sObj = {};
         if (this.$store.state.comData.commonData.draft === 1) {
