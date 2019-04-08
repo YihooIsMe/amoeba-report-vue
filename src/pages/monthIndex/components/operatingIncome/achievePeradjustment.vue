@@ -37,6 +37,7 @@
 import Vue from 'vue';
 import { Radio } from 'element-ui';
 import api from '@/http/index';
+import news from '@/assets/js/notification';
 
 Vue.use(Radio);
 Vue.use(api);
@@ -64,16 +65,17 @@ export default {
       // TODO:正式环境更改,一下围测试环境下
       const customerType = this.multipleSelectionPer[0].customerType;
       const PersonnelID = this.multipleSelectionPer[0].broker;
+      const achievePeradjustmentMonth = news.injectYearAndMonth().Month >= 10 ? news.injectYearAndMonth().Month.toString() : '0' + news.injectYearAndMonth().Month;
       console.log({
         OrganizationID: this.$store.state.comData.commonData.OrganizeId,
-        years: new Date().getFullYear() + '01',
+        years: new Date().getFullYear() + achievePeradjustmentMonth,
         customerType,
         RequestType: 1,
         PersonnelID,
       });
       this.$api.monthScheduleTable({
         OrganizationID: this.$store.state.comData.commonData.OrganizeId,
-        years: new Date().getFullYear() + '01',
+        years: new Date().getFullYear() + achievePeradjustmentMonth,
         customerType,
         RequestType: 1,
         PersonnelID,

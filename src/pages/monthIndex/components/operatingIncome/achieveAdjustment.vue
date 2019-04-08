@@ -37,6 +37,7 @@
 import Vue from 'vue';
 import { Radio } from 'element-ui';
 import api from '@/http/index';
+import news from '@/assets/js/notification';
 
 Vue.use(Radio);
 Vue.use(api);
@@ -64,16 +65,17 @@ export default {
       // TODO:这里的月份不是死的,后续修改
       const customerType = this.multipleSelection[0].customerType;
       const PersonnelID = this.multipleSelection[0].broker;
+      const achieveAdjustmentMonth = news.injectYearAndMonth().Month >= 10 ? news.injectYearAndMonth().Month.toString() : '0' + news.injectYearAndMonth().Month;
       console.log({
         OrganizationID: this.$store.state.comData.commonData.OrganizeId,
-        years: new Date().getFullYear() + '01',
+        years: new Date().getFullYear() + achieveAdjustmentMonth,
         customerType,
         RequestType: 0,
         PersonnelID,
       });
       this.$api.monthScheduleTable({
         OrganizationID: this.$store.state.comData.commonData.OrganizeId,
-        years: new Date().getFullYear() + '01',
+        years: new Date().getFullYear() + achieveAdjustmentMonth,
         customerType,
         RequestType: 0,
         PersonnelID,
