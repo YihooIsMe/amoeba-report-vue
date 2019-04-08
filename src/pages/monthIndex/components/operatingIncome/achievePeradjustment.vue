@@ -62,7 +62,6 @@ export default {
       this.$emit('closePerAchieveDialog', false);
     },
     getPerTransactionCase() {
-      // TODO:正式环境更改,一下围测试环境下
       const customerType = this.multipleSelectionPer[0].customerType;
       const PersonnelID = this.multipleSelectionPer[0].broker;
       const achievePeradjustmentMonth = news.injectYearAndMonth().Month >= 10 ? news.injectYearAndMonth().Month.toString() : '0' + news.injectYearAndMonth().Month;

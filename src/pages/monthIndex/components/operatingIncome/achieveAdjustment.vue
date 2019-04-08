@@ -62,7 +62,6 @@ export default {
       this.$emit('closeAchieveDialog', false);
     },
     getTransactionCase() {
-      // TODO:这里的月份不是死的,后续修改
       const customerType = this.multipleSelection[0].customerType;
       const PersonnelID = this.multipleSelection[0].broker;
       const achieveAdjustmentMonth = news.injectYearAndMonth().Month >= 10 ? news.injectYearAndMonth().Month.toString() : '0' + news.injectYearAndMonth().Month;
