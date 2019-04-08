@@ -2,7 +2,7 @@
   <div class="managementAlert">
     <div class="alertParent">
       <div class="alertContent">
-        <div class="title">请选择签约金类型</div>
+        <div class="title">请选择门店等级</div>
         <div class="close" @click="closeManagement">×</div>
         <div class="select">
           <select id="qyjVal" v-model="selected">
