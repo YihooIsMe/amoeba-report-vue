@@ -137,7 +137,11 @@ export default {
 </script>
 
 <style scoped>
-
+  div.radio:after{
+    content: '';
+    display: block;
+    clear: both;
+  }
 </style>
 <style lang="less">
   .achieve-dialog{

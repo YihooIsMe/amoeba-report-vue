@@ -183,6 +183,11 @@ export default {
   .el-dialog__body{
     padding-top: 10px;
   }
+  div.radio:after{
+    content: '';
+    display: block;
+    clear: both;
+  }
 }
 </style>
 <style>
