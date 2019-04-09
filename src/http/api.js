@@ -12,7 +12,7 @@ export default function $axios(options) {
 
     instance.interceptors.request.use(
       (config) => {
-        if (config.method.toLocaleLowerCase() === 'post' && typeof config.data.get !== 'function') {
+        if (config.method.toLocaleLowerCase() === 'post' && config.url !== '/ImportExcel') {
           config.data = qs.stringify(config.data);
         }
         return config;
