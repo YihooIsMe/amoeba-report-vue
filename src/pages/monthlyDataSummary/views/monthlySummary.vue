@@ -272,7 +272,7 @@ export default {
             if (res.data.result) {
               setTimeout(() => {
                 window.location.reload();
-              }, 1000);
+              }, 500);
             }
           })
           .catch((errMsg) => {
