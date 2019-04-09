@@ -103,6 +103,7 @@ export default {
           managementServiceFee = 2500 + 0.05 * this.remSep(this.tableOne(index).OriginalContractFee.value);
           break;
         default:
+          managementServiceFee = 0;
       }
     }
     if (this.fromWhere === 'yearIndex') {
@@ -126,9 +127,10 @@ export default {
           managementServiceFee = 2500 + 0.05 * this.remSep(this.tableOne(index).OriginalContractFee.value);
           break;
         default:
+          managementServiceFee = 0;
       }
     }
-    return managementServiceFee;
+    return Math.round(managementServiceFee);
   },
   /* Type类型为0时 */
   tableOne(index) {
