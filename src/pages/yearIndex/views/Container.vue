@@ -474,7 +474,7 @@ export default {
         const dataClassName = getSubmitData[i].className;
         const allInput = document.querySelectorAll('table.commonTable .' + dataClassName + ' input');
         for (let j = 0; j < 13; j += 1) {
-          if (dataClassName === 'F4' || dataClassName === 'G2' || dataClassName === 'H1') {
+          if (dataClassName === 'F4' || dataClassName === 'G2') {
             submitObj[this.months[j]] = cal.remPercent(allInput[(j + 1)].value);
           } else {
             submitObj[this.months[j]] = cal.remSep(allInput[(j + 1)].value);
@@ -533,10 +533,10 @@ export default {
         this.DraftData.forEach((item) => {
           const allInputEl = document.querySelectorAll('tr.' + item.className + '>td>input');
           for (let i = 0; i < 13; i += 1) {
-            if (item.className === 'F4' || item.className === 'G2' || item.className === 'H1') {
-              allInputEl[(i + 1)].value = cal.addPercent(item[this.months[i]]);
+            if (item.className === 'F4' || item.className === 'G2') {
+              allInputEl[(i + 1)].value = cal.addPercent(item[this.months[i]].toFixed(2));
             } else {
-              allInputEl[(i + 1)].value = item[this.months[i]].toLocaleString();
+              allInputEl[(i + 1)].value = Math.round(item[this.months[i]]).toLocaleString();
               if (item.className === 'F5') {
                 this.SigningRatio['SigningRatio' + (i + 1)] = item[this.months[i]];
               }
