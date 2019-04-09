@@ -112,7 +112,6 @@
         <div class="el-upload__tip" slot="tip">一次只能上传一个文件，仅限.xlsx或.xls格式</div>
       </el-upload>
     </el-dialog>
-
   </div>
 </template>
 
@@ -413,7 +412,7 @@ export default {
     },
     beforeUpload(file) {
       console.log('beforeUpload');
-      console.log(file.type);
+      console.log(file);
       const isText = file.type === 'application/vnd.ms-excel';
       const isTextComputer = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
       return (isText | isTextComputer);
@@ -435,7 +434,6 @@ export default {
       // 文件对象
       form.append('File', fileObj);
       form.append('userID', this.userID);
-      console.log(JSON.stringify(form));
       this.$api.yearUploadFile(form)
         .then((res) => {
           console.log(res);
@@ -445,6 +443,9 @@ export default {
             type: res.data.isSuccess ? 'success' : 'error',
           });
           this.dialogExcelImport = false;
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
         })
         .catch((errMsg) => {
           console.log(errMsg);
